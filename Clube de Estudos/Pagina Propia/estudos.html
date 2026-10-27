@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StudyFlow — Plataforma de Estudos</title>
+
+  <!-- ═══════════════════════════════════════════════
+       FONTES
+  ════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+  <!-- ═══════════════════════════════════════════════
+       VARIÁVEIS DE DESIGN (altere aqui para mudar o tema)
+  ════════════════════════════════════════════════ -->
+  <style>
+    :root {
+      --bg:           #0d0f14;       /* fundo principal */
+      --bg-card:      #13161d;       /* cards */
+      --bg-hover:     #1a1e28;       /* hover nos cards */
+      --accent:       #c9a96e;       /* dourado — cor de destaque */
+      --accent-dim:   #9c7a47;       /* dourado escuro */
+      --text-primary: #e8e3d8;       /* texto principal */
+      --text-muted:   #6b6f7e;       /* texto secundário */
+      --border:       #1f2330;       /* bordas sutis */
+      --green:        #4caf7d;
+      --red:          #e05c5c;
+      --blue:         #5b9bd5;
+
+      --font-display: 'Playfair Display', serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+
+      --radius-sm:    8px;
+      --radius-md:    14px;
+      --radius-lg:    20px;
+    }
+
+    /* ═══════════════════════════════════════════════
+         RESET & BASE
+    ════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Utilitários */
+    .hidden { display: none !important; }
+    .accent { color: var(--accent); }
+
+    /* ═══════════════════════════════════════════════
+         SIDEBAR (navegação lateral)
+    ════════════════════════════════════════════════ */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 240px;
+      height: 100vh;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 0 24px 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .sidebar-logo h1 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--accent);
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-logo span {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Item de navegação */
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 24px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.18s;
+      border-left: 3px solid transparent;
+      text-decoration: none;
+      background: none;
+      border-top: none;
+      border-right: none;
+      border-bottom: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item:hover { color: var(--text-primary); background: var(--bg-hover); }
+
+    .nav-item.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      background: rgba(201,169,110,0.07);
+      font-weight: 500;
+    }
+
+    .nav-icon { font-size: 17px; width: 22px; text-align: center; }
+
+    /* Separador */
+    .nav-sep {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 18px 24px 6px;
+    }
+
+    /* Avatar no rodapé da sidebar */
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 20px 24px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ═══════════════════════════════════════════════
+         CONTEÚDO PRINCIPAL
+    ════════════════════════════════════════════════ */
+    .main {
+      margin-left: 240px;
+      padding: 40px 48px;
+      min-height: 100vh;
+    }
+
+    /* Cabeçalho de cada página */
+    .page-header {
+      margin-bottom: 36px;
+    }
+
+    .page-header h2 {
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    /* ═══════════════════════════════════════════════
+         GRID DE CARDS GENÉRICO
+    ════════════════════════════════════════════════ */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+    /* ═══════════════════════════════════════════════
+         CARD BASE
+    ════════════════════════════════════════════════ */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      transition: border-color 0.18s, transform 0.18s;
+    }
+
+    .card:hover { border-color: #2d3344; transform: translateY(-2px); }
+
+    /* ═══════════════════════════════════════════════
+         PÁGINA: DASHBOARD
+    ════════════════════════════════════════════════ */
+
+    /* Cards de estatísticas */
+    .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 26px;
+      color: var(--text-primary);
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .stat-sub .up   { color: var(--green); }
+    .stat-sub .down { color: var(--red); }
+
+    /* Barra de progresso */
+    .progress-wrap { margin-bottom: 32px; }
+
+    .progress-bar-track {
+      height: 5px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    /* Matérias recentes */
+    .subject-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .subject-row:last-child { border-bottom: none; }
+
+    .subject-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .subject-info { flex: 1; }
+
+    .subject-name { font-size: 14px; font-weight: 500; }
+
+    .subject-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+
+    .badge-green { background: rgba(76,175,125,0.12); color: var(--green); }
+    .badge-amber { background: rgba(201,169,110,0.12); color: var(--accent); }
+    .badge-blue  { background: rgba(91,155,213,0.12);  color: var(--blue); }
+
+    /* ═══════════════════════════════════════════════
+         PÁGINA: MATÉRIAS (cursos)
+    ════════════════════════════════════════════════ */
+    .course-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: transform 0.18s, border-color 0.18s;
+      cursor: pointer;
+    }
+
+    .course-card:hover { transform: translateY(-3px); border-color: #2d3344; }
+
+    .course-thumb {
+      height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 44px;
+    }
+
+    .course-body { padding: 18px 20px 20px; }
+
+    .course-title { font-family: var(--font-display); font-size: 17px; margin-bottom: 6px; }
+
+    .course-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 14px; }
+
+    .course-footer { display: flex; align-items: center; justify-content: space-between; }
+
+    .course-progress-label { font-size: 12px; color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════════
+         PÁGINA: ANOTAÇÕES
+    ════════════════════════════════════════════════ */
+    .note-toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    /* Input / textarea estilo escuro */
+    input[type="text"], textarea, select {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: var(--accent-dim);
+    }
+
+    input[type="text"]::placeholder, textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea { resize: vertical; width: 100%; min-height: 120px; }
+
+    /* Botões */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      transition: opacity 0.15s, transform 0.12s;
+    }
+
+    .btn:hover { opacity: 0.86; }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary { background: var(--accent); color: #0d0f14; }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover { color: var(--text-primary); border-color: #2d3344; }
+
+    .btn-danger { background: rgba(224,92,92,0.12); color: var(--red); border: 1px solid rgba(224,92,92,0.2); }
+
+    .note-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .note-card-title { font-weight: 500; margin-bottom: 6px; }
+
+    .note-card-body { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    .note-card-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 14px;
+    }
+
+    .note-date { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+    /* ═══════════════════════════════════════════════
+         PÁGINA: FLASHCARDS / QUIZ
+    ════════════════════════════════════════════════ */
+    .flashcard-wrap {
+      perspective: 1000px;
+      max-width: 520px;
+      margin: 0 auto 36px;
+    }
+
+    .flashcard {
+      width: 100%; height: 220px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s ease;
+      cursor: pointer;
+    }
+
+    .flashcard.flipped { transform: rotateY(180deg); }
+
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .flashcard-front .fc-label { color: var(--accent); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+    .flashcard-front .fc-question { font-family: var(--font-display); font-size: 22px; }
+
+    .flashcard-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, #1a1e28, #13161d);
+    }
+
+    .flashcard-back .fc-label { color: var(--green); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+    .flashcard-back .fc-answer { font-size: 17px; font-weight: 300; color: var(--text-primary); }
+
+    .fc-hint { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+
+    .fc-actions {
+      display: flex; justify-content: center; gap: 12px;
+      margin-top: 0;
+    }
+
+    /* ═══════════════════════════════════════════════
+         PÁGINA: CRONÔMETRO POMODORO
+    ════════════════════════════════════════════════ */
+    .pomodoro-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 28px; padding-top: 20px;
+    }
+
+    .pomodoro-circle {
+      position: relative;
+      width: 220px; height: 220px;
+    }
+
+    .pomodoro-circle svg { transform: rotate(-90deg); }
+
+    .pomodoro-circle circle { fill: none; stroke-width: 6; }
+    .circle-bg  { stroke: var(--border); }
+    .circle-fill { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 0.5s linear; }
+
+    .pomodoro-time {
+      position: absolute;
+      inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+
+    .pomodoro-digits {
+      font-family: var(--font-mono);
+      font-size: 46px;
+      color: var(--text-primary);
+      letter-spacing: 2px;
+    }
+
+    .pomodoro-mode {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    .pomodoro-btns { display: flex; gap: 12px; }
+
+    .pomodoro-sessions {
+      display: flex; gap: 8px; margin-top: 4px;
+    }
+
+    .session-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .session-dot.done { background: var(--accent); }
+
+    /* ═══════════════════════════════════════════════
+         PÁGINA: TAREFAS
+    ════════════════════════════════════════════════ */
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: 10px;
+      transition: opacity 0.2s;
+    }
+
+    .task-item.done { opacity: 0.45; }
+    .task-item.done .task-text { text-decoration: line-through; }
+
+    .task-check {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1.5px solid var(--text-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.18s;
+    }
+
+    .task-check.checked {
+      background: var(--accent); border-color: var(--accent);
+      color: #0d0f14; font-size: 12px;
+    }
+
+    .task-text { flex: 1; font-size: 14px; }
+
+    .task-meta { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+    /* ═══════════════════════════════════════════════
+         ANIMAÇÃO DE ENTRADA DAS PÁGINAS
+    ════════════════════════════════════════════════ */
+    .page {
+      animation: fadeUp 0.3s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════════
+   RESPONSIVIDADE COMPLETA
+═══════════════════════════════════════════════ */
+
+/* TABLET */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 70px;
+  }
+
+  .nav-item span,
+  .nav-sep,
+  .sidebar-logo span,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .main {
+    margin-left: 70px;
+    padding: 24px 20px;
+  }
+
+  .stat-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+  /* 🔥 Sidebar vira topo */
+  .sidebar {
+    position: fixed;
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 10px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo {
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sidebar-logo h1 {
+    font-size: 16px;
+  }
+
+  .nav-sep,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .nav-item {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .nav-icon {
+    font-size: 16px;
+  }
+
+  .nav-item span:not(.nav-icon) {
+    display: none;
+  }
+
+  /* 🔥 Conteúdo ocupa tudo */
+  .main {
+    margin-left: 0;
+    margin-top: 70px;
+    padding: 16px;
+  }
+
+  /* 🔥 Cabeçalho */
+  .page-header h2 {
+    font-size: 22px;
+  }
+
+  /* 🔥 Stats */
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+
+  /* 🔥 Grids */
+  .grid-3,
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* 🔥 Inputs e botões */
+  .note-toolbar,
+  .pomodoro-btns,
+  .fc-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* 🔥 Task input */
+  #page-tarefas > div:first-of-type {
+    flex-direction: column;
+  }
+
+  /* 🔥 Flashcard */
+  .flashcard {
+    height: 180px;
+  }
+
+  .flashcard-front .fc-question {
+    font-size: 18px;
+  }
+
+  /* 🔥 Pomodoro */
+  .pomodoro-circle {
+    width: 180px;
+    height: 180px;
+  }
+
+  .pomodoro-digits {
+    font-size: 32px;
+  }
+
+  /* 🔥 Cards padding menor */
+  .card,
+  .stat-card {
+    padding: 16px;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>StudyFlow</h1>
+      <span>Plataforma</span>
+    </div>
+
+    <!-- MENU PRINCIPAL — data-page="..." liga ao JS abaixo -->
+    <div class="nav-sep">Principal</div>
+    <button class="nav-item active" data-page="dashboard">
+      <span class="nav-icon">🏠</span> <span>Dashboard</span>
+    </button>
+    <button class="nav-item" data-page="materias">
+      <span class="nav-icon">📚</span> <span>Matérias</span>
+    </button>
+    <button class="nav-item" data-page="tarefas">
+      <span class="nav-icon">✅</span> <span>Tarefas</span>
+    </button>
+
+    <div class="nav-sep">Ferramentas</div>
+    <button class="nav-item" data-page="anotacoes">
+      <span class="nav-icon">📝</span> <span>Anotações</span>
+    </button>
+    <button class="nav-item" data-page="flashcards">
+      <span class="nav-icon">🃏</span> <span>Flashcards</span>
+    </button>
+    <button class="nav-item" data-page="pomodoro">
+      <span class="nav-icon">⏱</span> <span>Pomodoro</span>
+    </button>
+
+    <!-- Rodapé com usuário logado -->
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(201,169,110,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;">🎓</div>
+        <div>
+          <!-- BACKEND: substitua por {{ user.name }} -->
+          <div style="font-size:13px;font-weight:500;">João Alves</div>
+          <div style="font-size:11px;color:var(--text-muted);">Estudante</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════
+       CONTEÚDO PRINCIPAL
+  ════════════════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- ─────────────────────────────────────────────
+         PÁGINA: DASHBOARD
+    ────────────────────────────────────────────── -->
+    <section id="page-dashboard" class="page">
+      <div class="page-header">
+        <h2>Bom dia, <span class="accent">João</span> 👋</h2>
+        <!-- BACKEND: {{ greeting }}, {{ user.first_name }} -->
+        <p>Aqui está o resumo dos seus estudos hoje.</p>
+      </div>
+
+      <!-- Estatísticas — BACKEND: preencha via API /api/stats -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-label">Horas hoje</div>
+          <div class="stat-value">2h 40m</div>
+          <div class="stat-sub"><span class="up">↑ 20min</span> vs ontem</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tarefas feitas</div>
+          <div class="stat-value">5 / 8</div>
+          <div class="stat-sub"><span class="accent">3 restantes</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sequência</div>
+          <div class="stat-value">12 dias</div>
+          <div class="stat-sub"><span class="up">🔥 Recorde!</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Flashcards</div>
+          <div class="stat-value">48</div>
+          <div class="stat-sub">revisados hoje</div>
+        </div>
+      </div>
+
+      <!-- Progresso geral — BACKEND: /api/progress -->
+      <div class="grid-2" style="margin-bottom:32px;">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-weight:500;">Progresso Semanal</div>
+            <div style="font-size:13px;color:var(--text-muted);">68%</div>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="width:68%"></div>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:10px;">Meta: 10h por semana</div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-weight:500;">Flashcards revisados</div>
+            <div style="font-size:13px;color:var(--text-muted);">80%</div>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="width:80%"></div>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:10px;">48 de 60 hoje</div>
+        </div>
+      </div>
+
+      <!-- Matérias recentes — BACKEND: /api/subjects/recent -->
+      <div class="card">
+        <div style="font-weight:500;margin-bottom:16px;">Matérias em andamento</div>
+        <div id="recent-subjects">
+          <!-- Gerado pelo JS (simula o que o backend retornaria) -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────
+         PÁGINA: MATÉRIAS
+    ────────────────────────────────────────────── -->
+    <section id="page-materias" class="page hidden">
+      <div class="page-header">
+        <h2>Minhas <span class="accent">Matérias</span></h2>
+        <p>Selecione uma matéria para continuar estudando.</p>
+      </div>
+      <!-- BACKEND: renderize cards via /api/subjects -->
+      <div class="grid-3" id="courses-grid">
+        <!-- Preenchido pelo JS -->
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────
+         PÁGINA: TAREFAS
+    ────────────────────────────────────────────── -->
+    <section id="page-tarefas" class="page hidden">
+      <div class="page-header">
+        <h2>Lista de <span class="accent">Tarefas</span></h2>
+        <p>Organize o que precisa estudar hoje.</p>
+      </div>
+
+      <!-- Adicionar tarefa — BACKEND: POST /api/tasks -->
+      <div style="display:flex;gap:10px;margin-bottom:28px;">
+        <input type="text" id="task-input" placeholder="Nova tarefa... (ex: Resolver 10 questões de Cálculo)" style="flex:1;" />
+        <button class="btn btn-primary" onclick="addTask()">+ Adicionar</button>
+      </div>
+
+      <!-- Lista — BACKEND: GET /api/tasks -->
+      <div id="task-list">
+        <!-- Preenchido pelo JS -->
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────
+         PÁGINA: ANOTAÇÕES
+    ────────────────────────────────────────────── -->
+    <section id="page-anotacoes" class="page hidden">
+      <div class="page-header">
+        <h2>Minhas <span class="accent">Anotações</span></h2>
+        <p>Capture ideias e resumos importantes.</p>
+      </div>
+
+      <!-- Formulário — BACKEND: POST /api/notes -->
+      <div class="card" style="margin-bottom:28px;">
+        <input type="text" id="note-title" placeholder="Título da anotação" style="width:100%;margin-bottom:12px;" />
+        <textarea id="note-body" placeholder="Escreva sua anotação aqui..."></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+          <button class="btn btn-primary" onclick="saveNote()">💾 Salvar anotação</button>
+        </div>
+      </div>
+
+      <!-- Lista — BACKEND: GET /api/notes -->
+      <div id="notes-list">
+        <!-- Preenchido pelo JS -->
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────
+         PÁGINA: FLASHCARDS
+    ────────────────────────────────────────────── -->
+    <section id="page-flashcards" class="page hidden">
+      <div class="page-header">
+        <h2>Revisão de <span class="accent">Flashcards</span></h2>
+        <p>Clique no card para ver a resposta.</p>
+      </div>
+
+      <!-- Card 3D — BACKEND: GET /api/flashcards?subject=... -->
+      <div class="flashcard-wrap">
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-face flashcard-front">
+            <div class="fc-label">Pergunta</div>
+            <div class="fc-question" id="fc-question">O que é a Lei de Ohm?</div>
+            <div class="fc-hint">Clique para ver a resposta</div>
+          </div>
+          <div class="flashcard-face flashcard-back">
+            <div class="fc-label">Resposta</div>
+            <div class="fc-answer" id="fc-answer">V = R × I — A tensão é igual à resistência multiplicada pela corrente elétrica.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ações de revisão -->
+      <div class="fc-actions" style="margin-bottom:32px;">
+        <button class="btn btn-danger" onclick="rateCard('errei')">✗ Errei</button>
+        <button class="btn btn-ghost" onclick="nextCard()">→ Pular</button>
+        <button class="btn btn-primary" onclick="rateCard('acertei')">✓ Acertei</button>
+      </div>
+
+      <!-- Contador — BACKEND: sincronize com /api/flashcards/session -->
+      <div style="text-align:center;color:var(--text-muted);font-size:13px;">
+        Card <span id="fc-index">1</span> de <span id="fc-total">5</span>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────
+         PÁGINA: POMODORO
+    ────────────────────────────────────────────── -->
+    <section id="page-pomodoro" class="page hidden">
+      <div class="page-header">
+        <h2>Temporizador <span class="accent">Pomodoro</span></h2>
+        <p>25 minutos de foco, 5 de descanso.</p>
+      </div>
+
+      <div class="pomodoro-wrap">
+
+        <!-- Círculo SVG animado -->
+        <div class="pomodoro-circle">
+          <svg width="220" height="220" viewBox="0 0 220 220">
+            <circle class="circle-bg" cx="110" cy="110" r="100"/>
+            <!-- stroke-dasharray = 2*pi*r ≈ 628 -->
+            <circle class="circle-fill" cx="110" cy="110" r="100"
+              stroke-dasharray="628"
+              id="pomo-ring" stroke-dashoffset="0"/>
+          </svg>
+          <div class="pomodoro-time">
+            <div class="pomodoro-digits" id="pomo-display">25:00</div>
+            <div class="pomodoro-mode"   id="pomo-mode">Foco</div>
+          </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="pomodoro-btns">
+          <button class="btn btn-ghost" onclick="resetPomo()">↺ Reiniciar</button>
+          <button class="btn btn-primary" id="pomo-btn" onclick="togglePomo()">▶ Iniciar</button>
+        </div>
+
+        <!-- Sessões completadas -->
+        <div class="pomodoro-sessions" id="pomo-dots">
+          <div class="session-dot"></div>
+          <div class="session-dot"></div>
+          <div class="session-dot"></div>
+          <div class="session-dot"></div>
+        </div>
+
+        <div style="text-align:center;font-size:13px;color:var(--text-muted);">
+          Sessões completadas hoje: <span id="pomo-count">0</span>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /main -->
+
+  <!-- ═══════════════════════════════════════════════
+       JAVASCRIPT
+       ─────────────────────────────────────────────
+       ESTRUTURA PARA BACKEND:
+       • Cada bloco "// BACKEND:" indica onde
+         substituir dados mockados por fetch() real.
+       • Endpoints sugeridos estão comentados.
+  ════════════════════════════════════════════════ -->
+  <script>
+
+    // ══════════════════════════════════════════════
+    // 1. NAVEGAÇÃO ENTRE PÁGINAS
+    // ══════════════════════════════════════════════
+    const navItems = document.querySelectorAll('.nav-item[data-page]');
+
+    navItems.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Remove classe active de todos
+        navItems.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Esconde todas as páginas
+        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+
+        // Mostra a página alvo e reinicia animação
+        const target = document.getElementById('page-' + btn.dataset.page);
+        target.classList.remove('hidden');
+        target.style.animation = 'none';
+        void target.offsetWidth; // reflow
+        target.style.animation = '';
+      });
+    });
+
+
+    // ══════════════════════════════════════════════
+    // 2. DADOS MOCKADOS
+    //    BACKEND: substitua por fetch('/api/...')
+    // ══════════════════════════════════════════════
+
+    // GET /api/subjects
+    const subjects = [
+      { id: 1, name: 'Matemática',   icon: '📐', color: '#1a2535', progress: 72, tag: 'Em dia',      tagClass: 'badge-green' },
+      { id: 2, name: 'Física',       icon: '⚡', color: '#1a2520', progress: 45, tag: 'Atenção',     tagClass: 'badge-amber' },
+      { id: 3, name: 'Química',      icon: '🧪', color: '#201a2e', progress: 60, tag: 'Em dia',      tagClass: 'badge-green' },
+      { id: 4, name: 'Português',    icon: '📖', color: '#1a2530', progress: 88, tag: 'Avançado',    tagClass: 'badge-blue'  },
+      { id: 5, name: 'Biologia',     icon: '🧬', color: '#1e2218', progress: 30, tag: 'Atrasado',    tagClass: 'badge-amber' },
+      { id: 6, name: 'História',     icon: '🏛', color: '#251e18', progress: 55, tag: 'Em dia',      tagClass: 'badge-green' },
+    ];
+
+    // GET /api/tasks
+    let tasks = [
+      { id: 1, text: 'Resolver lista 3 de Cálculo', done: false, date: 'Hoje' },
+      { id: 2, text: 'Resumo do Capítulo 7 — Física Quântica', done: true,  date: 'Ontem' },
+      { id: 3, text: 'Revisar flashcards de Gramática', done: false, date: 'Hoje' },
+      { id: 4, text: 'Assistir aula de Reações Orgânicas', done: false, date: 'Amanhã' },
+    ];
+
+    // GET /api/notes
+    let notes = [
+      { id: 1, title: 'Lei de Newton', body: 'F = m × a. A força resultante é igual à massa vezes a aceleração. Importante para as questões de dinâmica do ENEM.', date: '22/03/2026' },
+      { id: 2, title: 'Regra do Produto — Derivadas', body: 'Se f(x) = u(x) · v(x), então f\'(x) = u\'v + uv\'. Lembrar de aplicar nos exercícios de Cálculo I.', date: '20/03/2026' },
+    ];
+
+    // GET /api/flashcards
+    const flashcards = [
+      { q: 'O que é a Lei de Ohm?',              a: 'V = R × I — Tensão igual à resistência vezes a corrente.' },
+      { q: 'Defina fotossíntese.',                a: '6CO₂ + 6H₂O + luz → C₆H₁₂O₆ + 6O₂' },
+      { q: 'O que é entropia?',                   a: 'Medida de desordem de um sistema termodinâmico (2ª Lei da Termodinâmica).' },
+      { q: 'Quando ocorreu a Proclamação da República?', a: '15 de novembro de 1889, pelo Marechal Deodoro da Fonseca.' },
+      { q: 'O que é derivada?',                   a: 'Taxa de variação instantânea de uma função — a inclinação da tangente no ponto.' },
+    ];
+
+    let fcIndex = 0;
+
+
+    // ══════════════════════════════════════════════
+    // 3. RENDERIZAÇÃO DO DASHBOARD
+    // ══════════════════════════════════════════════
+    function renderRecentSubjects() {
+      const container = document.getElementById('recent-subjects');
+      // Mostra as 4 primeiras matérias
+      container.innerHTML = subjects.slice(0, 4).map(s => `
+        <div class="subject-row">
+          <div class="subject-icon" style="background:${s.color};">${s.icon}</div>
+          <div class="subject-info">
+            <div class="subject-name">${s.name}</div>
+            <div class="subject-meta">${s.progress}% concluído</div>
+          </div>
+          <span class="badge ${s.tagClass}">${s.tag}</span>
+        </div>
+      `).join('');
+    }
+
+
+    // ══════════════════════════════════════════════
+    // 4. RENDERIZAÇÃO DAS MATÉRIAS
+    // ══════════════════════════════════════════════
+    function renderCourses() {
+      const grid = document.getElementById('courses-grid');
+      grid.innerHTML = subjects.map(s => `
+        <div class="course-card">
+          <div class="course-thumb" style="background:${s.color};">${s.icon}</div>
+          <div class="course-body">
+            <div class="course-title">${s.name}</div>
+            <div class="course-desc">Clique para acessar aulas, resumos e exercícios desta matéria.</div>
+            <div class="course-footer">
+              <div style="flex:1;">
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" style="width:${s.progress}%"></div>
+                </div>
+                <div class="course-progress-label" style="margin-top:6px;">${s.progress}% concluído</div>
+              </div>
+              <span class="badge ${s.tagClass}" style="margin-left:14px;">${s.tag}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+
+    // ══════════════════════════════════════════════
+    // 5. TAREFAS
+    // ══════════════════════════════════════════════
+    function renderTasks() {
+      const list = document.getElementById('task-list');
+      if (!tasks.length) { list.innerHTML = '<p style="color:var(--text-muted);font-size:14px;">Nenhuma tarefa ainda.</p>'; return; }
+
+      list.innerHTML = tasks.map(t => `
+        <div class="task-item ${t.done ? 'done' : ''}" id="task-${t.id}">
+          <div class="task-check ${t.done ? 'checked' : ''}" onclick="toggleTask(${t.id})">
+            ${t.done ? '✓' : ''}
+          </div>
+          <div class="task-text">${t.text}</div>
+          <div class="task-meta">${t.date}</div>
+          <button class="btn btn-danger" style="padding:6px 10px;font-size:12px;" onclick="deleteTask(${t.id})">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function addTask() {
+      const input = document.getElementById('task-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      // BACKEND: POST /api/tasks  { text, date: today }
+      const newTask = { id: Date.now(), text, done: false, date: 'Hoje' };
+      tasks.unshift(newTask);
+      input.value = '';
+      renderTasks();
+    }
+
+    function toggleTask(id) {
+      // BACKEND: PATCH /api/tasks/:id  { done: !current }
+      tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+      renderTasks();
+    }
+
+    function deleteTask(id) {
+      // BACKEND: DELETE /api/tasks/:id
+      tasks = tasks.filter(t => t.id !== id);
+      renderTasks();
+    }
+
+    // Enter para adicionar tarefa
+    document.getElementById('task-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') addTask();
+    });
+
+
+    // ══════════════════════════════════════════════
+    // 6. ANOTAÇÕES
+    // ══════════════════════════════════════════════
+    function renderNotes() {
+      const list = document.getElementById('notes-list');
+      if (!notes.length) { list.innerHTML = '<p style="color:var(--text-muted);font-size:14px;">Nenhuma anotação ainda.</p>'; return; }
+
+      list.innerHTML = notes.map(n => `
+        <div class="note-card" id="note-${n.id}">
+          <div class="note-card-title">${n.title}</div>
+          <div class="note-card-body">${n.body}</div>
+          <div class="note-card-footer">
+            <div class="note-date">${n.date}</div>
+            <button class="btn btn-danger" style="padding:6px 10px;font-size:12px;" onclick="deleteNote(${n.id})">Excluir</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function saveNote() {
+      const title = document.getElementById('note-title').value.trim();
+      const body  = document.getElementById('note-body').value.trim();
+      if (!title || !body) return;
+
+      // BACKEND: POST /api/notes  { title, body }
+      const today = new Date().toLocaleDateString('pt-BR');
+      notes.unshift({ id: Date.now(), title, body, date: today });
+      document.getElementById('note-title').value = '';
+      document.getElementById('note-body').value  = '';
+      renderNotes();
+    }
+
+    function deleteNote(id) {
+      // BACKEND: DELETE /api/notes/:id
+      notes = notes.filter(n => n.id !== id);
+      renderNotes();
+    }
+
+
+    // ══════════════════════════════════════════════
+    // 7. FLASHCARDS
+    // ══════════════════════════════════════════════
+    function loadCard(index) {
+      const card = flashcards[index];
+      document.getElementById('fc-question').textContent = card.q;
+      document.getElementById('fc-answer').textContent   = card.a;
+      document.getElementById('fc-index').textContent    = index + 1;
+      document.getElementById('fc-total').textContent    = flashcards.length;
+      // Remove flip
+      document.getElementById('flashcard').classList.remove('flipped');
+    }
+
+    function flipCard() {
+      document.getElementById('flashcard').classList.toggle('flipped');
+    }
+
+    function nextCard() {
+      // BACKEND: POST /api/flashcards/session  { card_id, result: 'skip' }
+      fcIndex = (fcIndex + 1) % flashcards.length;
+      loadCard(fcIndex);
+    }
+
+    function rateCard(result) {
+      // BACKEND: POST /api/flashcards/session  { card_id: flashcards[fcIndex].id, result }
+      nextCard();
+    }
+
+
+    // ══════════════════════════════════════════════
+    // 8. POMODORO
+    // ══════════════════════════════════════════════
+    const POMO_FOCUS = 25 * 60;  // segundos
+    const POMO_BREAK = 5 * 60;
+
+    let pomoSeconds   = POMO_FOCUS;
+    let pomoTotal     = POMO_FOCUS;
+    let pomoRunning   = false;
+    let pomoInterval  = null;
+    let pomoIsFocus   = true;
+    let pomoSessions  = 0;
+
+    function updatePomoDisplay() {
+      const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+      const s = String(pomoSeconds % 60).padStart(2, '0');
+      document.getElementById('pomo-display').textContent = `${m}:${s}`;
+
+      // Anel SVG: quanto falta (0 = cheio, 628 = vazio)
+      const ratio  = pomoSeconds / pomoTotal;
+      const offset = 628 * (1 - ratio);
+      document.getElementById('pomo-ring').style.strokeDashoffset = offset;
+    }
+
+    function togglePomo() {
+      pomoRunning = !pomoRunning;
+      document.getElementById('pomo-btn').textContent = pomoRunning ? '⏸ Pausar' : '▶ Continuar';
+
+      if (pomoRunning) {
+        pomoInterval = setInterval(() => {
+          pomoSeconds--;
+          updatePomoDisplay();
+
+          if (pomoSeconds <= 0) {
+            clearInterval(pomoInterval);
+            pomoRunning = false;
+
+            if (pomoIsFocus) {
+              // Marca sessão completada
+              pomoSessions++;
+              document.getElementById('pomo-count').textContent = pomoSessions;
+              const dots = document.querySelectorAll('.session-dot');
+              if (pomoSessions <= 4) dots[pomoSessions - 1].classList.add('done');
+
+              // BACKEND: POST /api/pomodoro/session  { type: 'focus', duration: 25 }
+            }
+
+            // Alterna modo
+            pomoIsFocus = !pomoIsFocus;
+            pomoSeconds = pomoTotal = pomoIsFocus ? POMO_FOCUS : POMO_BREAK;
+            document.getElementById('pomo-mode').textContent = pomoIsFocus ? 'Foco' : 'Descanso';
+            document.getElementById('pomo-btn').textContent = '▶ Iniciar';
+            updatePomoDisplay();
+          }
+        }, 1000);
+      } else {
+        clearInterval(pomoInterval);
+      }
+    }
+
+    function resetPomo() {
+      clearInterval(pomoInterval);
+      pomoRunning  = false;
+      pomoIsFocus  = true;
+      pomoSeconds  = POMO_FOCUS;
+      pomoTotal    = POMO_FOCUS;
+      document.getElementById('pomo-btn').textContent  = '▶ Iniciar';
+      document.getElementById('pomo-mode').textContent = 'Foco';
+      updatePomoDisplay();
+    }
+
+
+    // ══════════════════════════════════════════════
+    // 9. INIT — roda tudo ao carregar
+    // ══════════════════════════════════════════════
+    renderRecentSubjects();
+    renderCourses();
+    renderTasks();
+    renderNotes();
+    loadCard(fcIndex);
+    updatePomoDisplay();
+
+  </script>
+</body>
+</html>

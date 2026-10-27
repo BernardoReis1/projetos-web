@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101116">
+  <title>Minha coleção de projetos</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101116;
+      --surface: #181a21;
+      --surface-raised: #20232c;
+      --text: #f5f4f0;
+      --muted: #9a9ba8;
+      --accent: #c6f36b;
+      --line: rgba(255, 255, 255, .09);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 12% 0%, rgba(198, 243, 107, .09), transparent 34rem),
+        var(--bg);
+      color: var(--text);
+      font: 15px/1.5 "Segoe UI", system-ui, sans-serif;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { color: inherit; }
+
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--accent);
+      color: #14170e;
+      font-size: 22px;
+    }
+    .brand strong { display: block; font-size: 15px; letter-spacing: .02em; }
+    .brand span { color: var(--muted); font-size: 12px; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .button:hover { transform: translateY(-2px); background: var(--surface-raised); border-color: rgba(255,255,255,.2); }
+    .button.primary { border-color: var(--accent); background: var(--accent); color: #14170e; font-weight: 700; }
+    .button.primary:hover { background: #d3ff7c; }
+
+    main { padding: 54px 0 70px; }
+    .eyebrow {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 8px 0 10px; font-size: clamp(32px, 5vw, 52px); line-height: 1.08; letter-spacing: -.045em; }
+    .intro { max-width: 650px; margin: 0; color: var(--muted); font-size: 16px; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 34px 0 24px;
+    }
+    .field {
+      min-height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      outline: none;
+      background: var(--surface);
+      color: var(--text);
+    }
+    .field:focus { border-color: var(--accent); }
+    #search { flex: 1 1 240px; }
+    #category { min-width: 180px; }
+
+    .count { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .card {
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(198,243,107,.45); box-shadow: 0 18px 42px rgba(0,0,0,.24); }
+    .cover {
+      position: relative;
+      display: grid;
+      height: 178px;
+      place-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--cover-a), var(--cover-b));
+      text-decoration: none;
+    }
+    .cover::after {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 48%, rgba(0,0,0,.25));
+      content: "";
+      pointer-events: none;
+    }
+    .cover-icon { position: relative; z-index: 1; font-size: 66px; filter: drop-shadow(0 8px 14px rgba(0,0,0,.2)); }
+    .cover-image { width: 100%; height: 100%; object-fit: cover; }
+    .category-tag {
+      position: absolute;
+      z-index: 2;
+      top: 12px;
+      left: 12px;
+      padding: 5px 9px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 99px;
+      background: rgba(12,13,16,.48);
+      color: white;
+      font-size: 11px;
+      backdrop-filter: blur(8px);
+    }
+    .card-content { padding: 17px; }
+    .card-title { margin: 0 0 6px; font-size: 17px; line-height: 1.3; }
+    .card-description {
+      display: -webkit-box;
+      min-height: 42px;
+      margin: 0;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 13px;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 16px; }
+    .open-link { color: var(--accent); font-size: 13px; font-weight: 700; text-decoration: none; }
+    .open-link:hover { text-decoration: underline; }
+    .delete-button {
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .delete-button:hover { border-color: #fa7b7b; color: #fa7b7b; }
+    .empty { grid-column: 1 / -1; padding: 34px; border: 1px dashed var(--line); border-radius: var(--radius); color: var(--muted); text-align: center; }
+
+    .storage-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 30px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .storage-note strong { color: var(--text); }
+    .storage-note .note-icon { color: var(--accent); font-size: 18px; }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 5;
+      max-width: min(420px, calc(100vw - 40px));
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface-raised);
+      box-shadow: 0 12px 32px rgba(0,0,0,.35);
+      color: var(--text);
+    }
+    .toast[hidden] { display: none; }
+
+    dialog {
+      width: min(520px, calc(100% - 28px));
+      max-height: min(90vh, 760px);
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+    }
+    dialog::backdrop { background: rgba(0,0,0,.7); backdrop-filter: blur(4px); }
+    .dialog-head, .dialog-body, .dialog-actions { padding: 20px 22px; }
+    .dialog-head { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+    .dialog-head h2 { margin: 0; font-size: 20px; }
+    .close-button { border: 0; background: transparent; color: var(--muted); font-size: 24px; cursor: pointer; }
+    .dialog-body { display: grid; gap: 14px; max-height: 60vh; overflow-y: auto; }
+    .form-row { display: grid; gap: 6px; }
+    .form-row label { font-size: 12px; font-weight: 700; }
+    .form-row small { color: var(--muted); font-size: 11px; }
+    .form-row textarea { min-height: 80px; padding-top: 10px; resize: vertical; }
+    .form-row input[type="file"] { padding: 10px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; border-top: 1px solid var(--line); }
+
+    @media (max-width: 850px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 580px) {
+      .shell { width: min(100% - 28px, 1180px); }
+      header { align-items: flex-start; flex-direction: column; padding: 18px 0; }
+      .actions { width: 100%; }
+      .actions .button { flex: 1; }
+      main { padding-top: 38px; }
+      .grid { grid-template-columns: 1fr; gap: 14px; }
+      .cover { height: 190px; }
+      #category { flex: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div><strong>Minha coleção</strong><span>Projetos organizados num só lugar</span></div>
+      </div>
+      <div class="actions">
+        <button class="button" id="saveFolder" type="button">▣ Guardar numa pasta</button>
+        <button class="button primary" id="addProject" type="button">＋ Adicionar projeto</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="eyebrow">A tua biblioteca digital</div>
+      <h1>Projetos, à primeira vista.</h1>
+      <p class="intro">Uma galeria visual dos teus projetos. Pesquisa, filtra e adiciona capas personalizadas; as tuas alterações ficam guardadas neste navegador.</p>
+
+      <section class="toolbar" aria-label="Pesquisar e filtrar projetos">
+        <input class="field" id="search" type="search" placeholder="Pesquisar projetos..." aria-label="Pesquisar projetos">
+        <select class="field" id="category" aria-label="Filtrar por categoria">
+          <option value="">Todas as categorias</option>
+        </select>
+      </section>
+
+      <p class="count" id="count" aria-live="polite"></p>
+      <section class="grid" id="projectGrid" aria-label="Projetos"></section>
+
+      <aside class="storage-note">
+        <span class="note-icon" aria-hidden="true">ℹ</span>
+        <div><strong>Sobre os teus dados.</strong> A lista e as capas são guardadas no armazenamento local deste navegador e neste dispositivo. Para criar uma cópia numa pasta, escolhe “Guardar numa pasta” e autoriza o acesso. O navegador só permite criar a pasta após essa autorização.</div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <dialog id="projectDialog">
+    <form id="projectForm">
+      <div class="dialog-head">
+        <h2>Adicionar projeto</h2>
+        <button class="close-button" id="closeDialog" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-row">
+          <label for="projectTitle">Nome do projeto</label>
+          <input class="field" id="projectTitle" name="title" maxlength="70" required placeholder="Ex.: Loja online">
+        </div>
+        <div class="form-row">
+          <label for="projectUrl">Endereço ou caminho do projeto</label>
+          <input class="field" id="projectUrl" name="url" required placeholder="Ex.: E-comerce/ecommerce.html">
+          <small>Usa um caminho relativo, como “pasta/projeto.html”, ou um endereço https://.</small>
+        </div>
+        <div class="form-row">
+          <label for="projectCategory">Categoria</label>
+          <input class="field" id="projectCategory" name="category" maxlength="30" placeholder="Ex.: Portfólio">
+        </div>
+        <div class="form-row">
+          <label for="projectIcon">Ícone da capa</label>
+          <input class="field" id="projectIcon" name="icon" maxlength="8" value="✨" placeholder="Ex.: 🎨">
+        </div>
+        <div class="form-row">
+          <label for="projectImage">Imagem para a capa (opcional)</label>
+          <input class="field" id="projectImage" name="image" type="file" accept="image/*">
+          <small>A imagem será reduzida para ocupar menos espaço.</small>
+        </div>
+        <div class="form-row">
+          <label for="projectDescription">Descrição (opcional)</label>
+          <textarea class="field" id="projectDescription" name="description" maxlength="180" placeholder="Uma frase sobre o projeto."></textarea>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="button" id="cancelDialog" type="button">Cancelar</button>
+        <button class="button primary" type="submit">Guardar projeto</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const STORAGE_KEY = 'minha-colecao-projetos-v1';
+
+    const builtInProjects = [
+      { title: 'Cards Click', url: 'Cards Click.html', category: 'Experimentos', icon: '🃏', description: 'Experiência interativa com cartões.' },
+      { title: 'Painel Financeiro', url: 'Painel de Controlo.html', category: 'Ferramentas', icon: '📊', description: 'Painel de controlo e organização financeira.' },
+      { title: 'Portfólio Musical', url: 'portfolio_musico.html', category: 'Portfólios', icon: '🎸', description: 'Portfólio criativo para músico.' },
+      { title: 'Portfólio Premium', url: 'portfolio_premium.html', category: 'Portfólios', icon: '💎', description: 'Apresentação premium de projetos e perfil.' },
+      { title: 'Preview 1', url: 'preview.html', category: 'Experimentos', icon: '🪄', description: 'Projeto em pré-visualização.' },
+      { title: 'Preview 2', url: 'preview 2.html', category: 'Experimentos', icon: '✨', description: 'Projeto em pré-visualização.' },
+      { title: 'Preview 3', url: 'preview (1).html', category: 'Experimentos', icon: '🔮', description: 'Projeto em pré-visualização.' },
+      { title: 'Estudos', url: 'Clube de Estudos/Pagina Propia/estudos.html', category: 'Educação', icon: '📚', description: 'Espaço pessoal de estudo.' },
+      { title: 'Pomodoro', url: 'Clube de Estudos/Pagina Propia/pomodoro.html', category: 'Educação', icon: '⏱️', description: 'Temporizador para sessões de foco.' },
+      { title: 'Clube de Estudos', url: 'Clube de Estudos/clube_estudos Login_Registro.html', category: 'Educação', icon: '🎓', description: 'Área de acesso e registo para estudantes.' },
+      { title: 'Estudos com IA', url: 'Clube de Estudos/clube_estudos_com_ia.html', category: 'Educação', icon: '🤖', description: 'Experiência de estudos com inteligência artificial.' },
+      { title: 'Nexus AI', url: 'Clube de Estudos/nexusai.html', category: 'Educação', icon: '🧠', description: 'Projeto Nexus AI.' },
+      { title: 'Landing L3', url: 'Land Pag/l3.html', category: 'Landing pages', icon: '🚀', description: 'Página de apresentação de produto.' },
+      { title: 'Landing', url: 'Land Pag/landing.html', category: 'Landing pages', icon: '🌅', description: 'Página de apresentação.' },
+      { title: 'Landing Z', url: 'Land Pag/landingz.html', category: 'Landing pages', icon: '⚡', description: 'Página de apresentação de projeto.' },
+      { title: 'Loja virtual', url: 'E-comerce/ecommerce.html', category: 'Lojas', icon: '🛍️', description: 'Experiência de comércio eletrónico.' },
+      { title: 'E-commerce', url: 'E-comerce/index.html', category: 'Lojas', icon: '🛒', description: 'Vitrine de loja online.' },
+      { title: 'Leitor de música local', url: 'Leitor de Musicas/player_local.html', category: 'Multimédia', icon: '🎧', description: 'Reprodutor para músicas locais.' },
+      { title: 'Leitor YouTube', url: 'Leitor de Musicas/player_youtube.html', category: 'Multimédia', icon: '▶️', description: 'Reprodutor de música com YouTube.' },
+      { title: 'Calculadora de câmbio', url: 'Calculadora de Cambios/calculadora_cambio.html', category: 'Ferramentas', icon: '💱', description: 'Calculadora de conversão de moedas.' },
+      { title: 'Cinematográfico', url: 'Cinematografico/Cinematografico.html', category: 'Entretenimento', icon: '🎬', description: 'Projeto de estilo cinematográfico.' },
+      { title: 'Farmácia Vida', url: 'Famarcia/farmacia_vida.html', category: 'Lojas', icon: '💊', description: 'Projeto de farmácia e saúde.' },
+      { title: 'Minhas matérias', url: 'Materias/minhas_materias.html', category: 'Educação', icon: '📝', description: 'Organização de matérias escolares.' },
+      { title: 'Portfólio escolar', url: 'PORTFOLIO ESCOLAR/portfolio_escola.html', category: 'Portfólios', icon: '🎨', description: 'Portfólio para projetos escolares.' },
+      { title: 'Painel de controlo', url: 'Painel de Controlo/index.html', category: 'Ferramentas', icon: '🧭', description: 'Painel de gestão.' },
+      { title: 'Portfólios Premium', url: 'Portfolios-Premium/index.html', category: 'Portfólios', icon: '🌟', description: 'Coleção de portfólios premium.' },
+      { title: 'Sistema bancário', url: 'Sistema Bancario/sistema_bancario.html', category: 'Ferramentas', icon: '🏦', description: 'Demonstração de sistema bancário.' }
+    ];
+
+    const grid = document.getElementById('projectGrid');
+    const search = document.getElementById('search');
+    const categorySelect = document.getElementById('category');
+    const count = document.getElementById('count');
+    const dialog = document.getElementById('projectDialog');
+    const form = document.getElementById('projectForm');
+    const toast = document.getElementById('toast');
+    let customProjects = loadProjects();
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.hidden = true; }, 4200);
+    }
+
+    function loadProjects() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return [];
+        const parsed = JSON.parse(saved);
+        if (!Array.isArray(parsed)) throw new Error('O conteúdo guardado não é uma lista.');
+        return parsed.filter(project => project && typeof project.id === 'string'
+          && typeof project.title === 'string' && typeof project.url === 'string');
+      } catch (error) {
+        console.error('Não foi possível carregar os projetos guardados.', error);
+        setTimeout(() => showToast('Não foi possível ler os projetos guardados neste navegador.'), 0);
+        return [];
+      }
+    }
+
+    function persistProjects(projects) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+        customProjects = projects;
+        return true;
+      } catch (error) {
+        console.error('Não foi possível guardar os projetos no armazenamento local.', error);
+        showToast('Não foi possível guardar. O armazenamento do navegador pode estar cheio ou indisponível.');
+        return false;
+      }
+    }
+
+    function allProjects() {
+      return [...builtInProjects.map((project, index) => ({ ...project, id: `built-in-${index}`, builtIn: true })), ...customProjects];
+    }
+
+    function populateCategories() {
+      const current = categorySelect.value;
+      const categories = [...new Set(allProjects().map(project => project.category).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'pt'));
+      categorySelect.replaceChildren(new Option('Todas as categorias', ''));
+      categories.forEach(name => categorySelect.add(new Option(name, name)));
+      if (categories.includes(current)) categorySelect.value = current;
+    }
+
+    function validProjectUrl(value) {
+      const trimmed = value.trim();
+      if (!trimmed || trimmed.startsWith('//') || /[\u0000-\u001f]/.test(trimmed)) return null;
+      try {
+        const url = new URL(trimmed, window.location.href);
+        if (!['http:', 'https:', 'file:'].includes(url.protocol)) return null;
+        return trimmed;
+      } catch {
+        return null;
+      }
+    }
+
+    function renderProjects() {
+      populateCategories();
+      const query = search.value.trim().toLocaleLowerCase('pt');
+      const selectedCategory = categorySelect.value;
+      const projects = allProjects().filter(project => {
+        const searchable = `${project.title} ${project.description || ''} ${project.category || ''}`.toLocaleLowerCase('pt');
+        return (!query || searchable.includes(query)) && (!selectedCategory || project.category === selectedCategory);
+      });
+
+      count.textContent = `${projects.length} ${projects.length === 1 ? 'projeto' : 'projetos'}`;
+      grid.replaceChildren();
+      if (!projects.length) {
+        const empty = document.createElement('p');
+        empty.className = 'empty';
+        empty.textContent = 'Não encontrei projetos com esses filtros.';
+        grid.append(empty);
+        return;
+      }
+
+      projects.forEach((project, index) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.style.setProperty('--cover-a', `hsl(${(index * 47 + 145) % 360} 43% 27%)`);
+        card.style.setProperty('--cover-b', `hsl(${(index * 47 + 188) % 360} 50% 15%)`);
+
+        const cover = document.createElement('a');
+        cover.className = 'cover';
+        cover.href = project.url;
+        cover.target = '_blank';
+        cover.rel = 'noopener noreferrer';
+        cover.setAttribute('aria-label', `Abrir ${project.title}`);
+        if (project.image) {
+          const image = document.createElement('img');
+          image.className = 'cover-image';
+          image.src = project.image;
+          image.alt = '';
+          cover.append(image);
+        } else {
+          const icon = document.createElement('span');
+          icon.className = 'cover-icon';
+          icon.textContent = project.icon || '✨';
+          cover.append(icon);
+        }
+
+        const category = document.createElement('span');
+        category.className = 'category-tag';
+        category.textContent = project.category || 'Sem categoria';
+        cover.append(category);
+
+        const content = document.createElement('div');
+        content.className = 'card-content';
+        const title = document.createElement('h2');
+        title.className = 'card-title';
+        title.textContent = project.title;
+        const description = document.createElement('p');
+        description.className = 'card-description';
+        description.textContent = project.description || 'Abre o projeto para ver mais.';
+        const bottom = document.createElement('div');
+        bottom.className = 'card-bottom';
+        const link = document.createElement('a');
+        link.className = 'open-link';
+        link.href = project.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Abrir projeto ↗';
+        bottom.append(link);
+
+        if (!project.builtIn) {
+          const remove = document.createElement('button');
+          remove.className = 'delete-button';
+          remove.type = 'button';
+          remove.textContent = 'Remover';
+          remove.setAttribute('aria-label', `Remover ${project.title}`);
+          remove.addEventListener('click', () => {
+            if (confirm(`Remover “${project.title}” desta coleção?`)) {
+              const next = customProjects.filter(item => item.id !== project.id);
+              if (persistProjects(next)) renderProjects();
+            }
+          });
+          bottom.append(remove);
+        }
+
+        content.append(title, description, bottom);
+        card.append(cover, content);
+        grid.append(card);
+      });
+    }
+
+    function imageAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Não foi possível ler a imagem selecionada.'));
+        reader.onload = () => {
+          const image = new Image();
+          image.onerror = () => reject(new Error('O ficheiro selecionado não é uma imagem válida.'));
+          image.onload = () => {
+            const maxWidth = 900;
+            const scale = Math.min(1, maxWidth / image.width);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(image.width * scale));
+            canvas.height = Math.max(1, Math.round(image.height * scale));
+            const context = canvas.getContext('2d');
+            if (!context) {
+              reject(new Error('Não foi possível processar a imagem neste navegador.'));
+              return;
+            }
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', 0.78));
+          };
+          image.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById('addProject').addEventListener('click', () => dialog.showModal());
+    document.getElementById('closeDialog').addEventListener('click', () => dialog.close());
+    document.getElementById('cancelDialog').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', event => {
+      if (event.target === dialog) dialog.close();
+    });
+    search.addEventListener('input', renderProjects);
+    categorySelect.addEventListener('change', renderProjects);
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const url = validProjectUrl(data.get('url'));
+      if (!url) {
+        showToast('Indica um caminho de projeto válido ou um endereço http:// ou https://.');
+        return;
+      }
+      const file = document.getElementById('projectImage').files[0];
+      let image = '';
+      if (file) {
+        try {
+          image = await imageAsDataUrl(file);
+        } catch (error) {
+          console.error(error);
+          showToast(error.message);
+          return;
+        }
+      }
+      const project = {
+        id: window.crypto && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        title: String(data.get('title')).trim(),
+        url,
+        category: String(data.get('category')).trim() || 'Pessoal',
+        icon: String(data.get('icon')).trim() || '✨',
+        description: String(data.get('description')).trim(),
+        ...(image ? { image } : {})
+      };
+      if (persistProjects([...customProjects, project])) {
+        form.reset();
+        document.getElementById('projectIcon').value = '✨';
+        dialog.close();
+        renderProjects();
+        showToast('Projeto guardado nesta coleção.');
+      }
+    });
+
+    document.getElementById('saveFolder').addEventListener('click', async () => {
+      const contents = JSON.stringify({
+        exportedAt: new Date().toISOString(),
+        projects: allProjects()
+      }, null, 2);
+
+      if (typeof window.showDirectoryPicker === 'function') {
+        try {
+          const parent = await window.showDirectoryPicker({ id: 'project-collection', mode: 'readwrite' });
+          const folder = await parent.getDirectoryHandle('Projetos', { create: true });
+          const fileHandle = await folder.getFileHandle('colecao-projetos.json', { create: true });
+          const writable = await fileHandle.createWritable();
+          await writable.write(contents);
+          await writable.close();
+          showToast('Cópia guardada na pasta “Projetos”.');
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+          console.error('Não foi possível guardar a cópia na pasta selecionada.', error);
+          showToast('Não foi possível guardar nessa pasta. Verifica a autorização do navegador e tenta novamente.');
+        }
+        return;
+      }
+
+      const blob = new Blob([contents], { type: 'application/json;charset=utf-8' });
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'colecao-projetos.json';
+      link.click();
+      URL.revokeObjectURL(downloadUrl);
+      showToast('Este navegador não permite criar pastas diretamente. Descarreguei uma cópia JSON para guardares na pasta que quiseres.');
+    });
+
+    renderProjects();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farmácia Vida — Saúde & Bem-estar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   RESET & TOKENS
+══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8faf8;
+  --bg2:#f2f6f2;
+  --surface:#ffffff;
+  --dark:#0c1a0e;
+  --dark2:#1a2e1c;
+  --green:#1a6b35;
+  --green2:#2d8f4e;
+  --green3:#4ab068;
+  --green-light:#e8f5ed;
+  --green-pale:#f0f9f2;
+  --mint:#d4ede0;
+  --teal:#0d7377;
+  --amber:#d97706;
+  --red:#dc2626;
+  --white:#ffffff;
+  --ink:#1a2e1c;
+  --muted:#6b8070;
+  --muted2:#9ab0a0;
+  --border:#d8e8dc;
+  --border2:#c4d8ca;
+  --shadow:0 4px 24px rgba(12,26,14,.07);
+  --shadow-lg:0 16px 56px rgba(12,26,14,.12);
+  --r:10px;--r2:18px;--r3:28px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  overflow-x:hidden;cursor:none;
+}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--green2);border-radius:2px}
+::selection{background:rgba(26,107,53,.15);color:var(--dark)}
+a{text-decoration:none;color:inherit}
+button{font-family:'Plus Jakarta Sans',sans-serif;border:none;outline:none;cursor:none}
+img{display:block;max-width:100%}
+
+/* ══════════════════════════════════════
+   CURSOR
+══════════════════════════════════════ */
+#cur{
+  width:9px;height:9px;background:var(--green2);border-radius:50%;
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+  transition:width .18s,height .18s,background .2s;
+}
+#cur-ring{
+  width:28px;height:28px;border:1.5px solid rgba(26,107,53,.3);
+  border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;
+}
+body:has(button:hover) #cur,body:has(a:hover) #cur,body:has(.prod-card:hover) #cur{
+  width:18px;height:18px;background:rgba(26,107,53,.15);
+  border:1.5px solid var(--green2);
+}
+
+/* ══════════════════════════════════════
+   URGENCY BAR
+══════════════════════════════════════ */
+.urgency-bar{
+  background:var(--green);color:#fff;
+  padding:10px 40px;
+  display:flex;align-items:center;justify-content:center;gap:28px;
+  font-size:.76rem;font-weight:500;letter-spacing:.05em;
+  overflow:hidden;
+}
+.ub-item{display:flex;align-items:center;gap:7px}
+.ub-sep{opacity:.3;font-size:.6rem}
+.ub-highlight{
+  background:rgba(255,255,255,.15);
+  border-radius:100px;padding:2px 10px;font-weight:700;
+}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+header{
+  background:rgba(255,255,255,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:400;
+  transition:box-shadow .3s;
+}
+header.lifted{box-shadow:var(--shadow-lg)}
+
+.header-inner{
+  max-width:1300px;margin:0 auto;
+  padding:16px 48px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+
+/* Logo */
+.logo{
+  display:flex;align-items:center;gap:12px;
+  user-select:none;flex-shrink:0;
+}
+.logo-mark{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+  box-shadow:0 4px 14px rgba(26,107,53,.3);
+}
+.logo-text{
+  font-family:'Fraunces',serif;
+  font-size:1.45rem;font-weight:600;letter-spacing:.01em;
+  color:var(--dark);
+}
+.logo-text span{color:var(--green2)}
+.logo-tagline{
+  font-size:.65rem;color:var(--muted);letter-spacing:.06em;
+  text-transform:uppercase;font-family:'JetBrains Mono',monospace;
+  margin-top:1px;
+}
+
+/* Search */
+.search-wrap{
+  flex:1;max-width:400px;
+  display:flex;align-items:center;
+  background:var(--green-pale);
+  border:1.5px solid var(--border);
+  border-radius:100px;height:44px;overflow:hidden;
+  transition:border-color .3s,box-shadow .3s;
+}
+.search-wrap:focus-within{
+  border-color:var(--green2);
+  box-shadow:0 0 0 3px rgba(26,107,53,.1);
+}
+.search-wrap input{
+  flex:1;border:none;outline:none;background:transparent;
+  color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.85rem;padding:0 18px;
+}
+.search-wrap input::placeholder{color:var(--muted2)}
+.s-btn{
+  width:44px;height:44px;background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;flex-shrink:0;color:#fff;
+  transition:background .2s;
+}
+.s-btn:hover{background:var(--green2)}
+
+/* Header actions */
+.h-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.h-btn{
+  width:40px;height:40px;border-radius:var(--r);
+  background:var(--green-pale);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;color:var(--muted);
+  transition:all .22s;position:relative;
+}
+.h-btn:hover{border-color:var(--green2);color:var(--green);background:var(--green-light)}
+.notif-dot{
+  position:absolute;top:-3px;right:-3px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--red);border:2px solid var(--bg);
+}
+.cart-btn-header{
+  display:flex;align-items:center;gap:9px;
+  height:40px;padding:0 18px;border-radius:100px;
+  background:var(--green);color:#fff;
+  font-size:.78rem;font-weight:600;letter-spacing:.05em;
+  transition:all .22s;box-shadow:0 4px 14px rgba(26,107,53,.3);
+}
+.cart-btn-header:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,107,53,.4)}
+.cart-n{
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.62rem;font-weight:700;
+}
+
+/* Nav */
+.header-nav{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+}
+.header-nav-inner{
+  max-width:1300px;margin:0 auto;
+  padding:0 48px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-links{display:flex;gap:0}
+.nav-link{
+  padding:13px 18px;font-size:.82rem;font-weight:500;
+  color:var(--muted);position:relative;
+  transition:color .25s;white-space:nowrap;
+}
+.nav-link::after{
+  content:'';position:absolute;bottom:0;left:18px;right:18px;
+  height:2px;background:var(--green2);
+  transform:scaleX(0);transition:transform .3s;border-radius:1px;
+}
+.nav-link:hover{color:var(--green)}
+.nav-link:hover::after,.nav-link.active::after{transform:scaleX(1)}
+.nav-link.active{color:var(--green);font-weight:600}
+.nav-right{
+  font-size:.75rem;color:var(--green);font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+.nav-right::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--green3);box-shadow:0 0 5px var(--green3);
+  animation:blink 2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero{
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:78vh;overflow:hidden;
+  max-width:100%;
+}
+.hero-left{
+  padding:80px 48px 80px 80px;
+  display:flex;flex-direction:column;justify-content:center;
+  background:var(--surface);position:relative;
+}
+.hero-left::after{
+  content:'';position:absolute;
+  top:40px;left:40px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(26,107,53,.05),transparent 70%);
+  pointer-events:none;
+}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green-light);border:1px solid var(--mint);
+  border-radius:100px;padding:6px 16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--green);margin-bottom:24px;width:fit-content;
+  animation:slideUp .7s .2s both;
+}
+.hero-pill::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--green3);
+}
+.hero-h1{
+  font-family:'Fraunces',serif;
+  font-size:clamp(2.6rem,5vw,4rem);
+  font-weight:400;line-height:1.05;
+  letter-spacing:-.02em;margin-bottom:20px;
+  animation:slideUp .8s .35s both;
+}
+.hero-h1 em{
+  font-style:italic;color:var(--green2);
+  display:block;
+}
+.hero-p{
+  font-size:1rem;line-height:1.8;color:var(--muted);
+  max-width:440px;margin-bottom:36px;
+  animation:slideUp .8s .5s both;
+}
+.hero-actions{
+  display:flex;gap:12px;flex-wrap:wrap;
+  animation:slideUp .8s .65s both;
+}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:9px;
+  background:var(--green);color:#fff;
+  padding:14px 30px;border-radius:8px;
+  font-size:.83rem;font-weight:600;letter-spacing:.04em;
+  transition:all .25s;box-shadow:0 4px 18px rgba(26,107,53,.3);
+}
+.btn-primary:hover{background:var(--green2);transform:translateY(-2px);box-shadow:0 8px 26px rgba(26,107,53,.4)}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1.5px solid var(--border2);color:var(--ink);
+  padding:14px 26px;border-radius:8px;
+  font-size:.83rem;font-weight:500;
+  transition:all .25s;
+}
+.btn-outline:hover{border-color:var(--green2);color:var(--green)}
+
+.hero-trust{
+  display:flex;gap:28px;margin-top:44px;
+  animation:slideUp .8s .8s both;
+}
+.trust-item .num{
+  font-family:'Fraunces',serif;
+  font-size:1.7rem;font-weight:400;color:var(--green);line-height:1;
+}
+.trust-item .lbl{font-size:.72rem;color:var(--muted);margin-top:3px}
+
+.hero-right{
+  background:linear-gradient(135deg,var(--green-pale),var(--mint),var(--green-light));
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.hero-right::before{
+  content:'';position:absolute;
+  top:-80px;right:-80px;
+  width:400px;height:400px;border-radius:50%;
+  background:rgba(26,107,53,.06);
+  pointer-events:none;
+}
+.hero-visual{
+  text-align:center;position:relative;z-index:1;
+  padding:40px;
+}
+.hero-icon-main{
+  font-size:8rem;
+  filter:drop-shadow(0 16px 32px rgba(12,26,14,.12));
+  animation:float 4s ease-in-out infinite;
+  user-select:none;display:block;margin-bottom:20px;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+.hero-badge{
+  position:absolute;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r2);
+  padding:12px 16px;box-shadow:var(--shadow-lg);
+}
+.hero-badge.top{top:40px;right:20px;animation:float 4s .6s ease-in-out infinite}
+.hero-badge.bottom{bottom:60px;left:20px;animation:float 4s 1s ease-in-out infinite}
+.hb-icon{font-size:1.4rem;margin-bottom:4px}
+.hb-label{font-size:.62rem;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+.hb-val{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--green)}
+
+.service-chips{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+  margin-top:20px;
+}
+.s-chip{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:100px;padding:6px 14px;
+  font-size:.74rem;font-weight:500;color:var(--green);
+  box-shadow:var(--shadow);
+}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+/* ══════════════════════════════════════
+   CATEGORIES
+══════════════════════════════════════ */
+.section{padding:72px 0;max-width:1300px;margin:0 auto;padding-left:80px;padding-right:80px}
+.sec-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:36px;
+}
+.sec-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--green2);margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.sec-eyebrow::before{
+  content:'';display:block;width:18px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--green2));border-radius:1px;
+}
+.sec-title{
+  font-family:'Fraunces',serif;
+  font-size:clamp(1.6rem,3vw,2.3rem);font-weight:400;letter-spacing:-.02em;
+}
+.sec-title em{font-style:italic;color:var(--green2)}
+.see-all{
+  font-size:.78rem;font-weight:600;color:var(--green);
+  display:flex;align-items:center;gap:6px;
+  border-bottom:1.5px solid var(--green);padding-bottom:2px;
+  transition:color .2s,border-color .2s;white-space:nowrap;
+}
+.see-all:hover{color:var(--green2);border-color:var(--green2)}
+
+.cat-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:16px;
+}
+.cat-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r2);padding:24px 16px;text-align:center;
+  transition:all .3s;cursor:pointer;position:relative;overflow:hidden;
+}
+.cat-card::before{
+  content:'';position:absolute;inset:0;
+  background:var(--green-pale);
+  transform:translateY(100%);transition:transform .3s;
+}
+.cat-card:hover{border-color:var(--green2);transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.cat-card:hover::before{transform:translateY(0)}
+.cat-icon{font-size:2.2rem;margin-bottom:10px;position:relative;z-index:1;display:block}
+.cat-name{font-size:.8rem;font-weight:600;color:var(--ink);position:relative;z-index:1;transition:color .3s}
+.cat-card:hover .cat-name{color:var(--green)}
+.cat-count{font-size:.68rem;color:var(--muted2);margin-top:3px;position:relative;z-index:1;font-family:'JetBrains Mono',monospace}
+
+/* ══════════════════════════════════════
+   FEATURES BAND
+══════════════════════════════════════ */
+.features-band{
+  background:var(--green);
+  padding:40px 80px;
+}
+.features-inner{
+  max-width:1300px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:32px;
+}
+.feat-item{display:flex;align-items:flex-start;gap:14px}
+.feat-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.feat-title{font-size:.9rem;font-weight:600;color:#fff;margin-bottom:3px}
+.feat-desc{font-size:.76rem;color:rgba(255,255,255,.65);line-height:1.5}
+
+/* ══════════════════════════════════════
+   PRODUCT GRID
+══════════════════════════════════════ */
+.prod-filters{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;align-items:center;
+}
+.pf-chip{
+  padding:7px 18px;border-radius:100px;
+  border:1.5px solid var(--border);background:transparent;
+  font-size:.78rem;font-weight:500;color:var(--muted);
+  transition:all .22s;
+}
+.pf-chip:hover{border-color:var(--green2);color:var(--green)}
+.pf-chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.pf-sort{
+  margin-left:auto;display:flex;align-items:center;gap:8px;
+  font-size:.78rem;color:var(--muted);
+}
+.pf-select{
+  border:1.5px solid var(--border);border-radius:8px;
+  padding:6px 12px;background:var(--surface);
+  color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.78rem;outline:none;cursor:none;
+  transition:border-color .2s;
+}
+.pf-select:focus,.pf-select:hover{border-color:var(--green2)}
+
+.prod-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;
+}
+.prod-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r2);overflow:hidden;
+  transition:transform .32s,border-color .3s,box-shadow .3s;
+  cursor:pointer;position:relative;
+}
+.prod-card:hover{transform:translateY(-6px);border-color:var(--border2);box-shadow:var(--shadow-lg)}
+
+.prod-img{
+  aspect-ratio:1;background:var(--green-pale);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.prod-emoji{
+  font-size:4.5rem;
+  transition:transform .4s cubic-bezier(.4,0,.2,1);user-select:none;
+  filter:drop-shadow(0 4px 12px rgba(12,26,14,.08));
+}
+.prod-card:hover .prod-emoji{transform:scale(1.08) rotate(-3deg)}
+
+.prod-overlay{
+  position:absolute;inset:0;
+  background:rgba(12,26,14,.0);
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:12px;gap:6px;
+  transition:background .3s;
+}
+.prod-card:hover .prod-overlay{background:rgba(12,26,14,.06)}
+.pa-btn{
+  height:34px;padding:0 14px;border-radius:100px;
+  font-size:.7rem;font-weight:600;letter-spacing:.05em;
+  transform:translateY(10px);opacity:0;
+  transition:all .28s;
+}
+.prod-card:hover .pa-btn{transform:none;opacity:1}
+.pa-btn:nth-child(2){transition-delay:.05s}
+.pa-cart{background:var(--green);color:#fff;box-shadow:0 4px 14px rgba(26,107,53,.3)}
+.pa-cart:hover{background:var(--green2)}
+.pa-view{background:var(--surface);color:var(--ink);border:1px solid var(--border)}
+.pa-view:hover{border-color:var(--green2);color:var(--green)}
+
+.prod-badge{
+  position:absolute;top:12px;left:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 9px;border-radius:4px;
+}
+.pb-new{background:var(--green);color:#fff}
+.pb-sale{background:var(--red);color:#fff}
+.pb-hot{background:var(--amber);color:#fff}
+
+.fav-btn{
+  position:absolute;top:10px;right:12px;
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;border:1px solid var(--border);transition:all .22s;
+}
+.fav-btn:hover,.fav-btn.liked{background:var(--surface)}
+.fav-btn.liked{color:var(--red)}
+
+.prod-info{padding:16px 18px}
+.prod-cat-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--green2);margin-bottom:5px;
+}
+.prod-name{
+  font-family:'Fraunces',serif;font-size:1rem;font-weight:400;
+  line-height:1.25;margin-bottom:6px;transition:color .2s;
+}
+.prod-card:hover .prod-name{color:var(--green)}
+.prod-desc{font-size:.76rem;color:var(--muted);line-height:1.5;margin-bottom:10px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod-footer{display:flex;align-items:center;justify-content:space-between}
+.prod-price-old{font-size:.7rem;color:var(--muted2);text-decoration:line-through;display:block;margin-bottom:1px}
+.prod-price{
+  font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--dark);
+}
+.prod-price.sale{color:var(--red)}
+.prod-stars{color:var(--amber);font-size:.72rem;letter-spacing:1px}
+.prod-reviews{font-size:.65rem;color:var(--muted2);margin-left:3px}
+
+/* ══════════════════════════════════════
+   BANNER CTA
+══════════════════════════════════════ */
+.banner-cta{
+  margin:0 80px 72px;
+  background:linear-gradient(135deg,var(--dark) 0%,var(--dark2) 60%,#0d3a1a 100%);
+  border-radius:var(--r3);padding:60px 64px;
+  display:flex;align-items:center;justify-content:space-between;gap:40px;
+  overflow:hidden;position:relative;
+}
+.banner-cta::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 50% 60% at 80% 50%,rgba(74,176,104,.08),transparent 60%);
+  pointer-events:none;
+}
+.banner-left{position:relative;z-index:1;max-width:500px}
+.banner-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--green3);margin-bottom:16px;
+}
+.banner-tag::before{content:'';width:16px;height:1px;background:var(--green3)}
+.banner-h2{
+  font-family:'Fraunces',serif;
+  font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;
+  color:#fff;line-height:1.1;margin-bottom:14px;
+}
+.banner-h2 em{font-style:italic;color:var(--green3)}
+.banner-p{font-size:.9rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:28px}
+.banner-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-white{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#fff;color:var(--dark);
+  padding:13px 28px;border-radius:8px;
+  font-size:.82rem;font-weight:700;letter-spacing:.04em;
+  transition:all .22s;
+}
+.btn-white:hover{background:var(--green-light);transform:translateY(-2px)}
+.btn-outline-white{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.8);
+  padding:13px 24px;border-radius:8px;
+  font-size:.82rem;font-weight:500;transition:all .22s;
+}
+.btn-outline-white:hover{border-color:#fff;color:#fff}
+.banner-right{
+  position:relative;z-index:1;text-align:center;flex-shrink:0;
+}
+.banner-icon{font-size:7rem;user-select:none;filter:drop-shadow(0 8px 24px rgba(74,176,104,.3))}
+.banner-stats{
+  display:flex;gap:32px;margin-top:20px;justify-content:center;
+}
+.bstat .bnum{
+  font-family:'Fraunces',serif;font-size:1.6rem;font-weight:400;
+  color:var(--green3);line-height:1;
+}
+.bstat .blbl{font-size:.68rem;color:rgba(255,255,255,.45);letter-spacing:.05em}
+
+/* ══════════════════════════════════════
+   SERVICES
+══════════════════════════════════════ */
+.services-bg{background:var(--surface)}
+.services-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.srv-card{
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--r2);padding:32px 28px;
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.srv-card::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:3px;background:linear-gradient(90deg,var(--green),var(--green3));
+  transform:scaleX(0);transform-origin:left;transition:transform .4s;
+}
+.srv-card:hover{border-color:rgba(26,107,53,.2);transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.srv-card:hover::before{transform:scaleX(1)}
+.srv-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--green-light);border:1.5px solid var(--mint);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;margin-bottom:18px;
+  transition:background .3s;
+}
+.srv-card:hover .srv-icon{background:var(--green);font-size:1.5rem}
+.srv-title{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:400;margin-bottom:10px}
+.srv-desc{font-size:.83rem;color:var(--muted);line-height:1.7;margin-bottom:16px}
+.srv-link{
+  font-size:.76rem;font-weight:600;color:var(--green);
+  display:flex;align-items:center;gap:5px;transition:gap .2s;
+}
+.srv-card:hover .srv-link{gap:9px}
+
+/* ══════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════ */
+.testi-bg{background:var(--green-pale)}
+.testi-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.testi-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r2);padding:28px;
+  transition:transform .3s,box-shadow .3s;
+}
+.testi-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.testi-stars{color:var(--amber);font-size:.8rem;letter-spacing:2px;margin-bottom:14px}
+.testi-text{
+  font-family:'Fraunces',serif;font-style:italic;
+  font-size:.98rem;line-height:1.7;color:var(--ink);
+  margin-bottom:20px;
+}
+.testi-author{display:flex;align-items:center;gap:12px}
+.t-av{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green-light),var(--mint));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:700;color:var(--green);
+  border:1.5px solid var(--border);flex-shrink:0;
+}
+.t-name{font-size:.85rem;font-weight:600}
+.t-role{font-size:.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* ══════════════════════════════════════
+   CART DRAWER
+══════════════════════════════════════ */
+.cart-overlay{
+  position:fixed;inset:0;z-index:600;background:rgba(12,26,14,0);
+  pointer-events:none;transition:background .35s;
+}
+.cart-overlay.open{background:rgba(12,26,14,.5);pointer-events:all}
+.cart-drawer{
+  position:fixed;right:0;top:0;bottom:0;width:420px;max-width:95vw;
+  background:var(--surface);border-left:1px solid var(--border);
+  z-index:601;transform:translateX(100%);
+  transition:transform .42s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(12,26,14,.08);
+}
+.cart-drawer.open{transform:none}
+.cart-head{
+  padding:22px 26px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.cart-head-title{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400}
+.cart-head-sub{font-size:.73rem;color:var(--muted);margin-top:2px}
+.cart-x{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;color:var(--muted);transition:all .22s;
+}
+.cart-x:hover{background:var(--dark);color:#fff;border-color:var(--dark)}
+.cart-items-area{flex:1;overflow-y:auto;padding:16px 26px;display:flex;flex-direction:column;gap:12px}
+.cart-empty-state{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;color:var(--muted);text-align:center;padding:40px 0;
+}
+.cart-empty-state .empty-icon{font-size:3.5rem;opacity:.3}
+.cart-empty-state p{font-size:.86rem;line-height:1.6}
+.ci{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:12px;background:var(--bg);border-radius:var(--r2);
+  border:1px solid var(--border);animation:slideFromR .28s ease;
+}
+@keyframes slideFromR{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.ci-img{
+  width:60px;height:60px;border-radius:10px;background:var(--green-pale);
+  display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex-shrink:0;
+}
+.ci-name{font-size:.85rem;font-weight:600;margin-bottom:3px}
+.ci-variant{font-size:.7rem;color:var(--muted);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.ci-price{font-family:'Fraunces',serif;font-size:.98rem;font-weight:600;color:var(--green)}
+.ci-qty{display:flex;align-items:center;gap:7px;margin-top:7px}
+.qb{
+  width:24px;height:24px;border-radius:50%;
+  border:1.5px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:700;transition:all .2s;color:var(--ink);
+}
+.qb:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.qn{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;min-width:18px;text-align:center}
+.ci-del{
+  width:26px;height:26px;border-radius:7px;background:transparent;
+  border:1px solid transparent;font-size:.78rem;color:var(--muted2);
+  display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;
+}
+.ci-del:hover{background:rgba(220,38,38,.08);border-color:rgba(220,38,38,.2);color:var(--red)}
+.cart-footer-area{
+  padding:20px 26px;border-top:1px solid var(--border);flex-shrink:0;
+}
+.cf-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.cf-row span{font-size:.83rem;color:var(--muted)}
+.cf-row strong{font-family:'JetBrains Mono',monospace;font-size:.86rem;font-weight:600}
+.cf-total{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:12px;border-top:2px dashed var(--border);margin-bottom:14px;
+}
+.cf-total span{font-size:.95rem;font-weight:600}
+.cf-total strong{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:600;color:var(--green)}
+.checkout-btn{
+  width:100%;height:48px;border-radius:8px;
+  background:var(--green);color:#fff;
+  font-size:.84rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .25s;box-shadow:0 4px 18px rgba(26,107,53,.3);
+  margin-bottom:8px;
+}
+.checkout-btn:hover{background:var(--green2);transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,107,53,.4)}
+.wa-btn{
+  width:100%;height:40px;border-radius:8px;
+  background:rgba(37,211,102,.08);border:1.5px solid rgba(37,211,102,.25);
+  color:#25d366;font-size:.78rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .22s;margin-bottom:6px;
+}
+.wa-btn:hover{background:rgba(37,211,102,.15)}
+.wa-btn svg{width:15px;height:15px;fill:#25d366}
+.clear-cart-btn{
+  width:100%;height:34px;border-radius:7px;
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);font-size:.74rem;transition:all .22s;
+}
+.clear-cart-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* ══════════════════════════════════════
+   NEWSLETTER
+══════════════════════════════════════ */
+.nl-section{
+  background:var(--surface);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:60px 80px;text-align:center;
+}
+.nl-inner{max-width:520px;margin:0 auto}
+.nl-title{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:400;margin-bottom:10px}
+.nl-title em{font-style:italic;color:var(--green2)}
+.nl-p{font-size:.9rem;color:var(--muted);margin-bottom:26px;line-height:1.7}
+.nl-form{display:flex;gap:10px;max-width:400px;margin:0 auto}
+.nl-input{
+  flex:1;height:46px;padding:0 18px;border-radius:8px;
+  border:1.5px solid var(--border);background:var(--bg);
+  color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;font-size:.86rem;
+  transition:border-color .2s;outline:none;
+}
+.nl-input:focus{border-color:var(--green2)}
+.nl-input::placeholder{color:var(--muted2)}
+.nl-btn{
+  height:46px;padding:0 22px;border-radius:8px;
+  background:var(--green);color:#fff;
+  font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  transition:all .22s;white-space:nowrap;
+}
+.nl-btn:hover{background:var(--green2);transform:translateY(-1px)}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer{background:var(--dark2);color:rgba(255,255,255,.6);padding:56px 80px 28px}
+.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.footer-logo .logo-mark{background:linear-gradient(135deg,var(--green),var(--green2))}
+.footer-logo .logo-text{color:#fff}
+.footer-brand-p{font-size:.82rem;line-height:1.7;max-width:260px}
+.footer-col h4{
+  font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:#fff;margin-bottom:14px;
+}
+.footer-links{display:flex;flex-direction:column;gap:7px}
+.footer-links a{font-size:.82rem;transition:color .2s}
+.footer-links a:hover{color:var(--green3)}
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,.07);padding-top:20px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  font-size:.74rem;
+}
+.footer-bottom em{color:var(--green3);font-style:normal}
+
+/* TOAST */
+.toast-host{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:900;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{
+  background:var(--dark);color:#fff;padding:11px 22px;border-radius:100px;
+  font-size:.81rem;font-weight:500;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 28px rgba(12,26,14,.25);
+  animation:tIn .35s cubic-bezier(.175,.885,.32,1.275) forwards;
+}
+.toast.out{animation:tOut .28s ease forwards}
+@keyframes tIn{from{opacity:0;transform:translateY(12px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateY(8px)}}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+.reveal.in{opacity:1;transform:none}
+.rd1{transition-delay:.08s}.rd2{transition-delay:.16s}.rd3{transition-delay:.24s}.rd4{transition-delay:.32s}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .section{padding:56px 32px}
+  .header-inner{padding:14px 28px}
+  .header-nav-inner{padding:0 28px}
+  .hero-left{padding:56px 32px}
+  .cat-grid{grid-template-columns:repeat(3,1fr)}
+  .features-inner{grid-template-columns:repeat(2,1fr);padding:32px}
+  .services-grid{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .banner-cta{margin:0 32px 56px;padding:44px 40px}
+  .nl-section{padding:48px 32px}
+  footer{padding:48px 32px 24px}
+}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .nav-links{overflow-x:auto}
+  .features-inner{grid-template-columns:1fr;gap:20px}
+  .services-grid{grid-template-columns:1fr}
+  .prod-grid{grid-template-columns:1fr 1fr}
+  .banner-cta{flex-direction:column;text-align:center}
+  .banner-right{display:none}
+  footer{padding:36px 20px 20px}
+  .footer-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- URGENCY BAR -->
+<div class="urgency-bar">
+  <div class="ub-item">🚚 Entrega gratuita acima de <span class="ub-highlight">Kz 5.000</span></div>
+  <span class="ub-sep">·</span>
+  <div class="ub-item">⏰ Aberto hoje até <span class="ub-highlight">22:00</span></div>
+  <span class="ub-sep">·</span>
+  <div class="ub-item">💊 Farmacêutico disponível <span class="ub-highlight">24/7</span></div>
+</div>
+
+<!-- HEADER -->
+<header id="mainHeader">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">💚</div>
+      <div>
+        <div class="logo-text">Farmácia <span>Vida</span></div>
+        <div class="logo-tagline">Saúde & Bem-estar · Luanda</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <input type="text" placeholder="Pesquisar medicamentos, vitaminas..." id="searchInput" oninput="searchProducts()">
+      <button class="s-btn">🔍</button>
+    </div>
+    <div class="h-actions">
+      <button class="h-btn" title="Favoritos">♡<span class="notif-dot" style="display:none"></span></button>
+      <button class="h-btn" title="Conta">👤</button>
+      <button class="cart-btn-header" onclick="toggleCart()">
+        🛒 Carrinho
+        <span class="cart-n" id="cartN">0</span>
+      </button>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <div class="header-nav-inner">
+      <div class="nav-links">
+        <a class="nav-link active" onclick="filterProd('todos',this)">Todos os Produtos</a>
+        <a class="nav-link" onclick="filterProd('medicamento',this)">Medicamentos</a>
+        <a class="nav-link" onclick="filterProd('vitamina',this)">Vitaminas</a>
+        <a class="nav-link" onclick="filterProd('bebe',this)">Bebé & Mãe</a>
+        <a class="nav-link" onclick="filterProd('beleza',this)">Beleza & Higiene</a>
+        <a class="nav-link" onclick="filterProd('equipamento',this)">Equipamentos</a>
+        <a class="nav-link" onclick="filterProd('promocao',this)">Promoções</a>
+      </div>
+      <div class="nav-right">Farmacêutico Online</div>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-pill">Farmácia certificada · Luanda</div>
+    <h1 class="hero-h1">
+      A tua saúde,<br>o nosso <em>compromisso.</em>
+    </h1>
+    <p class="hero-p">Medicamentos, vitaminas e produtos de bem-estar com a qualidade que mereces. Entrega rápida em Luanda ou levanta na nossa farmácia.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.querySelector('#produtos').scrollIntoView({behavior:'smooth'})">
+        🛒 Comprar agora
+      </button>
+      <button class="btn-outline" onclick="toast('📞 A ligar para a farmácia...')">
+        📞 Falar com farmacêutico
+      </button>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-item"><div class="num">12+</div><div class="lbl">Anos de serviço</div></div>
+      <div class="trust-item"><div class="num">50K+</div><div class="lbl">Clientes</div></div>
+      <div class="trust-item"><div class="num">4.9★</div><div class="lbl">Avaliação</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual">
+      <span class="hero-icon-main">💊</span>
+      <div class="service-chips">
+        <span class="s-chip">💉 Vacinas</span>
+        <span class="s-chip">🩺 Medição TA</span>
+        <span class="s-chip">🧪 Testes Rápidos</span>
+        <span class="s-chip">🚚 Entrega ao Domicílio</span>
+      </div>
+      <div class="hero-badge top">
+        <div class="hb-icon">⏰</div>
+        <div class="hb-label">Horário</div>
+        <div class="hb-val">24 horas</div>
+      </div>
+      <div class="hero-badge bottom">
+        <div class="hb-icon">✅</div>
+        <div class="hb-label">Produtos autênticos</div>
+        <div class="hb-val">100% Certificados</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES BAND -->
+<div class="features-band">
+  <div class="features-inner">
+    <div class="feat-item">
+      <div class="feat-icon">🚚</div>
+      <div><div class="feat-title">Entrega Rápida</div><div class="feat-desc">Entrega ao domicílio em 2–4h em toda Luanda</div></div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-icon">👨‍⚕️</div>
+      <div><div class="feat-title">Farmacêutico 24/7</div><div class="feat-desc">Aconselhamento profissional sempre disponível</div></div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-icon">✅</div>
+      <div><div class="feat-title">100% Autêntico</div><div class="feat-desc">Todos os produtos são originais e certificados</div></div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-icon">↩️</div>
+      <div><div class="feat-title">Devolução Fácil</div><div class="feat-desc">30 dias para devolver produtos não abertos</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="section reveal">
+  <div class="sec-head">
+    <div>
+      <div class="sec-eyebrow">Navegar por</div>
+      <h2 class="sec-title">Categorias em <em>Destaque</em></h2>
+    </div>
+    <a class="see-all" href="#">Ver todas →</a>
+  </div>
+  <div class="cat-grid">
+    <div class="cat-card reveal rd1" onclick="filterProd('medicamento',null)">
+      <span class="cat-icon">💊</span>
+      <div class="cat-name">Medicamentos</div>
+      <div class="cat-count">248 produtos</div>
+    </div>
+    <div class="cat-card reveal rd2" onclick="filterProd('vitamina',null)">
+      <span class="cat-icon">🍊</span>
+      <div class="cat-name">Vitaminas</div>
+      <div class="cat-count">156 produtos</div>
+    </div>
+    <div class="cat-card reveal rd3" onclick="filterProd('bebe',null)">
+      <span class="cat-icon">🍼</span>
+      <div class="cat-name">Bebé & Mãe</div>
+      <div class="cat-count">94 produtos</div>
+    </div>
+    <div class="cat-card reveal rd4" onclick="filterProd('beleza',null)">
+      <span class="cat-icon">🧴</span>
+      <div class="cat-name">Beleza & Higiene</div>
+      <div class="cat-count">312 produtos</div>
+    </div>
+    <div class="cat-card reveal rd1" onclick="filterProd('equipamento',null)">
+      <span class="cat-icon">🩺</span>
+      <div class="cat-name">Equipamentos</div>
+      <div class="cat-count">67 produtos</div>
+    </div>
+    <div class="cat-card reveal rd2" onclick="filterProd('promocao',null)">
+      <span class="cat-icon">🏷️</span>
+      <div class="cat-name">Promoções</div>
+      <div class="cat-count">43 produtos</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="section" id="produtos">
+  <div class="sec-head reveal">
+    <div>
+      <div class="sec-eyebrow">Catálogo</div>
+      <h2 class="sec-title">Produtos <em>Recomendados</em></h2>
+    </div>
+    <a class="see-all" href="#">Ver todos →</a>
+  </div>
+
+  <div class="prod-filters reveal" id="prodFiltersRow">
+    <button class="pf-chip active" onclick="filterProd('todos',this)">✨ Todos</button>
+    <button class="pf-chip" onclick="filterProd('medicamento',this)">💊 Medicamentos</button>
+    <button class="pf-chip" onclick="filterProd('vitamina',this)">🍊 Vitaminas</button>
+    <button class="pf-chip" onclick="filterProd('bebe',this)">🍼 Bebé</button>
+    <button class="pf-chip" onclick="filterProd('beleza',this)">🧴 Beleza</button>
+    <button class="pf-chip" onclick="filterProd('equipamento',this)">🩺 Equipamentos</button>
+    <button class="pf-chip" onclick="filterProd('promocao',this)">🏷️ Promoções</button>
+    <div class="pf-sort">
+      Ordenar:
+      <select class="pf-select" id="sortSel" onchange="sortProducts()">
+        <option value="default">Em destaque</option>
+        <option value="price-asc">Preço ↑</option>
+        <option value="price-desc">Preço ↓</option>
+        <option value="name">Nome A-Z</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="prod-grid reveal" id="prodGrid"></div>
+</div>
+
+<!-- BANNER CTA -->
+<div class="banner-cta reveal">
+  <div class="banner-left">
+    <div class="banner-tag">Serviços Exclusivos</div>
+    <h2 class="banner-h2">Mais do que<br>uma farmácia,<br><em>um parceiro de saúde.</em></h2>
+    <p class="banner-p">Consulta online, entrega ao domicílio, programa de fidelidade e aconselhamento farmacêutico personalizado — tudo num só lugar.</p>
+    <div class="banner-actions">
+      <button class="btn-white" onclick="toast('📋 A abrir registo...')">📋 Criar conta grátis</button>
+      <button class="btn-outline-white" onclick="toast('📞 A contactar farmacêutico...')">📞 Falar connosco</button>
+    </div>
+  </div>
+  <div class="banner-right">
+    <div class="banner-icon">🏥</div>
+    <div class="banner-stats">
+      <div class="bstat"><div class="bnum">12+</div><div class="blbl">Anos</div></div>
+      <div class="bstat"><div class="bnum">50K+</div><div class="blbl">Clientes</div></div>
+      <div class="bstat"><div class="bnum">4.9★</div><div class="blbl">Avaliação</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<div class="services-bg">
+  <div class="section reveal">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">O que oferecemos</div>
+        <h2 class="sec-title">Serviços <em>Especializados</em></h2>
+      </div>
+    </div>
+    <div class="services-grid">
+      <div class="srv-card reveal rd1">
+        <div class="srv-icon">💉</div>
+        <div class="srv-title">Vacinação</div>
+        <div class="srv-desc">Administração de vacinas com rastreio digital do historial vacinal. Vacinas para adultos e crianças disponíveis.</div>
+        <a class="srv-link" href="#">Saber mais →</a>
+      </div>
+      <div class="srv-card reveal rd2">
+        <div class="srv-icon">🩸</div>
+        <div class="srv-title">Testes Rápidos</div>
+        <div class="srv-desc">Testes de glicemia, tensão arterial, colesterol, gravidez e COVID-19. Resultados em minutos.</div>
+        <a class="srv-link" href="#">Saber mais →</a>
+      </div>
+      <div class="srv-card reveal rd3">
+        <div class="srv-icon">📱</div>
+        <div class="srv-title">Farmácia Online</div>
+        <div class="srv-desc">Encomende os seus medicamentos online e receba em casa. Receita médica digital aceite.</div>
+        <a class="srv-link" href="#">Saber mais →</a>
+      </div>
+      <div class="srv-card reveal rd1">
+        <div class="srv-icon">🧘</div>
+        <div class="srv-title">Aconselhamento</div>
+        <div class="srv-desc">Consulta farmacêutica personalizada para medicação crónica, nutrição e bem-estar geral.</div>
+        <a class="srv-link" href="#">Saber mais →</a>
+      </div>
+      <div class="srv-card reveal rd2">
+        <div class="srv-icon">👶</div>
+        <div class="srv-title">Saúde Infantil</div>
+        <div class="srv-desc">Acompanhamento especializado em saúde pediátrica, produtos de puericultura e nutrição infantil.</div>
+        <a class="srv-link" href="#">Saber mais →</a>
+      </div>
+      <div class="srv-card reveal rd3">
+        <div class="srv-icon">🏋️</div>
+        <div class="srv-title">Nutrição & Sport</div>
+        <div class="srv-desc">Suplementos desportivos, planos nutricionais e produtos para uma vida activa e saudável.</div>
+        <a class="srv-link" href="#">Saber mais →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div class="testi-bg">
+  <div class="section reveal">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">Clientes</div>
+        <h2 class="sec-title">O que <em>dizem</em> de nós</h2>
+      </div>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal rd1">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Excelente serviço! Encomendei os medicamentos do meu filho às 21h e chegaram no dia seguinte de manhã. A farmacêutica ainda me ligou para confirmar a posologia."</p>
+        <div class="testi-author">
+          <div class="t-av">AC</div>
+          <div><div class="t-name">Ana Cardoso</div><div class="t-role">Cliente desde 2019</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal rd2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"A Farmácia Vida é a melhor farmácia de Luanda. Produtos originais, preços justos e atendimento humano. Nunca mais vou a outro lado."</p>
+        <div class="testi-author">
+          <div class="t-av">MR</div>
+          <div><div class="t-name">Manuel Rodrigues</div><div class="t-role">Cliente desde 2021</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal rd3">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Fiz a vacina aqui e o processo foi rápido, seguro e com acompanhamento. Recomendo a todos. Equipa muito profissional e simpática."</p>
+        <div class="testi-author">
+          <div class="t-av">PM</div>
+          <div><div class="t-name">Paula Mendes</div><div class="t-role">Cliente desde 2022</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<div class="nl-section reveal">
+  <div class="nl-inner">
+    <h2 class="nl-title">Recebe as nossas <em>novidades</em></h2>
+    <p class="nl-p">Promoções exclusivas, dicas de saúde e novidades directamente no teu email. Sem spam.</p>
+    <div class="nl-form">
+      <input class="nl-input" type="email" placeholder="o-teu@email.com">
+      <button class="nl-btn" onclick="toast('✅ Subscrito com sucesso!')">Subscrever</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">
+        <div class="logo-mark">💚</div>
+        <div class="logo-text">Farmácia <span>Vida</span></div>
+      </div>
+      <p class="footer-brand-p">A farmácia de confiança de Luanda desde 2012. Saúde, qualidade e proximidade em cada atendimento.</p>
+    </div>
+    <div>
+      <h4>Serviços</h4>
+      <div class="footer-links">
+        <a href="#">Vacinação</a><a href="#">Testes Rápidos</a>
+        <a href="#">Farmácia Online</a><a href="#">Aconselhamento</a>
+      </div>
+    </div>
+    <div>
+      <h4>Informação</h4>
+      <div class="footer-links">
+        <a href="#">Sobre Nós</a><a href="#">Localização</a>
+        <a href="#">Horários</a><a href="#">Contactos</a>
+      </div>
+    </div>
+    <div>
+      <h4>Contacto</h4>
+      <div class="footer-links">
+        <a href="#">📍 Luanda, Angola</a>
+        <a href="#">📞 +244 923 000 000</a>
+        <a href="#">✉ geral@farmaciavida.ao</a>
+        <a href="#">💬 WhatsApp</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 <em>Farmácia Vida</em> · Todos os direitos reservados</span>
+    <span>💳 Multicaixa · Transferência · MBWay</span>
+  </div>
+</footer>
+
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <div>
+      <div class="cart-head-title">🛒 Carrinho</div>
+      <div class="cart-head-sub" id="cartSub">0 itens</div>
+    </div>
+    <button class="cart-x" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items-area" id="cartItemsArea">
+    <div class="cart-empty-state">
+      <div class="empty-icon">🛒</div>
+      <p>O teu carrinho está vazio.<br>Adiciona produtos para começar!</p>
+    </div>
+  </div>
+  <div class="cart-footer-area" id="cartFooter" style="display:none">
+    <div class="cf-row"><span>Subtotal</span><strong id="cartSubVal">Kz 0</strong></div>
+    <div class="cf-row"><span>Entrega</span><strong style="color:var(--green)">Grátis</strong></div>
+    <div class="cf-total"><span>Total</span><strong id="cartTotalVal">Kz 0</strong></div>
+    <button class="checkout-btn" onclick="checkout()">💳 Finalizar Compra</button>
+    <button class="wa-btn" onclick="checkoutWA()">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Encomendar via WhatsApp
+    </button>
+    <button class="clear-cart-btn" onclick="clearCart()">🗑 Esvaziar carrinho</button>
+  </div>
+</div>
+
+<div class="toast-host" id="toastHost"></div>
+
+<script>
+/* ══════════════════════════════════════
+   CONFIG
+══════════════════════════════════════ */
+const WA = '244923000000';
+
+/* ══════════════════════════════════════
+   PRODUCTS
+══════════════════════════════════════ */
+const products = [
+  {id:1,name:'Paracetamol 500mg',cat:'medicamento',emoji:'💊',price:1200,oldPrice:null,badge:'hot',desc:'Caixas 20 comprimidos · Analgésico e antipirético',stars:'★★★★★',reviews:412},
+  {id:2,name:'Ibuprofeno 400mg',cat:'medicamento',emoji:'💊',price:1800,oldPrice:2200,badge:'sale',desc:'Caixas 24 comp. · Anti-inflamatório não esteroide',stars:'★★★★★',reviews:287},
+  {id:3,name:'Vitamina C 1000mg',cat:'vitamina',emoji:'🍊',price:3500,oldPrice:null,badge:'new',desc:'60 comprimidos efervescentes · Reforço imunitário',stars:'★★★★★',reviews:534},
+  {id:4,name:'Vitamina D3 2000UI',cat:'vitamina',emoji:'☀️',price:4200,oldPrice:5000,badge:'sale',desc:'90 cápsulas · Saúde óssea e sistema imunitário',stars:'★★★★☆',reviews:198},
+  {id:5,name:'Omega 3 Fish Oil',cat:'vitamina',emoji:'🐟',price:5800,oldPrice:null,badge:'new',desc:'60 cápsulas 1000mg · Saúde cardiovascular',stars:'★★★★★',reviews:312},
+  {id:6,name:'Fralda Pampers P',cat:'bebe',emoji:'🍼',price:8500,oldPrice:10000,badge:'sale',desc:'Pack 50 unidades · Recém-nascido até 6kg',stars:'★★★★★',reviews:445},
+  {id:7,name:'Leite NAN Optipro 1',cat:'bebe',emoji:'🍼',price:12000,oldPrice:null,badge:'new',desc:'900g · 0-6 meses · Substituto do leite materno',stars:'★★★★★',reviews:178},
+  {id:8,name:'Sabonete Dove',cat:'beleza',emoji:'🧴',price:1500,oldPrice:null,badge:'hot',desc:'Pack 3 unidades · Hidratação extra com 1/4 de creme',stars:'★★★★☆',reviews:623},
+  {id:9,name:'Protetor Solar SPF50',cat:'beleza',emoji:'🌞',price:4800,oldPrice:6000,badge:'sale',desc:'200ml · UVA/UVB · Resistente à água',stars:'★★★★★',reviews:267},
+  {id:10,name:'Tensiómetro Digital',cat:'equipamento',emoji:'🩺',price:28000,oldPrice:35000,badge:'sale',desc:'Automático de braço · Memória 120 medições',stars:'★★★★★',reviews:89},
+  {id:11,name:'Glucómetro Premium',cat:'equipamento',emoji:'🩸',price:18000,oldPrice:null,badge:'new',desc:'Medição em 5 seg. · 500 memórias · Bluetooth',stars:'★★★★☆',reviews:134},
+  {id:12,name:'Centrum Multivitamínico',cat:'vitamina',emoji:'💫',price:6500,oldPrice:8000,badge:'sale',desc:'100 comprimidos · Complexo completo de vitaminas',stars:'★★★★★',reviews:456},
+];
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let cart=[];let favs=[];let curFilter='todos';let searchQ='';let sortMode='default';
+
+/* ══════════════════════════════════════
+   CURSOR
+══════════════════════════════════════ */
+const cur=document.getElementById('cur');
+const ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=(mx-4.5)+'px';cur.style.top=(my-4.5)+'px';
+});
+(function loop(){
+  rx+=(mx-rx-14)*.11;ry+=(my-ry-14)*.11;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+
+/* HEADER SCROLL */
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainHeader').classList.toggle('lifted',window.scrollY>60);
+});
+
+/* FORMAT */
+function fmtKz(n){return 'Kz '+n.toLocaleString('pt-AO')+',00'}
+
+/* ══════════════════════════════════════
+   RENDER PRODUCTS
+══════════════════════════════════════ */
+function renderProducts(){
+  let list=products.filter(p=>{
+    const mc=curFilter==='todos'||p.cat===curFilter||
+      (curFilter==='promocao'&&p.oldPrice);
+    const ms=!searchQ||p.name.toLowerCase().includes(searchQ)||p.desc.toLowerCase().includes(searchQ);
+    return mc&&ms;
+  });
+  if(sortMode==='price-asc') list=[...list].sort((a,b)=>a.price-b.price);
+  else if(sortMode==='price-desc') list=[...list].sort((a,b)=>b.price-a.price);
+  else if(sortMode==='name') list=[...list].sort((a,b)=>a.name.localeCompare(b.name));
+
+  const g=document.getElementById('prodGrid');
+  if(!list.length){
+    g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:3rem;margin-bottom:14px">🔍</div><p>Nenhum produto encontrado.</p></div>`;
+    return;
+  }
+  g.innerHTML=list.map((p,i)=>{
+    const inCart=cart.find(c=>c.id===p.id);
+    const isFav=favs.includes(p.id);
+    const badgeCls=p.badge==='new'?'pb-new':p.badge==='sale'?'pb-sale':'pb-hot';
+    const badgeTxt=p.badge==='new'?'Novo':p.badge==='sale'?'Promoção':'Popular';
+    return `
+    <div class="prod-card" style="animation:fadeC .5s ${i*.05}s both">
+      <div class="prod-img">
+        <div class="prod-emoji">${p.emoji}</div>
+        ${p.badge?`<span class="prod-badge ${badgeCls}">${badgeTxt}</span>`:''}
+        <button class="fav-btn ${isFav?'liked':''}" onclick="toggleFav(event,${p.id})">${isFav?'❤️':'🤍'}</button>
+        <div class="prod-overlay">
+          <button class="pa-btn pa-cart" onclick="addCart(event,${p.id})">${inCart?'✓ Adicionado':'+ Carrinho'}</button>
+          <button class="pa-btn pa-view" onclick="toast('ℹ️ ${p.name.replace(/'/g,"\\'")}')">Ver</button>
+        </div>
+      </div>
+      <div class="prod-info">
+        <div class="prod-cat-label">${catLbl(p.cat)}</div>
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-desc">${p.desc}</div>
+        <div class="prod-footer">
+          <div>
+            ${p.oldPrice?`<span class="prod-price-old">${fmtKz(p.oldPrice)}</span>`:''}
+            <span class="prod-price ${p.oldPrice?'sale':''}">${fmtKz(p.price)}</span>
+          </div>
+          <div style="text-align:right">
+            <div class="prod-stars">${p.stars}</div>
+            <span class="prod-reviews">(${p.reviews})</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+const fadeAnim=document.createElement('style');
+fadeAnim.textContent=`@keyframes fadeC{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}`;
+document.head.appendChild(fadeAnim);
+
+function catLbl(c){
+  return {medicamento:'💊 Medicamento',vitamina:'🍊 Vitamina',bebe:'🍼 Bebé & Mãe',beleza:'🧴 Beleza',equipamento:'🩺 Equipamento'}[c]||c;
+}
+
+/* FILTERS */
+function filterProd(cat,el){
+  curFilter=cat;
+  document.querySelectorAll('.pf-chip').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderProducts();
+  document.getElementById('produtos').scrollIntoView({behavior:'smooth'});
+}
+
+function sortProducts(){
+  sortMode=document.getElementById('sortSel').value;
+  renderProducts();
+}
+
+function searchProducts(){
+  searchQ=document.getElementById('searchInput').value.toLowerCase().trim();
+  renderProducts();
+}
+
+/* ══════════════════════════════════════
+   CART
+══════════════════════════════════════ */
+function addCart(e,id){
+  if(e) e.stopPropagation();
+  const p=products.find(x=>x.id===id);
+  const ex=cart.find(c=>c.id===id);
+  if(ex) ex.qty++;
+  else cart.push({id,qty:1});
+  updateCartUI();renderProducts();
+  toast(`✅ ${p.name} adicionado!`);
+  const n=document.getElementById('cartN');
+  n.style.transform='scale(1.5)';setTimeout(()=>n.style.transform='',220);
+}
+function removeCart(id){
+  cart=cart.filter(c=>c.id!==id);
+  updateCartUI();renderProducts();toast('🗑 Produto removido');
+}
+function changeQty(id,d){
+  const it=cart.find(c=>c.id===id);
+  if(!it) return;
+  it.qty+=d;
+  if(it.qty<=0){removeCart(id);return;}
+  updateCartUI();
+}
+function clearCart(){
+  cart=[];updateCartUI();renderProducts();toast('🗑 Carrinho limpo');
+}
+function updateCartUI(){
+  const total=cart.reduce((s,c)=>s+c.qty,0);
+  const val=cart.reduce((s,c)=>{const p=products.find(x=>x.id===c.id);return s+(p?p.price*c.qty:0);},0);
+  document.getElementById('cartN').textContent=total;
+  document.getElementById('cartSub').textContent=`${total} ${total===1?'item':'itens'}`;
+  document.getElementById('cartSubVal').textContent=fmtKz(val);
+  document.getElementById('cartTotalVal').textContent=fmtKz(val);
+  document.getElementById('cartFooter').style.display=total>0?'block':'none';
+  const area=document.getElementById('cartItemsArea');
+  if(!cart.length){
+    area.innerHTML=`<div class="cart-empty-state"><div class="empty-icon">🛒</div><p>O teu carrinho está vazio.<br>Adiciona produtos para começar!</p></div>`;
+    return;
+  }
+  area.innerHTML=cart.map(c=>{
+    const p=products.find(x=>x.id===c.id);
+    if(!p) return '';
+    return `
+    <div class="ci">
+      <div class="ci-img">${p.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div class="ci-name">${p.name}</div>
+        <div class="ci-variant">${catLbl(p.cat)}</div>
+        <div class="ci-price">${fmtKz(p.price*c.qty)}</div>
+        <div class="ci-qty">
+          <button class="qb" onclick="changeQty(${p.id},-1)">−</button>
+          <span class="qn">${c.qty}</span>
+          <button class="qb" onclick="changeQty(${p.id},1)">＋</button>
+        </div>
+      </div>
+      <button class="ci-del" onclick="removeCart(${p.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+let cartOpen=false;
+function toggleCart(){
+  cartOpen=!cartOpen;
+  document.getElementById('cartDrawer').classList.toggle('open',cartOpen);
+  document.getElementById('cartOverlay').classList.toggle('open',cartOpen);
+  document.body.style.overflow=cartOpen?'hidden':'';
+}
+
+function checkout(){
+  if(!cart.length) return;
+  toast('💳 A redirecionar para o pagamento...');
+  setTimeout(()=>toast('🎉 Funcionalidade de pagamento em breve!'),1200);
+}
+
+function checkoutWA(){
+  if(!cart.length) return;
+  const lines=cart.map(c=>{
+    const p=products.find(x=>x.id===c.id);
+    return `• ${p.emoji} *${p.name}*\n  Qtd: ${c.qty} × ${fmtKz(p.price)} = ${fmtKz(p.price*c.qty)}`;
+  }).join('\n\n');
+  const total=cart.reduce((s,c)=>{const p=products.find(x=>x.id===c.id);return s+(p?p.price*c.qty:0);},0);
+  const tq=cart.reduce((s,c)=>s+c.qty,0);
+  const msg=`💊 *Olá Farmácia Vida! Quero fazer uma encomenda:*\n\n${lines}\n\n━━━━━━━━━━\n📦 *${tq} produto${tq>1?'s':''}*\n💰 *Total: ${fmtKz(total)}*\n🚚 Entrega gratuita\n━━━━━━━━━━\n\nPor favor confirmem disponibilidade e prazo. Obrigado! 🙏`;
+  window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+/* FAVS */
+function toggleFav(e,id){
+  e.stopPropagation();
+  const i=favs.indexOf(id);
+  if(i>=0){favs.splice(i,1);toast('💔 Removido dos favoritos')}
+  else{favs.push(id);toast('❤️ Adicionado aos favoritos!')}
+  renderProducts();
+}
+
+/* TOAST */
+function toast(msg,dur=2200){
+  const h=document.getElementById('toastHost');
+  const t=document.createElement('div');
+  t.className='toast';t.textContent=msg;h.appendChild(t);
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300)},dur);
+}
+
+/* ESC */
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&cartOpen)toggleCart()});
+
+/* SCROLL REVEAL */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* INIT */
+renderProducts();updateCartUI();
+</script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    :root {
+        --accent: #c9a96e;
+        /* dourado — cor de destaque */
+    }
+
+    /* ═══════════════════════════════════════════════
+         PÁGINA: CRONÔMETRO POMODORO
+    ════════════════════════════════════════════════ */
+    .pomodoro-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+        padding-top: 20px;
+    }
+
+    .pomodoro-circle {
+        position: relative;
+        width: 220px;
+        height: 220px;
+    }
+
+    .pomodoro-circle svg {
+        transform: rotate(-90deg);
+    }
+
+    .pomodoro-circle circle {
+        fill: none;
+        stroke-width: 6;
+    }
+
+    .circle-bg {
+        stroke: var(--border);
+    }
+
+    .circle-fill {
+        stroke: var(--accent);
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.5s linear;
+    }
+
+    .pomodoro-time {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pomodoro-digits {
+        font-family: var(--font-mono);
+        font-size: 46px;
+        color: var(--text-primary);
+        letter-spacing: 2px;
+    }
+
+    .pomodoro-mode {
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-top: 4px;
+    }
+
+    .pomodoro-btns {
+        display: flex;
+        gap: 12px;
+    }
+
+    .pomodoro-sessions {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .session-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--border);
+        transition: background 0.3s;
+    }
+
+    .session-dot.done {
+        background: var(--accent);
+    }
+</style>
+
+<body>
+
+    <div class="pomodoro-wrap">
+
+        <!-- Círculo SVG animado -->
+        <div class="pomodoro-circle">
+            <svg width="220" height="220" viewBox="0 0 220 220">
+                <circle class="circle-bg" cx="110" cy="110" r="100" />
+                <!-- stroke-dasharray = 2*pi*r ≈ 628 -->
+                <circle class="circle-fill" cx="110" cy="110" r="100" stroke-dasharray="628" id="pomo-ring"
+                    stroke-dashoffset="0" />
+            </svg>
+            <div class="pomodoro-time">
+                <div class="pomodoro-digits" id="pomo-display">25:00</div>
+                <div class="pomodoro-mode" id="pomo-mode">Foco</div>
+            </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="pomodoro-btns">
+            <button class="btn btn-ghost" onclick="resetPomo()">↺ Reiniciar</button>
+            <button class="btn btn-primary" id="pomo-btn" onclick="togglePomo()">▶ Iniciar</button>
+        </div>
+
+        <!-- Sessões completadas -->
+        <div class="pomodoro-sessions" id="pomo-dots">
+            <div class="session-dot"></div>
+            <div class="session-dot"></div>
+            <div class="session-dot"></div>
+            <div class="session-dot"></div>
+        </div>
+
+        <div style="text-align:center;font-size:13px;color:var(--text-muted);">
+            Sessões completadas hoje: <span id="pomo-count">0</span>
+        </div>
+    </div>
+
+    <script>
+        // ══════════════════════════════════════════════
+        // 8. POMODORO
+        // ══════════════════════════════════════════════
+        const POMO_FOCUS = 25 * 60;  // segundos
+        const POMO_BREAK = 5 * 60;
+
+        let pomoSeconds = POMO_FOCUS;
+        let pomoTotal = POMO_FOCUS;
+        let pomoRunning = false;
+        let pomoInterval = null;
+        let pomoIsFocus = true;
+        let pomoSessions = 0;
+
+        function updatePomoDisplay() {
+            const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+            const s = String(pomoSeconds % 60).padStart(2, '0');
+            document.getElementById('pomo-display').textContent = `${m}:${s}`;
+
+            // Anel SVG: quanto falta (0 = cheio, 628 = vazio)
+            const ratio = pomoSeconds / pomoTotal;
+            const offset = 628 * (1 - ratio);
+            document.getElementById('pomo-ring').style.strokeDashoffset = offset;
+        }
+
+        function togglePomo() {
+            pomoRunning = !pomoRunning;
+            document.getElementById('pomo-btn').textContent = pomoRunning ? '⏸ Pausar' : '▶ Continuar';
+
+            if (pomoRunning) {
+                pomoInterval = setInterval(() => {
+                    pomoSeconds--;
+                    updatePomoDisplay();
+
+                    if (pomoSeconds <= 0) {
+                        clearInterval(pomoInterval);
+                        pomoRunning = false;
+
+                        if (pomoIsFocus) {
+                            // Marca sessão completada
+                            pomoSessions++;
+                            document.getElementById('pomo-count').textContent = pomoSessions;
+                            const dots = document.querySelectorAll('.session-dot');
+                            if (pomoSessions <= 4) dots[pomoSessions - 1].classList.add('done');
+
+                            // BACKEND: POST /api/pomodoro/session  { type: 'focus', duration: 25 }
+                        }
+
+                        // Alterna modo
+                        pomoIsFocus = !pomoIsFocus;
+                        pomoSeconds = pomoTotal = pomoIsFocus ? POMO_FOCUS : POMO_BREAK;
+                        document.getElementById('pomo-mode').textContent = pomoIsFocus ? 'Foco' : 'Descanso';
+                        document.getElementById('pomo-btn').textContent = '▶ Iniciar';
+                        updatePomoDisplay();
+                    }
+                }, 1000);
+            } else {
+                clearInterval(pomoInterval);
+            }
+        }
+
+        function resetPomo() {
+            clearInterval(pomoInterval);
+            pomoRunning = false;
+            pomoIsFocus = true;
+            pomoSeconds = POMO_FOCUS;
+            pomoTotal = POMO_FOCUS;
+            document.getElementById('pomo-btn').textContent = '▶ Iniciar';
+            document.getElementById('pomo-mode').textContent = 'Foco';
+            updatePomoDisplay();
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cards Clicáveis</title>
+
+<style>
+body{
+    background:#0F172A;
+    color:white;
+    font-family:Arial, sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:50px;
+}
+
+.container{
+    display:flex;
+    gap:20px;
+}
+
+.card{
+    width:200px;
+    height:120px;
+    background:#1E293B;
+    border-radius:15px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+#resultado{
+    margin-top:30px;
+    font-size:24px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Escolha um Card</h1>
+
+<div class="container">
+
+    <div class="card" onclick="mostrarCard(1)">
+        Card 1
+    </div>
+
+    <div class="card" onclick="mostrarCard(2)">
+        Card 2
+    </div>
+
+    <div class="card" onclick="mostrarCard(3)">
+        Card 3
+    </div>
+
+</div>
+
+<h2 id="resultado">
+    Nenhum card foi clicado.
+</h2>
+
+<script>
+
+function mostrarCard(numero){
+
+    document.getElementById("resultado").textContent =
+        "O Card " + numero + " foi clicado!";
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexusAI — Inteligência Artificial</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f; --panel: #111118; --surface: #16161f;
+    --border: rgba(255,255,255,0.07); --border-active: rgba(120,80,255,0.5);
+    --accent: #7850ff; --accent2: #00d4aa; --text: #f0eeff;
+    --muted: #7a7890; --muted2: #4a4860;
+    --response-bg: #13131c; --user-bg: #1e1a35; --glow: rgba(120,80,255,0.15);
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+
+  /* SIDEBAR */
+  #sidebar { width: 280px; min-width: 280px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+  #sidebar::after { content: ''; position: absolute; top: 0; right: 0; width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, var(--accent), transparent); opacity: 0.3; }
+  .sidebar-header { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
+  .logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #a080ff, #00d4aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; }
+  .logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 300; }
+  .sidebar-search { margin: 16px 16px 0; }
+  .sidebar-search input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 9px 14px 9px 36px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a7890' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 12px center; }
+  .sidebar-search input:focus { border-color: var(--border-active); }
+  .sidebar-search input::placeholder { color: var(--muted2); }
+  .sidebar-section { padding: 20px 16px 0; flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--muted2) transparent; }
+  .section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted2); font-weight: 500; padding: 0 8px; margin-bottom: 8px; }
+  .topic-group { margin-bottom: 24px; }
+  .topic-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 400; cursor: pointer; text-align: left; transition: all 0.2s; margin-bottom: 2px; }
+  .topic-btn:hover { background: var(--surface); color: var(--text); }
+  .topic-btn.active { background: linear-gradient(135deg, rgba(120,80,255,0.2), rgba(0,212,170,0.08)); color: var(--text); border: 1px solid var(--border-active); }
+  .topic-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .topic-badge { margin-left: auto; font-size: 10px; padding: 2px 7px; border-radius: 20px; background: rgba(120,80,255,0.15); color: #a080ff; font-weight: 500; }
+
+  /* MAIN */
+  #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid var(--border); background: var(--panel); }
+  #topic-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  .topbar-actions { display: flex; gap: 8px; }
+  .topbar-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); padding: 7px 14px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+  .topbar-btn:hover { border-color: var(--border-active); color: var(--text); }
+
+  /* CHAT */
+  #chat-area { flex: 1; overflow-y: auto; padding: 32px 40px; display: flex; flex-direction: column; gap: 24px; scrollbar-width: thin; scrollbar-color: var(--muted2) transparent; }
+  .msg { display: flex; gap: 14px; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .msg.user { flex-direction: row-reverse; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .avatar.ai-av { background: linear-gradient(135deg, #7850ff, #00d4aa); box-shadow: 0 0 16px rgba(120,80,255,0.4); font-size: 14px; font-family: 'Syne', sans-serif; font-weight: 800; color: white; }
+  .avatar.user-av { background: var(--user-bg); border: 1px solid var(--border-active); font-size: 18px; }
+  .bubble { max-width: 72%; padding: 14px 18px; border-radius: 16px; font-size: 14.5px; line-height: 1.7; }
+  .msg.ai .bubble { background: var(--response-bg); border: 1px solid var(--border); border-top-left-radius: 4px; }
+  .msg.user .bubble { background: var(--user-bg); border: 1px solid rgba(120,80,255,0.25); border-top-right-radius: 4px; color: #e0daff; }
+  .bubble p { margin-bottom: 10px; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble strong { color: #a080ff; font-weight: 500; }
+  .bubble em { color: var(--accent2); font-style: normal; font-weight: 500; }
+  .bubble code { background: rgba(120,80,255,0.1); border: 1px solid rgba(120,80,255,0.2); border-radius: 5px; padding: 1px 6px; font-size: 13px; font-family: 'Courier New', monospace; color: #00d4aa; }
+  .bubble ul, .bubble ol { margin: 8px 0 8px 20px; }
+  .bubble li { margin-bottom: 6px; }
+  .bubble h3 { font-family: 'Syne', sans-serif; color: #a080ff; font-size: 15px; margin: 14px 0 8px; font-weight: 700; }
+  .bubble h3:first-child { margin-top: 0; }
+  .level-tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .level-basico { background: rgba(0,212,170,0.15); color: #00d4aa; border: 1px solid rgba(0,212,170,0.3); }
+  .level-intermedio { background: rgba(120,80,255,0.15); color: #a080ff; border: 1px solid rgba(120,80,255,0.3); }
+  .level-avancado { background: rgba(255,80,120,0.15); color: #ff8080; border: 1px solid rgba(255,80,120,0.3); }
+  .msg-meta { font-size: 11px; color: var(--muted2); margin-top: 6px; padding: 0 4px; }
+  .msg.user .msg-meta { text-align: right; }
+
+  /* LEVEL BTNS */
+  .level-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .level-btn { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .level-btn:hover { background: rgba(120,80,255,0.08); color: var(--text); }
+  .level-btn.basico { border-color: rgba(0,212,170,0.3); color: #00d4aa; }
+  .level-btn.intermedio { border-color: rgba(120,80,255,0.4); color: #a080ff; }
+  .level-btn.avancado { border-color: rgba(255,80,120,0.3); color: #ff8080; }
+
+  /* SUGGESTIONS / PILLS */
+  .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .suggestion-pill { background: var(--surface); border: 1px solid var(--border); border-radius: 50px; padding: 7px 14px; font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .suggestion-pill:hover { border-color: var(--border-active); color: var(--text); background: rgba(120,80,255,0.08); }
+
+  /* WELCOME */
+  #welcome { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 40px; }
+  .welcome-icon { font-size: 48px; filter: drop-shadow(0 0 20px rgba(120,80,255,0.5)); margin-bottom: 8px; }
+  .welcome-title { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #a080ff, #00d4aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .welcome-sub { color: var(--muted); font-size: 15px; max-width: 440px; line-height: 1.7; font-weight: 300; }
+  .welcome-suggestions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; max-width: 560px; }
+
+  /* INPUT */
+  #input-area { padding: 20px 40px 28px; border-top: 1px solid var(--border); background: var(--panel); }
+  #input-box { display: flex; align-items: flex-end; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px 12px 18px; transition: border-color 0.2s; }
+  #input-box:focus-within { border-color: var(--border-active); box-shadow: 0 0 20px var(--glow); }
+  #user-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14.5px; resize: none; min-height: 24px; max-height: 140px; line-height: 1.6; scrollbar-width: none; }
+  #user-input::placeholder { color: var(--muted2); font-weight: 300; }
+  #send-btn { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #7850ff, #00d4aa); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  #send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(120,80,255,0.4); }
+  #send-btn:active { transform: scale(0.97); }
+  #send-btn svg { width: 16px; height: 16px; fill: white; }
+  .input-hint { font-size: 11px; color: var(--muted2); text-align: center; margin-top: 10px; }
+
+  /* TYPING */
+  .typing-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: blink 1.2s ease-in-out infinite; margin: 0 2px; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100% { opacity: 0.2; transform: scale(1); } 40% { opacity: 1; transform: scale(1.2); } }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">NexusAI</div>
+    <div class="logo-sub">Assistente Inteligente</div>
+  </div>
+  <div class="sidebar-search">
+    <input type="text" id="search-topics" placeholder="Pesquisar tópicos..." oninput="filterTopics(this.value)">
+  </div>
+  <div class="sidebar-section" id="topics-list"></div>
+</div>
+
+<div id="main">
+  <div id="topbar">
+    <div id="topic-title">
+      <span id="title-icon">✨</span>
+      <span id="title-text">Assistente NexusAI</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" onclick="clearChat()">Limpar conversa</button>
+      <button class="topbar-btn" onclick="newChat()">Nova conversa</button>
+    </div>
+  </div>
+  <div id="chat-area">
+    <div id="welcome">
+      <div class="welcome-icon">✨</div>
+      <div class="welcome-title">Como posso ajudar?</div>
+      <div class="welcome-sub">Seleciona um tópico e escolhe o teu nível — do básico ao avançado. Todo o conteúdo está disponível localmente.</div>
+      <div class="welcome-suggestions" id="welcome-pills"></div>
+    </div>
+  </div>
+  <div id="input-area">
+    <div id="input-box">
+      <textarea id="user-input" placeholder="Escreve a tua mensagem..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button id="send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+    <div class="input-hint">Enter para enviar · Shift+Enter para nova linha</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  DADOS EDUCATIVOS — Do básico ao avançado, por tópico
+// ═══════════════════════════════════════════════════════════════
+
+const TOPICS = {
+
+  "ciencia": {
+    name: "Ciência & Tecnologia", icon: "🔬", category: "Conhecimento", badge: "Popular",
+    levels: {
+      basico: {
+        label: "Começar pelo início",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>O que é Ciência e Tecnologia?</h3>
+<p><strong>Ciência</strong> é o estudo sistemático do mundo natural — como as coisas funcionam, porque existem e como se relacionam entre si. <strong>Tecnologia</strong> é a aplicação prática desse conhecimento para criar ferramentas, máquinas e soluções.</p>
+<h3>Método Científico</h3>
+<ul>
+  <li>🔍 <strong>Observar</strong> — notar um fenómeno</li>
+  <li>❓ <strong>Questionar</strong> — formular uma pergunta</li>
+  <li>💡 <strong>Hipótese</strong> — propor uma explicação testável</li>
+  <li>🧪 <strong>Experimentar</strong> — testar a hipótese</li>
+  <li>📊 <strong>Analisar</strong> — interpretar os resultados</li>
+  <li>✅ <strong>Concluir</strong> — aceitar, rejeitar ou reformular a hipótese</li>
+</ul>
+<h3>Ramos Principais</h3>
+<ul>
+  <li>⚛️ <strong>Física:</strong> matéria, energia, movimento e forças</li>
+  <li>🧪 <strong>Química:</strong> composição e transformação das substâncias</li>
+  <li>🌿 <strong>Biologia:</strong> seres vivos e os seus processos</li>
+  <li>🌍 <strong>Geologia:</strong> estrutura e história da Terra</li>
+  <li>💻 <strong>Tecnologia:</strong> internet, smartphones, robótica, IA</li>
+</ul>
+<h3>Exemplos do Dia-a-Dia</h3>
+<p>A ciência explica porque o céu é azul (dispersão da luz de Rayleigh), como os aviões voam (princípio de Bernoulli) e porque o pão cresce (fermentação por leveduras). A tecnologia usou esse conhecimento para criar GPS, vacinas, painéis solares e telemóveis.</p>`,
+        questions: ["O que é o método científico?", "Diferença entre ciência e tecnologia?", "Para que serve a física?"]
+      },
+      intermedio: {
+        label: "Aprofundar o conhecimento",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Ramos Avançados da Ciência</h3>
+<ul>
+  <li>🧬 <strong>Genómica:</strong> Estudo completo do DNA. O Projeto Genoma Humano mapeou ~3 mil milhões de pares de bases do ADN humano em 13 anos (1990–2003).</li>
+  <li>🌌 <strong>Astrofísica:</strong> Combina física e astronomia para estudar estrelas, buracos negros e a origem do universo (Big Bang, ~13,8 mil milhões de anos).</li>
+  <li>🔋 <strong>Nanotecnologia:</strong> Manipulação de matéria à escala nanométrica. 1 nm = 0,000001 mm — menor que um vírus.</li>
+  <li>🤖 <strong>Robótica:</strong> Sistemas autónomos com mecânica, electrónica e software integrados.</li>
+</ul>
+<h3>A 4.ª Revolução Industrial</h3>
+<p>Fusão entre o mundo físico, digital e biológico. As tecnologias-chave são: Inteligência Artificial, Internet das Coisas (IoT), computação quântica, impressão 3D, biotecnologia e blockchain. O ritmo de mudança é exponencial (Lei de Moore, Lei de Kurzweil).</p>
+<h3>Energias Renováveis</h3>
+<p>O custo da energia solar fotovoltaica caiu <em>90% entre 2010 e 2023</em>. A energia eólica offshore e o hidrogénio verde são apostas centrais para descarbonizar a economia global até 2050 e limitar o aquecimento a 1,5°C (Acordo de Paris).</p>`,
+        questions: ["Como funciona a nanotecnologia?", "O que é a 4.ª Revolução Industrial?", "Explica a energia solar fotovoltaica"]
+      },
+      avancado: {
+        label: "Nível de investigação",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Computação Quântica</h3>
+<p>Usa qubits em <em>superposição</em> (0 e 1 simultaneamente) e <em>entrelaçamento quântico</em> para processamento paralelo massivo. O algoritmo de Shor factoriza inteiros em tempo polinomial, ameaçando a criptografia RSA actual. O algoritmo de Grover oferece speedup quadrático em pesquisa. Empresas líderes: IBM (Eagle 127 qubits), Google (Sycamore), IonQ, Quantinuum.</p>
+<h3>Biologia Sintética e CRISPR-Cas9</h3>
+<p>O sistema CRISPR-Cas9 (Doudna & Charpentier, Nobel 2020) funciona como "tesoura molecular" que corta e reescreve sequências específicas de ADN com precisão sem precedentes. Aplicações: doenças monogénicas (drepanocitose, fibrose cística), oncologia, criação de organismos com propriedades industriais. Questões éticas: edição de germline e eugenismo.</p>
+<h3>Física de Partículas e o Modelo Padrão</h3>
+<p>O Modelo Padrão descreve 17 partículas fundamentais: 6 quarks, 6 leptões, 4 bosões de gauge e o bóson de Higgs. Este último, confirmado no LHC (CERN) em 2012, explica a massa das partículas via mecanismo de Brout–Englert–Higgs. Questões abertas: matéria escura (27%), energia escura (68%), gravidade quântica, bariogénese.</p>
+<h3>Neurociência Computacional</h3>
+<p>O Human Connectome Project mapeia as ~86 mil milhões de ligações neuronais. Interfaces cérebro-computador (BCI) como o Neuralink (Musk) e BrainGate permitem controlo de próteses e comunicação por pensamento. A questão do "problema difícil da consciência" (Chalmers) permanece em aberto.</p>`,
+        questions: ["Como funciona o CRISPR-Cas9?", "O que são qubits?", "Explica o Modelo Padrão da física"]
+      }
+    }
+  },
+
+  "matematica": {
+    name: "Matemática", icon: "📐", category: "Conhecimento",
+    levels: {
+      basico: {
+        label: "Operações e números",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>As 4 Operações Fundamentais</h3>
+<ul>
+  <li>➕ <strong>Adição:</strong> juntar quantidades — 5 + 3 = 8</li>
+  <li>➖ <strong>Subtracção:</strong> retirar — 9 − 4 = 5</li>
+  <li>✖️ <strong>Multiplicação:</strong> adição repetida — 4 × 3 = 12</li>
+  <li>➗ <strong>Divisão:</strong> repartir igualmente — 12 ÷ 4 = 3</li>
+</ul>
+<h3>Tipos de Números</h3>
+<ul>
+  <li><strong>Naturais (ℕ):</strong> 1, 2, 3, 4... (contagem)</li>
+  <li><strong>Inteiros (ℤ):</strong> ...-2, -1, 0, 1, 2... (incluem negativos)</li>
+  <li><strong>Racionais (ℚ):</strong> frações como ½, ¾, 0,75</li>
+  <li><strong>Irracionais:</strong> π = 3,14159..., √2 = 1,41421...</li>
+  <li><strong>Reais (ℝ):</strong> todos os números acima reunidos</li>
+</ul>
+<h3>Geometria Básica</h3>
+<ul>
+  <li>Área rectângulo: <code>base × altura</code></li>
+  <li>Área círculo: <code>π × r²</code></li>
+  <li>Perímetro quadrado: <code>4 × lado</code></li>
+  <li>Teorema de Pitágoras: <code>a² + b² = c²</code> (triângulo rectângulo)</li>
+</ul>
+<h3>Percentagens</h3>
+<p>Percentagem = (parte ÷ total) × 100. Exemplo: 15 de 60 = (15÷60)×100 = <strong>25%</strong>. Para calcular X% de N: X÷100 × N. Exemplo: 20% de 50 = 0,20 × 50 = <strong>10</strong>.</p>`,
+        questions: ["Como calcular percentagens?", "O que são números primos?", "Como calcular a área de um triângulo?"]
+      },
+      intermedio: {
+        label: "Álgebra, funções e trigonometria",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Álgebra</h3>
+<p>A álgebra usa letras (variáveis) para representar valores desconhecidos:</p>
+<ul>
+  <li><strong>Equação 1.º grau:</strong> <code>2x + 5 = 13</code> → <code>x = 4</code></li>
+  <li><strong>Equação 2.º grau:</strong> <code>ax² + bx + c = 0</code> → fórmula resolvente: <code>x = (−b ± √(b²−4ac)) / 2a</code></li>
+  <li><strong>Sistemas de equações:</strong> substituição ou eliminação para encontrar múltiplas variáveis</li>
+</ul>
+<h3>Funções</h3>
+<p>Uma função <code>f(x)</code> associa a cada x exatamente um y. Tipos: linear <code>f(x) = mx + b</code>, quadrática <code>f(x) = ax²</code>, exponencial <code>f(x) = aˣ</code>, logarítmica <code>f(x) = log(x)</code>.</p>
+<h3>Trigonometria</h3>
+<ul>
+  <li><code>sin(θ) = cateto oposto / hipotenusa</code></li>
+  <li><code>cos(θ) = cateto adjacente / hipotenusa</code></li>
+  <li><code>tan(θ) = sin(θ) / cos(θ)</code></li>
+  <li>Valores notáveis: sin(30°)=0,5 | sin(45°)=√2/2 | sin(60°)=√3/2</li>
+</ul>
+<h3>Estatística Descritiva</h3>
+<p><strong>Média</strong> = soma ÷ n. <strong>Mediana</strong> = valor central ordenado. <strong>Moda</strong> = valor mais frequente. <strong>Desvio padrão (σ)</strong> mede a dispersão em torno da média. <strong>Variância</strong> = σ².</p>`,
+        questions: ["Como resolver equações de 2.º grau?", "O que é uma função exponencial?", "Explica probabilidade básica"]
+      },
+      avancado: {
+        label: "Cálculo, álgebra linear e topologia",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Cálculo Diferencial e Integral</h3>
+<p>Fundado independentemente por Newton (fluxões) e Leibniz (notação dx/dy actual):</p>
+<ul>
+  <li><strong>Derivada:</strong> taxa de variação instantânea. <code>f'(x) = lim[h→0] (f(x+h)−f(x))/h</code>. Regras: produto, quociente, cadeia.</li>
+  <li><strong>Integral:</strong> área sob a curva. Teorema Fundamental: <code>∫ₐᵇ f(x)dx = F(b)−F(a)</code></li>
+  <li><strong>Séries de Taylor:</strong> aproximação de funções como somas infinitas de potências.</li>
+  <li><strong>Equações Diferenciais:</strong> modelam dinâmicas — crescimento populacional (Malthus, Verhulst), osciladores harmónicos, equações de Maxwell.</li>
+</ul>
+<h3>Álgebra Linear</h3>
+<p>Espaços vectoriais, transformações lineares, matrizes. Decomposição SVD (Singular Value Decomposition) está por trás de sistemas de recomendação, compressão de imagens e PCA. A transformada de Fourier: <code>F(ω) = ∫ f(t)e^{−iωt}dt</code> — converte entre domínios temporal e frequencial. Base da compressão JPEG e do processamento de sinal.</p>
+<h3>Geometria Riemanniana e Topologia</h3>
+<p>A <strong>topologia</strong> estuda invariantes a deformações contínuas (anel ≅ caneca). A <strong>geometria Riemanniana</strong> generaliza Euclides a superfícies curvas — o tensor métrico <code>gμν</code> é o formalismo matemático da Relatividade Geral de Einstein. A curvatura de Riemann determina como geodésicas divergem.</p>
+<h3>Teoria dos Números</h3>
+<p>O <strong>Último Teorema de Fermat</strong> (aⁿ+bⁿ=cⁿ sem soluções inteiras para n>2), provado por Andrew Wiles em 1995 após 358 anos. A <strong>hipótese de Riemann</strong> sobre os zeros não-triviais de ζ(s) permanece o mais famoso Problema do Milénio por resolver, com prémio de $1M.</p>`,
+        questions: ["O que é a transformada de Fourier?", "Como funciona a decomposição SVD?", "Explica a geometria riemanniana"]
+      }
+    }
+  },
+
+  "historia": {
+    name: "História & Cultura", icon: "🏛️", category: "Conhecimento",
+    levels: {
+      basico: {
+        label: "Grandes períodos da história",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>Os Períodos da História Universal</h3>
+<ul>
+  <li>🦕 <strong>Pré-História</strong> (até ~3500 a.C.): ferramentas, fogo, agricultura, escrita não existia</li>
+  <li>🏺 <strong>Idade Antiga</strong> (3500 a.C. – 476 d.C.): Egito, Grécia, Roma, Mesopotâmia, China, Índia</li>
+  <li>⚔️ <strong>Idade Média</strong> (476 – 1453): feudalismo, Cruzadas, Islam, Império Bizantino</li>
+  <li>🧭 <strong>Idade Moderna</strong> (1453 – 1789): Renascimento, Descobrimentos, Reforma Protestante</li>
+  <li>🏭 <strong>Idade Contemporânea</strong> (1789 – hoje): Revoluções, guerras mundiais, globalização</li>
+</ul>
+<h3>Civilizações Marcantes</h3>
+<p><strong>Egito:</strong> pirâmides, papiro, hieróglifos — 3000 anos de civilização contínua. <strong>Grécia:</strong> democracia, filosofia, teatro, Jogos Olímpicos. <strong>Roma:</strong> direito, língua latina (base do português), engenharia (aquedutos, estradas), maior império ocidental.</p>
+<h3>Angola na História</h3>
+<p>Os povos Bantu chegaram à região ~1000 d.C. O <strong>Reino do Congo</strong> (século XIV) foi um dos mais organizados da África subsaariana, com sistema de governo, comércio e diplomacia. O contacto europeu iniciou com <strong>Diogo Cão</strong> em 1482. O colonialismo português durou até à independência em <strong>11 de novembro de 1975</strong>.</p>`,
+        questions: ["O que foi o Renascimento?", "O que é o feudalismo?", "Como foi a independência de Angola?"]
+      },
+      intermedio: {
+        label: "Revoluções e impérios modernos",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>As Grandes Revoluções</h3>
+<ul>
+  <li>🗽 <strong>Revolução Americana (1776):</strong> Declaração de Independência baseada no iluminismo de Locke ("vida, liberdade e busca da felicidade"). Criou o modelo presidencialista republicano.</li>
+  <li>⚖️ <strong>Revolução Francesa (1789):</strong> "Liberdade, Igualdade, Fraternidade". Fim do Ancien Régime, Declaração dos Direitos do Homem, Terror, Napoleão.</li>
+  <li>🏭 <strong>Revolução Industrial (1760–1840):</strong> Máquina a vapor, carvão, fábricas. Transformou sociedade agrária em industrial. Nascimento do proletariado e do capitalismo moderno.</li>
+  <li>☭ <strong>Revolução Russa (1917):</strong> Fim do czarismo, nascimento da URSS. Influenciou a geopolítica até 1991.</li>
+</ul>
+<h3>Colonialismo e Conferência de Berlim</h3>
+<p>A <strong>Conferência de Berlim (1884–85)</strong> partilhou África entre potências europeias sem consultar africanos — base das fronteiras actuais e das suas contradições étnicas. O sistema colonial extraía matérias-primas, impunha trabalho forçado e suprimia culturas locais.</p>
+<h3>As Guerras Mundiais</h3>
+<p>A <strong>1.ª GM (1914–18)</strong> matou ~20 milhões. Precipitada pelo assassinato do Arquiduque Franz Ferdinand em Sarajevo. Fim dos impérios austro-húngaro, otomano e russo. A <strong>2.ª GM (1939–45)</strong> causou ~70–85 milhões de mortes. Holocausto: 6 milhões de judeus. Bombas atómicas em Hiroshima e Nagasaki. Início da Guerra Fria EUA-URSS.</p>`,
+        questions: ["O que foi a Guerra Fria?", "Como surgiu o pan-africanismo?", "Explica o Tratado de Versalhes"]
+      },
+      avancado: {
+        label: "Historiografia e teoria crítica",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Correntes Historiográficas</h3>
+<ul>
+  <li><strong>Escola dos Annales (Braudel, Febvre, Le Goff):</strong> Privilegia a <em>longue durée</em> — estruturas geográficas, demográficas e económicas sobre eventos políticos. História total vs. histoire événementielle.</li>
+  <li><strong>Materialismo Histórico (Marx, Engels):</strong> A infraestrutura económica (modo de produção, relações de produção) determina a superestrutura (direito, política, ideologia). História como luta de classes.</li>
+  <li><strong>História Pós-Colonial (Fanon, Said, Spivak, Bhabha):</strong> Desconstrução dos meta-narrativos eurocêntricos. "Orientalismo" de Said analisa como o Ocidente construiu discursivamente o "Oriente" como inferior.</li>
+  <li><strong>Micro-história (Ginzburg, Levi):</strong> O caso singular como janela para estruturas amplas — <em>O Queijo e os Vermes</em> reconstrói o cosmos de um moleiro do séc. XVI.</li>
+</ul>
+<h3>Descolonização Africana e Angola</h3>
+<p>A descolonização (1950–75) foi moldada pelo <strong>Pan-Africanismo</strong> (Nkrumah, Nyerere, Cabral) e pela <strong>Conferência de Bandung (1955)</strong>, que fundou o Movimento dos Não-Alinhados. Em Angola, a guerra de libertação (1961–74) envolveu MPLA, FNLA e UNITA, cada uma apoiada por potências externas (URSS/Cuba, EUA, África do Sul) — manifestação clássica de proxy war da Guerra Fria. O Acordo de Alvor (1975) fracassou, abrindo 27 anos de guerra civil (1975–2002).</p>
+<h3>Memória, Trauma e História Pública</h3>
+<p>Pierre Nora distingue <em>milieux de mémoire</em> (memória viva, incorporada) de <em>lieux de mémoire</em> (lugares institucionalizados — museus, monumentos, datas). A gestão da memória histórica é um campo de disputa política sobre identidade nacional e reconciliação pós-conflito.</p>`,
+        questions: ["O que é a Escola dos Annales?", "Explica o pós-colonialismo de Fanon", "Como analisar a memória histórica?"]
+      }
+    }
+  },
+
+  "programacao": {
+    name: "Programação", icon: "💻", category: "Tecnologia", badge: "Popular",
+    levels: {
+      basico: {
+        label: "Primeiros passos no código",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>O que é Programação?</h3>
+<p>Programar é dar instruções precisas a um computador. O computador não "pensa" — executa exactamente o que lhe disseres. A linguagem de programação é o intermediário entre o pensamento humano e a máquina.</p>
+<h3>Conceitos Fundamentais</h3>
+<ul>
+  <li>📦 <strong>Variável:</strong> "caixa" que guarda um valor. <code>nome = "Ana"</code> | <code>idade = 25</code></li>
+  <li>🔀 <strong>Condição (if/else):</strong> tomar decisões. <code>if idade >= 18: print("adulto")</code></li>
+  <li>🔄 <strong>Loop (for/while):</strong> repetir acções. <code>for i in range(5): print(i)</code></li>
+  <li>🧩 <strong>Função:</strong> bloco reutilizável. <code>def saudacao(nome): return "Olá " + nome</code></li>
+  <li>📋 <strong>Lista:</strong> colecção de valores. <code>frutas = ["manga", "papaia", "laranja"]</code></li>
+  <li>🗂️ <strong>Dicionário:</strong> pares chave-valor. <code>pessoa = {"nome": "João", "idade": 30}</code></li>
+</ul>
+<h3>Por Onde Começar?</h3>
+<p><strong>Python</strong> é a melhor primeira linguagem — sintaxe legível e versátil. Instala em python.org. O primeiro programa: <code>print("Olá, Mundo!")</code>. Plataformas gratuitas: Replit (online), VS Code (desktop), Google Colab (Python na nuvem).</p>`,
+        questions: ["Como instalar Python?", "O que é uma função?", "Diferença entre lista e dicionário?"]
+      },
+      intermedio: {
+        label: "Paradigmas e estruturas de dados",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Paradigmas de Programação</h3>
+<ul>
+  <li><strong>Imperativo/Procedural:</strong> sequência de instruções passo a passo (C, Pascal)</li>
+  <li><strong>OOP (Orientado a Objectos):</strong> classes e objectos com encapsulamento, herança, polimorfismo (Java, Python, C#)</li>
+  <li><strong>Funcional:</strong> funções puras sem efeitos secundários, imutabilidade (Haskell, Erlang, Scala, partes de JavaScript)</li>
+  <li><strong>Declarativo:</strong> descreves o resultado desejado, não o como (SQL, HTML)</li>
+</ul>
+<h3>Estruturas de Dados Essenciais</h3>
+<ul>
+  <li><strong>Array:</strong> acesso O(1) por índice</li>
+  <li><strong>HashMap/Dict:</strong> acesso médio O(1) por chave (hash table)</li>
+  <li><strong>Pilha (Stack):</strong> LIFO — Last In, First Out (uso: chamadas recursivas)</li>
+  <li><strong>Fila (Queue):</strong> FIFO — First In, First Out (uso: processamento assíncrono)</li>
+  <li><strong>Árvore Binária:</strong> busca O(log n) quando balanceada (AVL, Red-Black)</li>
+  <li><strong>Grafo:</strong> nós + arestas — redes sociais, mapas, dependências</li>
+</ul>
+<h3>Git e Controlo de Versões</h3>
+<p>Comandos essenciais: <code>git init</code> → <code>git add .</code> → <code>git commit -m "msg"</code> → <code>git push</code>. Branching: <code>git checkout -b feature/nova</code>. O GitHub é portfólio e ferramenta de colaboração. Pull Requests e code review são práticas profissionais standard.</p>`,
+        questions: ["O que é OOP?", "Como funciona o Git?", "Explica algoritmos de ordenação"]
+      },
+      avancado: {
+        label: "Engenharia de software profissional",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Complexidade Algorítmica (Big-O)</h3>
+<ul>
+  <li><code>O(1)</code> — Constante: acesso a array por índice</li>
+  <li><code>O(log n)</code> — Logarítmica: pesquisa binária</li>
+  <li><code>O(n)</code> — Linear: percorrer lista</li>
+  <li><code>O(n log n)</code> — MergeSort, HeapSort (ótimo para comparação)</li>
+  <li><code>O(n²)</code> — BubbleSort, InsertionSort ingénuo</li>
+  <li><code>O(2ⁿ)</code> — Força bruta: subconjuntos, problemas NP-completos</li>
+</ul>
+<h3>Arquitecturas de Software</h3>
+<ul>
+  <li><strong>Microserviços:</strong> serviços independentes via REST/gRPC/mensageria (Kafka, RabbitMQ). Escalamento independente, fault isolation.</li>
+  <li><strong>CQRS + Event Sourcing:</strong> separação de comandos e consultas; estado reconstituído a partir de eventos imutáveis.</li>
+  <li><strong>Serverless:</strong> AWS Lambda, Cloudflare Workers — execução por invocação, sem gestão de infraestrutura, escalamento automático.</li>
+  <li><strong>Hexagonal Architecture (Ports & Adapters):</strong> isolamento do domínio de negócio das dependências externas.</li>
+</ul>
+<h3>Design Patterns (Gang of Four)</h3>
+<p><strong>Criacionais:</strong> Singleton, Factory Method, Abstract Factory, Builder, Prototype.<br>
+<strong>Estruturais:</strong> Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy.<br>
+<strong>Comportamentais:</strong> Chain of Responsibility, Command, Iterator, Mediator, Observer, Strategy, Template Method, Visitor.</p>
+<h3>Qualidade: TDD e DevOps</h3>
+<p>TDD: Red → Green → Refactor. Pirâmide de testes: unitários (base) → integração → E2E (topo). DORA metrics: Deployment Frequency, Lead Time, MTTR, Change Failure Rate. CI/CD com GitHub Actions, Jenkins, ArgoCD.</p>`,
+        questions: ["O que são Design Patterns?", "Como funciona TDD?", "Explica microserviços vs monólito"]
+      }
+    }
+  },
+
+  "ia": {
+    name: "Inteligência Artificial", icon: "🤖", category: "Tecnologia",
+    levels: {
+      basico: {
+        label: "O que é a IA?",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>O que é Inteligência Artificial?</h3>
+<p>IA é a capacidade de uma máquina realizar tarefas que normalmente exigiriam inteligência humana — reconhecer imagens, entender linguagem, jogar xadrez, conduzir um carro ou compor música.</p>
+<h3>Tipos de IA</h3>
+<ul>
+  <li>🎯 <strong>IA Estreita (Narrow AI):</strong> especializada numa única tarefa. <em>É o que existe hoje.</em> Ex: reconhecimento facial, filtros de spam, recomendações da Netflix.</li>
+  <li>🧠 <strong>IA Geral (AGI):</strong> capacidades cognitivas gerais equivalentes às humanas. <em>Ainda não existe.</em></li>
+  <li>🌍 <strong>Super-IA:</strong> IA que supera a inteligência humana em tudo. <em>Hipotética, tema de debate filosófico e ético.</em></li>
+</ul>
+<h3>IA no Dia-a-Dia</h3>
+<ul>
+  <li>📱 <strong>Assistentes de voz:</strong> Siri, Alexa, Google Assistant</li>
+  <li>🎵 <strong>Recomendações:</strong> Spotify, YouTube, Netflix</li>
+  <li>🚗 <strong>Piloto automático:</strong> Tesla, Waymo usam visão computacional</li>
+  <li>💬 <strong>Chatbots:</strong> ChatGPT, Claude, Gemini</li>
+  <li>🩺 <strong>Diagnóstico médico:</strong> detecção de cancro em imagens com precisão de especialista</li>
+  <li>🌐 <strong>Tradução:</strong> Google Translate, DeepL</li>
+</ul>`,
+        questions: ["O que é machine learning?", "Como funciona o ChatGPT?", "A IA vai substituir empregos?"]
+      },
+      intermedio: {
+        label: "Machine Learning e redes neuronais",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Machine Learning (Aprendizagem Automática)</h3>
+<p>Em vez de programar regras explícitas, o modelo aprende padrões a partir de dados:</p>
+<ul>
+  <li><strong>Supervisionado:</strong> pares (entrada, saída esperada). Ex: classificar emails spam/não-spam, diagnóstico médico, tradução automática.</li>
+  <li><strong>Não-supervisionado:</strong> encontra padrões sem rótulos. Ex: segmentação de clientes, redução de dimensionalidade (PCA), detecção de anomalias.</li>
+  <li><strong>Por Reforço:</strong> agente aprende por tentativa-erro com recompensas. Ex: AlphaGo (Go), OpenAI Five (DOTA2), robótica.</li>
+</ul>
+<h3>Redes Neuronais Artificiais</h3>
+<p>Inspiradas no cérebro: neurónios artificiais organizados em camadas (input → hidden → output). A <strong>função de activação</strong> (ReLU, sigmoid, tanh) introduz não-linearidade essencial. O <strong>backpropagation</strong> calcula gradientes via regra da cadeia e ajusta pesos por gradiente descendente. O <em>learning rate</em> controla o tamanho dos passos.</p>
+<h3>Modelos de Linguagem (LLMs)</h3>
+<p>GPT-4, Claude, Gemini são baseados na arquitectura <strong>Transformer</strong> (paper "Attention Is All You Need", Google, 2017). O mecanismo de <em>self-attention</em> permite ao modelo focar nas partes relevantes do contexto. Treinados em trilhões de tokens de texto, aprendem representações estatísticas ricas da linguagem humana.</p>`,
+        questions: ["Como funciona backpropagation?", "O que é a arquitectura Transformer?", "Explica overfitting e underfitting"]
+      },
+      avancado: {
+        label: "Investigação e fronteiras técnicas",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Arquitecturas de Modelos de Fundação</h3>
+<ul>
+  <li><strong>Transformers:</strong> auto-atenção multi-cabeça (MHA) com complexidade O(n²). Variantes eficientes: FlashAttention (IO-aware CUDA kernels), Longformer (atenção esparsa), Ring Attention (sequências longas distribuídas). Positional encodings: sinusoidal (original) vs. RoPE (Rotary Position Embedding).</li>
+  <li><strong>Modelos de Difusão:</strong> Stable Diffusion, DALL-E 3, Sora. Processo de denoising: aprendem a reverter ruído gaussiano progressivo via U-Net ou DiT (Diffusion Transformer). Guidance: CFG (Classifier-Free Guidance).</li>
+  <li><strong>MoE (Mixture of Experts):</strong> GPT-4, Mixtral, Gemini usam roteamento esparso — só uma fracção dos parâmetros é activada por token, permitindo escalar para biliões de parâmetros sem custo proporcional de inferência.</li>
+</ul>
+<h3>RLHF e Alinhamento</h3>
+<p>O pipeline RLHF (Reinforcement Learning from Human Feedback): 1) SFT (Supervised Fine-Tuning) em exemplos curados, 2) Treino de Reward Model com preferências humanas (Bradley-Terry), 3) Optimização de política via PPO ou DPO (Direct Preference Optimisation). Desafios: reward hacking, sycophancy, specification gaming, scalable oversight.</p>
+<h3>Raciocínio e Test-Time Compute</h3>
+<p>Chain-of-Thought (Wei et al. 2022), Tree-of-Thought, MCTS para raciocínio. Modelos o1/o3 (OpenAI), R1 (DeepSeek) exploram test-time compute escalável — mais tokens de "pensamento" produzem melhor raciocínio. Leis de escalonamento (Kaplan 2020, Chinchilla 2022) mostram que compute, dados e parâmetros devem crescer conjuntamente.</p>`,
+        questions: ["O que é RLHF?", "Como funciona Chain-of-Thought?", "Explica o problema de alinhamento de IA"]
+      }
+    }
+  },
+
+  "filosofia": {
+    name: "Filosofia", icon: "💭", category: "Conhecimento",
+    levels: {
+      basico: {
+        label: "Introdução ao pensamento filosófico",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>O que é Filosofia?</h3>
+<p>Do grego <em>philo</em> (amor) + <em>sophia</em> (sabedoria). É a arte de fazer as perguntas mais fundamentais sobre existência, conhecimento, moral e realidade — e tentar respondê-las com raciocínio rigoroso.</p>
+<h3>Os Ramos da Filosofia</h3>
+<ul>
+  <li>🌍 <strong>Metafísica:</strong> O que existe? O que é a realidade? Existe Deus?</li>
+  <li>🧠 <strong>Epistemologia:</strong> O que é conhecimento? Como sabemos o que sabemos?</li>
+  <li>⚖️ <strong>Ética:</strong> O que é o bem e o mal? Como devemos agir?</li>
+  <li>🏛️ <strong>Filosofia Política:</strong> Como se deve organizar a sociedade?</li>
+  <li>🎨 <strong>Estética:</strong> O que é a beleza? O que é arte?</li>
+  <li>🔬 <strong>Filosofia da Ciência:</strong> Como funciona o conhecimento científico?</li>
+</ul>
+<h3>Os Clássicos Gregos</h3>
+<p><strong>Sócrates</strong> (470–399 a.C.): "Só sei que nada sei." Método socrático — questionar pressupostos até atingir a verdade. Foi condenado à morte por "corromper a juventude". <strong>Platão:</strong> Teoria das Ideias — o mundo sensível é sombra de Formas eternas e perfeitas. <strong>Aristóteles:</strong> lógica formal, ética da virtude, biologia, política — "o homem é um animal político".</p>`,
+        questions: ["O que é o método socrático?", "Explica a teoria das Ideias de Platão", "O que é ética?"]
+      },
+      intermedio: {
+        label: "Filosofia moderna e existencialismo",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Racionalismo vs. Empirismo</h3>
+<ul>
+  <li><strong>Descartes (1596–1650):</strong> "Cogito ergo sum" — a dúvida metódica até à certeza indubitável do pensamento. Dualismo mente-corpo (res cogitans vs. res extensa). Fundador do racionalismo moderno.</li>
+  <li><strong>Hume (1711–1776):</strong> Empirismo radical — todo o conhecimento vem da experiência. Ceticismo sobre causalidade: não vemos causas, apenas sequências regulares. Inviabiliza a metafísica tradicional.</li>
+  <li><strong>Kant (1724–1804):</strong> "Revolução copernicana" — o sujeito estrutura a experiência (categorias do entendimento: causalidade, substância). Imperativo Categórico: age segundo a máxima que possas querer universalizar.</li>
+  <li><strong>Hegel (1770–1831):</strong> Dialéctica tese-antítese-síntese. A história como desenvolvimento do Espírito Absoluto em direcção à liberdade.</li>
+  <li><strong>Nietzsche (1844–1900):</strong> "Deus está morto." Vontade de poder, Übermensch, eterno retorno. Crítica da moral cristã como ressentimento dos fracos.</li>
+</ul>
+<h3>Existencialismo (séc. XX)</h3>
+<p><strong>Sartre:</strong> "A existência precede a essência" — não há natureza humana prévia, somos o que fazemos. Condenados à liberdade e à responsabilidade radical. <strong>Camus:</strong> O absurdo da condição humana (a busca de sentido num universo indiferente) e a necessidade de criar sentido apesar disso — "é preciso imaginar Sísifo feliz".</p>`,
+        questions: ["O que é o imperativo categórico de Kant?", "Explica o existencialismo de Sartre", "O que significa o absurdo em Camus?"]
+      },
+      avancado: {
+        label: "Filosofia analítica e continental contemporânea",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Filosofia Analítica</h3>
+<ul>
+  <li><strong>Wittgenstein I (Tractatus):</strong> Figura mundo via proposições com estrutura lógica. "O que não se pode dizer, deve calar-se." A filosofia é elucidação, não teoria.</li>
+  <li><strong>Wittgenstein II (Investigações):</strong> Viragem pragmática. Significado = uso. Jogos de linguagem como formas de vida. Anti-essencialismo semântico.</li>
+  <li><strong>Filosofia da Mente:</strong> O <em>problema difícil da consciência</em> (Chalmers): por que há experiência subjectiva (qualia)? O explanatory gap entre neurociência e fenomenologia. Posições: funcionalismo, fisicalismo eliminativista, panpsiquismo, dualismo de propriedades.</li>
+  <li><strong>Filosofia da Ciência:</strong> Popper (falsificacionismo), Kuhn (paradigmas e revoluções científicas), Lakatos (programas de investigação progressivos/degenerativos), Feyerabend ("contra o método").</li>
+</ul>
+<h3>Continental Contemporânea</h3>
+<p><strong>Heidegger:</strong> Dasein (ser-no-mundo), temporalidade, a questão do ser esquecida pela metafísica ocidental desde Platão. <strong>Derrida:</strong> Desconstrução — toda a presença é diferida (différance), logocentrismo, aporias textuais. <strong>Foucault:</strong> Genealogia do poder-saber, arqueologia do discurso, biopoder e governamentalidade.</p>
+<h3>Metaética e Filosofia Política</h3>
+<p><strong>Rawls</strong> (véu da ignorância, equidade como justiça, princípio da diferença) vs. <strong>Nozick</strong> (direitos absolutos, Estado mínimo, entitlement theory). <strong>Singer</strong>: utilitarismo das preferências, Altruísmo Efectivo. <strong>MacIntyre</strong>: revival aristotélico contra o "projecto iluminista" da moralidade.</p>`,
+        questions: ["Explica o problema difícil da consciência", "O que é a desconstrução de Derrida?", "Rawls vs. Nozick na justiça social"]
+      }
+    }
+  },
+
+  "saude": {
+    name: "Saúde & Bem-estar", icon: "🌿", category: "Vida & Saúde",
+    levels: {
+      basico: {
+        label: "Hábitos saudáveis essenciais",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>Os 5 Pilares da Saúde</h3>
+<ul>
+  <li>😴 <strong>Sono:</strong> 7–9h para adultos. Consolida memória, regula hormonas, repara tecidos. Evitar ecrãs 1h antes de dormir.</li>
+  <li>🏃 <strong>Exercício:</strong> OMS recomenda 150 min/semana de actividade moderada ou 75 min de intensa. Benefícios: saúde cardiovascular, ossos mais fortes, redução do stress (endorfinas).</li>
+  <li>🥗 <strong>Alimentação:</strong> dieta variada — muita fruta, legumes, cereais integrais, proteína magra. Limitar açúcar refinado, sal e ultraprocessados.</li>
+  <li>💧 <strong>Hidratação:</strong> 1,5–2 litros de água por dia (mais em Angola e climas quentes). A desidratação afecta concentração e humor.</li>
+  <li>🧘 <strong>Saúde Mental:</strong> gerir stress, cultivar relações sociais, praticar gratidão. Estima de si e propósito são factores protectores.</li>
+</ul>
+<h3>Prevenção é Prioridade</h3>
+<p>Consulta um médico regularmente. Vacinas, exames de rotina e check-ups identificam problemas antes que se tornem graves. Sinais de alerta: dor persistente, falta de ar inexplicada, fadiga extrema ou alterações de peso sem causa aparente.</p>`,
+        questions: ["Quanto exercício devo fazer por semana?", "O que é uma dieta equilibrada?", "Como melhorar a qualidade do sono?"]
+      },
+      intermedio: {
+        label: "Fisiologia do exercício e microbioma",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Fisiologia do Exercício</h3>
+<p>O exercício aeróbico aumenta o <strong>VO2max</strong> (capacidade máxima de consumo de oxigénio) e a densidade mitocondrial. O treino de força estimula síntese proteica muscular via via <strong>mTOR</strong> e liberta IGF-1 e hormona do crescimento. O EPOC (Excess Post-exercise Oxygen Consumption) eleva o metabolismo até 48h após treino intenso.</p>
+<h3>Psiconeuroendocrinologia do Stress</h3>
+<p>O stress crónico activa o eixo HPA (hipotálamo-hipófise-adrenal), elevando cortisol, suprimindo a imunidade e aumentando risco cardiovascular. A meditação mindfulness reduz actividade da amígdala e aumenta espessura do córtex pré-frontal (Hölzel et al., 2011). O exercício regula o eixo HPA e aumenta BDNF (neurotrofina essencial para neuroplasticidade).</p>
+<h3>Microbioma Intestinal (Eixo Gut-Brain)</h3>
+<p>O intestino contém ~38 biliões de bactérias — mais do que células humanas. A diversidade do microbioma correlaciona com saúde mental, imunidade e peso. <strong>Probióticos</strong> (iogurte, kefir, kimchi) introduzem bactérias benéficas. <strong>Prebióticos</strong> (fibra alimentar, inulina, FOS) alimentam a flora existente. Disbiose associada a depressão, ansiedade e doenças autoimunes.</p>
+<h3>Cronobiologia e Sono</h3>
+<p>O ritmo circadiano é regulado pelo núcleo supraquiasmático (SCN) sensível à luz azul. Melatonina sinaliza o início do sono. Sono NREM profundo (ondas delta) para restauração física; sono REM para processamento emocional e consolidação de memória procedural. Privação de sono aumenta cortisol, grelina (fome) e reduz leptina (saciedade).</p>`,
+        questions: ["O que é o VO2max?", "Como o stress crónico afecta o corpo?", "O que é o microbioma intestinal?"]
+      },
+      avancado: {
+        label: "Biologia do envelhecimento e medicina de precisão",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Marcas do Envelhecimento (Hallmarks of Aging)</h3>
+<p>López-Otín et al. (Cell, 2013) identificou 9 marcas primárias: instabilidade genómica, encurtamento de telómeros, alterações epigenéticas, perda de proteostase (autofagia, chaperonas), desregulação da nutrição/sensing, disfunção mitocondrial, senescência celular, exaustão de células estaminais, e comunicação intercelular alterada (SASP: Senescence-Associated Secretory Phenotype).</p>
+<h3>Vias de Longevidade</h3>
+<ul>
+  <li><strong>mTORC1:</strong> sensor de nutrientes/aminoácidos. Inibição (rapamicina, restrição calórica) activa autofagia e aumenta longevidade em modelos animais.</li>
+  <li><strong>AMPK:</strong> sensor de energia (AMP/ATP). Activado por exercício, metformina, berberina. Antagoniza mTOR e activa SIRT1.</li>
+  <li><strong>Sirtuínas (SIRT1–7):</strong> deacetilases NAD⁺-dependentes. NAD⁺ declina com a idade. NMN e NR (precursores) são investigados como suplementos pró-longevidade.</li>
+  <li><strong>FOXO transcription factors:</strong> activados pela redução de IGF-1/insulina — mediadores da longevidade em centenários.</li>
+</ul>
+<h3>Medicina de Precisão e Epigenómica</h3>
+<p>Sequenciamento de genoma inteiro (WGS) e análise de SNPs permitem terapias personalizadas. A <strong>farmacogenómica</strong> estuda como variantes (CYP2D6, CYP2C19) afectam metabolismo de fármacos. Os <strong>relógios epigenéticos</strong> (Horvath Clock, DunedinPACE) medem a idade biológica via metilação do ADN — podem divergir décadas da idade cronológica. Terapias senolíticas (Dasatinib + Quercetina) eliminam células senescentes.</p>`,
+        questions: ["O que são as Hallmarks of Aging?", "Como funciona a autofagia?", "Explica os relógios epigenéticos"]
+      }
+    }
+  },
+
+  "financas": {
+    name: "Finanças", icon: "💰", category: "Negócios",
+    levels: {
+      basico: {
+        label: "Gerir o teu dinheiro",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>Princípios de Finanças Pessoais</h3>
+<ul>
+  <li>📊 <strong>Regra 50/30/20:</strong> 50% necessidades (renda, alimentação), 30% desejos (lazer), 20% poupança e investimento</li>
+  <li>🛡️ <strong>Fundo de Emergência:</strong> 3–6 meses de despesas em conta poupança de fácil acesso, antes de investir</li>
+  <li>💳 <strong>Gerir Dívidas:</strong> método avalanche (eliminar juros mais altos primeiro) ou bola de neve (dívidas menores primeiro para motivação)</li>
+  <li>📈 <strong>Investir cedo:</strong> o juro composto é o "oitavo milagre do mundo". €1.000 a 10%/ano = €17.449 em 30 anos</li>
+</ul>
+<h3>Conceitos Essenciais</h3>
+<ul>
+  <li><strong>Inflação:</strong> aumento geral dos preços. Dinheiro parado em casa perde poder de compra.</li>
+  <li><strong>Juro Composto:</strong> juros sobre juros — crescimento exponencial. Fórmula: <code>M = C × (1 + r)ⁿ</code></li>
+  <li><strong>Diversificação:</strong> não colocar todos os ovos no mesmo cesto</li>
+  <li><strong>Risco vs. Retorno:</strong> maior potencial de ganho implica maior risco de perda</li>
+</ul>`,
+        questions: ["O que é juro composto?", "Como criar um orçamento?", "Onde poupar o dinheiro com segurança?"]
+      },
+      intermedio: {
+        label: "Investimentos e mercados financeiros",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Classes de Activos</h3>
+<ul>
+  <li>📈 <strong>Acções (Equity):</strong> participação em empresas. Retorno histórico médio do S&P 500: ~10%/ano nominal, ~7% real.</li>
+  <li>🏛️ <strong>Obrigações (Bonds):</strong> empréstimo a governos ou empresas. Menor risco, menor retorno. Relação inversa com taxas de juro.</li>
+  <li>🏠 <strong>Imobiliário:</strong> renda passiva e valorização. REIT (Real Estate Investment Trust) permite exposição sem comprar imóvel.</li>
+  <li>🪙 <strong>Commodities:</strong> ouro, petróleo — hedge contra inflação e crises.</li>
+  <li>₿ <strong>Criptomoedas:</strong> alta volatilidade, risco/retorno elevado. Bitcoin como "ouro digital".</li>
+</ul>
+<h3>ETFs e Fundos de Índice</h3>
+<p>ETF (Exchange-Traded Fund): cesta de activos negociada em bolsa como uma acção. ETFs de índice (S&P 500, MSCI World) oferecem diversificação global a custos muito baixos (TER < 0,1%). Estudos SPIVA mostram que >90% dos gestores activos não superam o índice a 20 anos — base do investimento passivo (Bogle/Vanguard).</p>
+<h3>Análise Fundamentalista</h3>
+<p>Métricas-chave: <strong>P/E ratio</strong> (preço/lucro), <strong>ROE</strong> (retorno sobre capital), <strong>Dívida/EBITDA</strong>, <strong>Free Cash Flow</strong>. Método DCF (Discounted Cash Flow): valor intrínseco = soma dos fluxos de caixa futuros descontados à taxa WACC.</p>`,
+        questions: ["O que é um ETF?", "Como analisar o valor de uma empresa?", "O que é diversificação de portfólio?"]
+      },
+      avancado: {
+        label: "Teoria do portfólio e derivados",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Teoria Moderna do Portfólio (Markowitz, 1952)</h3>
+<p>A <strong>fronteira eficiente</strong> define portfólios com máximo retorno esperado para dado nível de risco (variância). A correlação entre activos é fundamental: adicionar activos negativamente correlacionados reduz o risco total sem sacrificar retorno. O <strong>CAPM</strong>: <code>E(Ri) = Rf + βi × (E(Rm) − Rf)</code> — o prémio de risco é linear com o beta do activo. A linha CML (Capital Market Line) e a SML (Security Market Line) definem portfólios eficientes com activo sem risco.</p>
+<h3>Derivados e Gestão de Risco</h3>
+<ul>
+  <li><strong>Opções:</strong> Black-Scholes-Merton para valorização — inputs: preço spot, strike, maturidade, taxa livre de risco, volatilidade implícita (IV). As gregas: Delta (sensibilidade ao preço), Gamma (convexidade), Theta (time decay), Vega (sensibilidade à volatilidade), Rho (taxa de juro).</li>
+  <li><strong>Futuros/Forwards:</strong> cobertura (hedging) de risco de preço/câmbio. Base risk, backwardation, contango.</li>
+  <li><strong>VaR e CVaR:</strong> métricas de risco de cauda. Limitações reveladas na crise de 2008 — fat tails (distribuição de Cauchy vs. gaussiana).</li>
+</ul>
+<h3>Finanças Comportamentais</h3>
+<p><strong>Prospect Theory</strong> (Kahneman & Tversky, Nobel 2002): perdas sentidas ~2× mais intensamente que ganhos equivalentes. Vieses: ancoragem, excesso de confiança, efeito de disposição, herding, framing. <strong>Mercados eficientes</strong> (Fama) vs. anomalias exploráveis (momentum, value premium, small-cap). <strong>DeFi:</strong> AMMs (Uniswap: <code>x × y = k</code>), yield farming, tokenomics.</p>`,
+        questions: ["O que é a fronteira eficiente de Markowitz?", "Como funciona a fórmula Black-Scholes?", "Explica DeFi e Automated Market Makers"]
+      }
+    }
+  },
+
+  "psicologia": {
+    name: "Psicologia", icon: "🧠", category: "Vida & Saúde",
+    levels: {
+      basico: {
+        label: "Introdução à mente humana",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>O que é Psicologia?</h3>
+<p>A psicologia estuda o comportamento humano e os processos mentais — pensamentos, emoções, memória, percepção e personalidade. É uma ciência com método rigoroso, não apenas "falar de problemas".</p>
+<h3>Conceitos Base</h3>
+<ul>
+  <li>🧩 <strong>Comportamento:</strong> tudo o que fazemos, observável externamente</li>
+  <li>💭 <strong>Cognição:</strong> pensamento, memória, raciocínio, linguagem, atenção</li>
+  <li>❤️ <strong>Emoção:</strong> respostas a estímulos. Ekman identificou 6 emoções básicas universais: alegria, tristeza, medo, raiva, nojo, surpresa</li>
+  <li>👤 <strong>Personalidade:</strong> traços estáveis de comportamento. Big Five: Abertura, Conscienciosidade, Extroversão, Amabilidade, Neuroticismo (OCEAN)</li>
+</ul>
+<h3>Os Pioneiros</h3>
+<p><strong>Freud:</strong> inconsciente, id/ego/superego, mecanismos de defesa. <strong>Piaget:</strong> estágios do desenvolvimento cognitivo infantil. <strong>Maslow:</strong> hierarquia das necessidades (fisiológicas → segurança → pertença → estima → auto-realização). <strong>Pavlov:</strong> condicionamento clássico — o cão que salivava ao som da campainha.</p>`,
+        questions: ["O que é a hierarquia de Maslow?", "Como funciona a memória?", "O que são mecanismos de defesa?"]
+      },
+      intermedio: {
+        label: "Psicologia cognitiva e social",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Memória e Cognição</h3>
+<p>Modelo de Atkinson-Shiffrin: memória sensorial (< 1 seg) → memória de curto prazo (7±2 itens, 20 seg) → memória de longo prazo (ilimitada). Memória declarativa: episódica (eventos pessoais) + semântica (factos gerais). Memória procedural (habilidades motoras). O efeito de posição serial: primacy (início) e recency (fim) são melhor lembrados.</p>
+<h3>Psicologia Social — Experimentos Marcantes</h3>
+<ul>
+  <li><strong>Asch (Conformidade):</strong> 75% dos participantes cederam à pressão do grupo e deram respostas claramente erradas sobre comprimento de linhas.</li>
+  <li><strong>Milgram (Obediência):</strong> 65% obedeceram a autoridade para administrar "choques" aparentemente letais a estranhos.</li>
+  <li><strong>Zimbardo (Stanford):</strong> estudantes tornaram-se "guardas" abusivos em 6 dias — poder situacional vs. disposição pessoal.</li>
+  <li><strong>Bystander Effect (Latané & Darley):</strong> quanto mais pessoas, menor a probabilidade de ajuda — difusão de responsabilidade.</li>
+</ul>
+<h3>Terapias com Evidência Científica</h3>
+<p><strong>TCC (Cognitivo-Comportamental):</strong> reestrutura pensamentos distorcidos e modifica comportamentos. Evidência robusta para depressão, ansiedade, fobias. <strong>ACT (Aceitação e Comprometimento):</strong> flexibilidade psicológica. <strong>DBT:</strong> regulação emocional (Borderline). <strong>EMDR:</strong> trauma e PTSD.</p>`,
+        questions: ["O que é TCC?", "O que mostrou o experimento de Milgram?", "Como funciona a dissonância cognitiva?"]
+      },
+      avancado: {
+        label: "Neuropsicologia e psicopatologia",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Neuropsicologia</h3>
+<p>O <strong>córtex pré-frontal (CPF)</strong> regula tomada de decisão, inibição de impulsos e memória de trabalho. Lesão ilustrada pelo caso Phineas Gage (1848): barra de ferro destruiu CPF → alteração radical de personalidade. A <strong>amígdala</strong> processa emoções, especialmente medo, via duas vias (LeDoux): tálamo→amígdala (rápida, inconsciente) e tálamo→córtex→amígdala (lenta, consciente). O <strong>hipocampo</strong> consolida memória de curto→longo prazo durante sono (caso H.M.: hipocampo removido → amnésia anterógrada severa).</p>
+<h3>Psicopatologia Baseada em Evidências</h3>
+<ul>
+  <li><strong>TEA (Autismo):</strong> défice nos neurónios-espelho e teoria da mente (Baron-Cohen). Hipótese do "cérebro masculino extremo". Heterogeneidade genética: >100 genes de risco identificados.</li>
+  <li><strong>Esquizofrenia:</strong> hipótese dopaminérgica (excesso D2 vias mesolímbicas + défice mesocortical). Sintomas positivos (alucinações, delírios) vs. negativos (avolição, alogia). Modelo diátese-stress: vulnerabilidade genética × gatilhos ambientais (cannabis, trauma urbano).</li>
+  <li><strong>Borderline (BPD):</strong> modelo biosocial de Linehan — invalidação emocional na infância × temperamento vulnerável → desregulação emocional.</li>
+</ul>
+<h3>Psicologia Positiva e Bem-Estar Científico</h3>
+<p>Seligman (2011) propõe o modelo <strong>PERMA</strong>: Positive Emotions, Engagement, Relationships, Meaning, Accomplishment. A <strong>flow theory</strong> (Csikszentmihalyi): estado de absorção óptima quando desafio ≈ competência. O Harvard Study of Adult Development (85 anos, n=724) identificou a qualidade das relações próximas como o maior preditor de longevidade e bem-estar — mais do que dinheiro, fama ou QI.</p>`,
+        questions: ["Como funciona a amígdala no medo?", "O que é o modelo diátese-stress?", "Explica o modelo PERMA de Seligman"]
+      }
+    }
+  },
+
+  "empreendedorismo": {
+    name: "Empreendedorismo", icon: "🚀", category: "Negócios",
+    levels: {
+      basico: {
+        label: "Criar o teu primeiro negócio",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>O que é Empreendedorismo?</h3>
+<p>É o processo de criar valor identificando oportunidades e assumindo riscos calculados. Um empreendedor transforma ideias em negócios sustentáveis que resolvem problemas reais de pessoas reais.</p>
+<h3>Os 5 Primeiros Passos</h3>
+<ul>
+  <li>💡 <strong>Ideia:</strong> identifica um problema que as pessoas têm e que não está bem resolvido no mercado</li>
+  <li>🔍 <strong>Validação:</strong> testa se as pessoas realmente querem pagar pela solução, antes de investir muito</li>
+  <li>👥 <strong>Persona:</strong> define quem é o teu cliente ideal — idade, comportamento, dores, desejos</li>
+  <li>💰 <strong>Modelo de Negócio:</strong> como o negócio vai ganhar dinheiro? Venda directa, assinatura, publicidade, comissão?</li>
+  <li>📋 <strong>Plano Simples:</strong> objectivos, recursos necessários, estratégia de entrada no mercado</li>
+</ul>
+<h3>Tipos de Negócio</h3>
+<p><strong>Startup:</strong> alto crescimento, escalável, tecnologia. <strong>PME:</strong> crescimento estável, local ou regional. <strong>Freelancing:</strong> venda de serviços especializados. <strong>E-commerce:</strong> venda online de produtos. <strong>Franquia:</strong> modelo de negócio comprovado sob licença.</p>`,
+        questions: ["Como validar uma ideia de negócio?", "O que é um plano de negócios?", "Como encontrar o primeiro cliente?"]
+      },
+      intermedio: {
+        label: "Lean Startup e estratégia empresarial",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Metodologia Lean Startup (Eric Ries)</h3>
+<p>Ciclo <strong>Build → Measure → Learn</strong>. O <strong>MVP (Minimum Viable Product)</strong> testa hipóteses com o mínimo de recursos — aprende rápido, falha barato. Pivot vs. persevere: quando mudar a estratégia vs. manter o curso, baseado em métricas reais (not vanity metrics).</p>
+<h3>Business Model Canvas (Osterwalder)</h3>
+<p>9 blocos interligados: <strong>Proposta de Valor</strong> (núcleo) → Segmentos de Clientes → Canais → Relações com Clientes → Fontes de Receita → Recursos-Chave → Actividades-Chave → Parceiros-Chave → Estrutura de Custos.</p>
+<h3>Estratégia Competitiva (Porter)</h3>
+<ul>
+  <li><strong>5 Forças:</strong> rivalidade, novos entrantes, produtos substitutos, poder dos compradores, poder dos fornecedores</li>
+  <li><strong>3 Estratégias Genéricas:</strong> liderança em custo (Walmart), diferenciação (Apple), foco/nicho</li>
+  <li><strong>Vantagem Competitiva Sustentável (Moat):</strong> economias de escala, efeitos de rede, custos de mudança, ativos intangíveis</li>
+</ul>
+<h3>Fontes de Financiamento</h3>
+<p><strong>Bootstrapping:</strong> autofinanciamento — mais controlo, crescimento mais lento. <strong>FFF:</strong> Friends, Family, Fools — capital inicial informal. <strong>Angel Investors:</strong> investidores individuais em fase seed. <strong>VC (Venture Capital):</strong> fundos para startups com alto potencial de escala (Series A/B/C). <strong>Crowdfunding:</strong> Kickstarter, Indiegogo.</p>`,
+        questions: ["O que é um MVP?", "Como funciona o Lean Startup?", "Como preparar um pitch para investidores?"]
+      },
+      avancado: {
+        label: "Escalonamento e liderança empresarial",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Estratégias de Escalonamento</h3>
+<p><strong>Efeitos de rede</strong> (Lei de Metcalfe): o valor da plataforma cresce quadraticamente com o número de utilizadores — Uber, Airbnb, LinkedIn. <strong>Viral coefficient k</strong>: se k > 1, crescimento exponencial orgânico; k = (utilizadores que convidam) × (taxa de conversão do convite). <strong>Economias de escala</strong> vs. des-economias: custo médio decresce até ponto de inflexão onde coordenação torna-se dispendiosa.</p>
+<h3>Unit Economics</h3>
+<ul>
+  <li><strong>CAC (Customer Acquisition Cost):</strong> (marketing + vendas) ÷ novos clientes</li>
+  <li><strong>LTV (Lifetime Value):</strong> ARPU × margem bruta × (1 / churn rate)</li>
+  <li><strong>LTV/CAC > 3:</strong> regra de ouro de sustentabilidade</li>
+  <li><strong>Payback period < 12 meses:</strong> indicador de eficiência capital</li>
+  <li><strong>NRR (Net Revenue Retention) > 100%:</strong> expansão na base existente — chave para crescimento composto</li>
+</ul>
+<h3>Liderança e Cultura</h3>
+<p><strong>Jim Collins (Good to Great):</strong> Nível 5 de liderança (humildade + vontade feroz), Hedgehog Concept (intersecção paixão/aptidão/motor económico), cultura de disciplina. <strong>OKRs</strong> (Doerr, Measure What Matters): Google, Intel — objectivos ambiciosos com key results mensuráveis. <strong>Culture-first:</strong> Netflix (Freedom & Responsibility), Zappos (core values), Patagonia (missão como âncora identitária).</p>`,
+        questions: ["Como calcular LTV/CAC?", "O que são efeitos de rede?", "Explica o Hedgehog Concept de Collins"]
+      }
+    }
+  },
+
+  "marketing": {
+    name: "Marketing", icon: "📣", category: "Negócios",
+    levels: {
+      basico: {
+        label: "Fundamentos do marketing",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>O que é Marketing?</h3>
+<p>Marketing é criar, comunicar e entregar valor ao cliente de forma a beneficiar o negócio. Não é apenas publicidade — é entender o cliente melhor do que ele se entende a si próprio e criar soluções que ele deseja.</p>
+<h3>Os 4 Ps do Marketing Mix</h3>
+<ul>
+  <li>🏷️ <strong>Produto:</strong> o que vendes — funcionalidades, qualidade, design, embalagem, marca</li>
+  <li>💲 <strong>Preço:</strong> estratégia de preço — premium, penetração (baixo para ganhar quota), skimming (alto inicial), freemium</li>
+  <li>📍 <strong>Praça (Distribuição):</strong> como o produto chega ao cliente — loja física, online, distribuidores, directo</li>
+  <li>📢 <strong>Promoção:</strong> como comunicas — publicidade, redes sociais, relações públicas, marketing de conteúdo</li>
+</ul>
+<h3>Canais de Marketing Digital</h3>
+<ul>
+  <li>📱 <strong>Redes Sociais:</strong> Instagram e TikTok (jovens/lifestyle), LinkedIn (B2B), Facebook (amplo alcance)</li>
+  <li>📧 <strong>Email Marketing:</strong> ROI médio de €42 por cada €1 investido — o canal digital mais eficiente</li>
+  <li>🔍 <strong>SEO:</strong> posicionamento orgânico no Google através de conteúdo relevante e links</li>
+  <li>🎯 <strong>Publicidade Paga:</strong> Google Ads e Meta Ads para alcance rápido e segmentado</li>
+</ul>`,
+        questions: ["Como criar conteúdo para redes sociais?", "O que é SEO?", "Como fazer email marketing?"]
+      },
+      intermedio: {
+        label: "Funis, branding e performance",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Funil de Marketing AIDA</h3>
+<p><strong>Awareness</strong> (consciência) → <strong>Interest</strong> (interesse) → <strong>Desire</strong> (desejo) → <strong>Action</strong> (acção). Cada etapa exige mensagens e canais diferentes: topo do funil (conteúdo educativo, redes sociais), meio do funil (comparações, estudos de caso), fundo do funil (demonstrações, trial, oferta). Taxa de conversão = acções ÷ visitantes.</p>
+<h3>Content Marketing e SEO</h3>
+<p>Criação de conteúdo valioso para atrair e reter clientes sem interrupção. Estratégia <strong>Pillar + Cluster</strong>: artigo pillar longo sobre tema central + artigos cluster sobre subtópicos interligados (melhora autoridade topical). Métricas SEO: DA (Domain Authority), backlinks, Core Web Vitals, featured snippets.</p>
+<h3>Performance Marketing</h3>
+<ul>
+  <li><strong>Google Ads:</strong> Search (intenção de compra — alto intento) + Display + YouTube + Shopping</li>
+  <li><strong>Meta Ads:</strong> targeting por interesses, comportamentos, custom audiences, lookalike audiences (1–3%)</li>
+  <li><strong>Métricas:</strong> CPC (custo/clique), CPM (custo/1000 impressões), CTR (taxa clique), ROAS (retorno/investimento), CAC</li>
+</ul>
+<h3>Branding e Posicionamento</h3>
+<p>O brand é a promessa que a empresa faz e cumpre consistentemente. <strong>Al Ries & Trout:</strong> a mente do consumidor já tem categorias — o objectivo é ownar uma (Volvo = segurança, Red Bull = energia, Apple = criatividade). Reposicionamento requer anos de consistência.</p>`,
+        questions: ["O que é o funil de vendas AIDA?", "Como fazer publicidade no Meta Ads?", "Como posicionar uma marca?"]
+      },
+      avancado: {
+        label: "Growth Marketing e atribuição avançada",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Growth Hacking e Loops de Crescimento</h3>
+<p>Sean Ellis (2010): o growth hacker usa dados e criatividade para encontrar alavancas de crescimento. <strong>Growth loops</strong> (vs. funis lineares): viral loop (utilizadores convidam utilizadores), paid loop (receita financia aquisição), content loop (SEO gera tráfego que gera mais conteúdo). O viral coefficient <em>k</em>: k > 1 → crescimento exponencial. k = infecções × taxa conversão.</p>
+<h3>Product-Led Growth (PLG)</h3>
+<p>O produto em si é o motor de aquisição, retenção e expansão. Slack, Dropbox, Notion, Figma. <strong>Freemium</strong> como aquisição; conversão para premium via value-gap triggers. <strong>Onboarding</strong>: atingir o "aha moment" (activation) o mais cedo possível via progressive onboarding e empty states. Time-to-value (TTV) é a métrica crítica.</p>
+<h3>Atribuição Multi-Touch e MMM</h3>
+<p>Modelos de atribuição: first-touch, last-touch, linear, time-decay, position-based (U-shaped), e <strong>data-driven</strong> (Shapley values via teoria dos jogos cooperativos). Em era pós-cookies (Privacy Sandbox, iOS 14+), o <strong>Marketing Mix Modeling (MMM)</strong> usa regressão econométrica para medir impacto de cada canal. <strong>CDPs</strong> (Customer Data Platforms) unificam first-party data.</p>
+<h3>Psicologia de Influência e Ética</h3>
+<p><strong>Cialdini:</strong> 6 princípios — reciprocidade, coerência/comprometimento, prova social, autoridade, simpatia, escassez. <strong>Nudge Theory</strong> (Thaler & Sunstein, Nobel 2017): arquitectura de escolha que favorece comportamentos desejados sem coerção. Dark patterns vs. ethical design — distinção crescentemente relevante com regulamentação (GDPR, DSA).</p>`,
+        questions: ["O que é Product-Led Growth?", "Como funciona o Growth Hacking?", "Explica atribuição multi-touch com Shapley values"]
+      }
+    }
+  },
+
+  "escrita": {
+    name: "Escrita Criativa", icon: "✍️", category: "Criatividade", badge: "Novo",
+    levels: {
+      basico: {
+        label: "Os fundamentos da narrativa",
+        content: `<span class="level-tag level-basico">🌱 Básico</span>
+<h3>O que é Escrita Criativa?</h3>
+<p>É a arte de contar histórias com imaginação — ficção, poesia, crónicas, contos. Qualquer pessoa pode escrever; a prática é o que transforma em escritor. Lembra: o primeiro rascunho é para o escritor, a reescrita é para o leitor.</p>
+<h3>Os 5 Elementos de uma Boa História</h3>
+<ul>
+  <li>👤 <strong>Personagem:</strong> quem vive a história? Tem desejos, medos, contradições internas?</li>
+  <li>🌍 <strong>Cenário:</strong> onde e quando? O ambiente molda as personagens.</li>
+  <li>⚡ <strong>Conflito:</strong> o coração da narrativa. Sem obstáculo não há drama. Conflito: interno, interpessoal, social, cósmico.</li>
+  <li>📈 <strong>Arco Narrativo:</strong> situação inicial → complicação → clímax → resolução (e transformação)</li>
+  <li>🎭 <strong>Tema:</strong> sobre o que é <em>realmente</em> a história? Amor? Identidade? Perda? Poder?</li>
+</ul>
+<h3>Dicas Práticas Para Começar</h3>
+<ul>
+  <li>✏️ Escreve 15 minutos por dia sem editar — deixa fluir</li>
+  <li>📚 Lê muito: escritores são sempre grandes leitores</li>
+  <li>🌱 Começa com o que conheces — experiência pessoal tem autenticidade</li>
+  <li>🔄 O primeiro rascunho não precisa de ser bom — existe para ser melhorado</li>
+</ul>`,
+        questions: ["Como criar personagens interessantes?", "O que é 'show don't tell'?", "Como superar o bloqueio criativo?"]
+      },
+      intermedio: {
+        label: "Técnicas narrativas e estrutura",
+        content: `<span class="level-tag level-intermedio">🔬 Intermédio</span>
+<h3>Estruturas Narrativas</h3>
+<ul>
+  <li><strong>Viagem do Herói (Campbell):</strong> 12 etapas do monomito — presente em Star Wars, Matrix, O Senhor dos Anéis, Simba em O Rei Leão</li>
+  <li><strong>3 Actos:</strong> Setup (25%) → Confrontação (50%) → Resolução (25%)</li>
+  <li><strong>Freytag's Pyramid:</strong> exposition → rising action → climax → falling action → dénouement</li>
+  <li><strong>In medias res:</strong> começar a narrativa no meio da acção, recuar depois</li>
+</ul>
+<h3>Ponto de Vista (POV)</h3>
+<ul>
+  <li><strong>1.ª pessoa:</strong> "eu" — intimidade e subjectividade. Narrador limitado.</li>
+  <li><strong>3.ª pessoa limitada:</strong> acesso à mente de um personagem. Liberdade narratorial.</li>
+  <li><strong>3.ª omnisciente:</strong> narrador sabe tudo. Risco: perda de tensão.</li>
+  <li><strong>2.ª pessoa:</strong> "tu" — raro, cria imersão directa e estranheza produtiva.</li>
+</ul>
+<h3>Show, Don't Tell</h3>
+<p>Em vez de "ela estava triste", escreve: "virou o rosto para a janela e ficou a olhar para a chuva sem dizer nada". Em vez de "ele era nervoso": "as mãos húmidas, o pé a bater no chão, os olhos que fugiam para a porta". O leitor deve inferir a emoção, não recebê-la rotulada.</p>`,
+        questions: ["Como usar o 'Show Don't Tell'?", "Explica a Viagem do Herói", "Como criar tensão numa cena?"]
+      },
+      avancado: {
+        label: "Craft literário e teoria narrativa",
+        content: `<span class="level-tag level-avancado">🚀 Avançado</span>
+<h3>Narratologia (Genette)</h3>
+<p>Distingue <em>histoire</em> (o que acontece — a fábula), <em>récit</em> (como é contado — o sujet) e <em>narration</em> (o acto de narrar). A <strong>analepse</strong> (flashback) e <strong>prolepse</strong> (flashforward) manipulam a ordem temporal. <strong>Focalização</strong>: zero (omnisciente), interna (perspectiva de personagem), externa (narrador sabe menos que personagem — suspense).</p>
+<h3>Técnicas de Estilo Avançadas</h3>
+<ul>
+  <li><strong>Ritmo prosístico:</strong> alternância entre frases longas (expansão mental, meditação) e curtas. Impacto. A última frase de uma cena define o tom da próxima.</li>
+  <li><strong>Ostranenie / Desfamiliarização (Shklovsky, 1917):</strong> tornar o familiar estranho para revitalizar a percepção — técnica central do Formalismo Russo.</li>
+  <li><strong>Free Indirect Discourse:</strong> fusão da voz narratorial com a consciência do personagem sem marcadores explícitos ("Amanhã seria diferente. Tinha a certeza disso.") — Joyce, Woolf, Flaubert.</li>
+  <li><strong>Iceberg Theory (Hemingway):</strong> "A dignidade do movimento de um iceberg deve-se ao facto de oito novenos estarem debaixo de água." O escritor deve saber o que deixa por dizer.</li>
+</ul>
+<h3>Reescrita Como Craft</h3>
+<p>Nabokov escrevia em fichas de índice, reorganizáveis. Carver tinha um editor (Lish) que cortava 50–70% dos seus textos. Técnicas: ler em voz alta para detectar ritmo quebrado; imprimir e marcar; a regra de "matar os teus filhos" (kill your darlings — excluir passagens de que gostas muito mas que não servem a narrativa); cortar 10% em cada ronda de edição.</p>`,
+        questions: ["O que é free indirect discourse?", "Explica a teoria do iceberg de Hemingway", "Como estruturar um romance longo?"]
+      }
+    }
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  ORGANIZAÇÃO POR CATEGORIA
+// ═══════════════════════════════════════════════════════════════
+
+const CATEGORIES = {};
+Object.entries(TOPICS).forEach(([key, t]) => {
+  if (!CATEGORIES[t.category]) CATEGORIES[t.category] = [];
+  CATEGORIES[t.category].push(key);
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+let currentKey = null;
+let conversationHistory = [];
+
+function getTime() {
+  return new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+}
+function scrollDown() { const a = document.getElementById('chat-area'); a.scrollTop = a.scrollHeight; }
+function hideWelcome() { const w = document.getElementById('welcome'); if (w) w.remove(); }
+function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════════════════════════════════════════════════════
+//  RENDER SIDEBAR
+// ═══════════════════════════════════════════════════════════════
+function renderSidebar() {
+  document.getElementById('topics-list').innerHTML = Object.entries(CATEGORIES).map(([cat, keys]) => `
+    <div class="topic-group">
+      <div class="section-label">${cat}</div>
+      ${keys.map(k => {
+        const t = TOPICS[k];
+        return `<button class="topic-btn" data-key="${k}" onclick="selectTopic('${k}')">
+          <span class="topic-icon">${t.icon}</span> ${t.name}
+          ${t.badge ? `<span class="topic-badge">${t.badge}</span>` : ''}
+        </button>`;
+      }).join('')}
+    </div>`).join('');
+}
+
+function renderWelcomePills() {
+  const el = document.getElementById('welcome-pills');
+  if (!el) return;
+  el.innerHTML = Object.entries(TOPICS).slice(0, 6).map(([k, t]) =>
+    `<div class="suggestion-pill" onclick="selectTopic('${k}')">${t.icon} ${t.name}</div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SELECCIONAR TÓPICO
+// ═══════════════════════════════════════════════════════════════
+function selectTopic(key) {
+  const t = TOPICS[key];
+  if (!t) return;
+  currentKey = key;
+  conversationHistory = [];
+  document.querySelectorAll('.topic-btn').forEach(b => b.classList.toggle('active', b.dataset.key === key));
+  document.getElementById('title-icon').textContent = t.icon;
+  document.getElementById('title-text').textContent = t.name;
+  hideWelcome();
+  const area = document.getElementById('chat-area');
+  area.innerHTML = '';
+  showLevelSelector(key);
+}
+
+function showLevelSelector(key) {
+  const t = TOPICS[key];
+  appendAiMessage(`
+    <p>Escolheste <strong>${t.name}</strong> ${t.icon}</p>
+    <p>Em que nível queres começar?</p>
+    <div class="level-selector">
+      <button class="level-btn basico" onclick="showLevel('${key}','basico')">🌱 Básico — ${t.levels.basico.label}</button>
+      <button class="level-btn intermedio" onclick="showLevel('${key}','intermedio')">🔬 Intermédio — ${t.levels.intermedio.label}</button>
+      <button class="level-btn avancado" onclick="showLevel('${key}','avancado')">🚀 Avançado — ${t.levels.avancado.label}</button>
+    </div>`);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MOSTRAR NÍVEL
+// ═══════════════════════════════════════════════════════════════
+function showLevel(key, level) {
+  const t = TOPICS[key];
+  const data = t.levels[level];
+  appendUserMessage(data.label);
+  setTimeout(() => {
+    appendAiMessage(data.content);
+    setTimeout(() => showFollowUp(key, level, data.questions), 200);
+  }, 350);
+}
+
+function showFollowUp(key, level, questions) {
+  const levels = ['basico','intermedio','avancado'];
+  const nextLevel = levels[levels.indexOf(level) + 1];
+  const qPills = questions.map(q =>
+    `<div class="suggestion-pill" onclick="handleQ('${key}','${level}','${escAttr(q)}')">${q}</div>`
+  ).join('');
+  const nextPill = nextLevel
+    ? `<div class="suggestion-pill" style="border-color:rgba(255,80,120,0.4);color:#ff8080" onclick="showLevel('${key}','${nextLevel}')">⬆️ Passar para nível ${nextLevel === 'intermedio' ? 'Intermédio' : 'Avançado'}</div>`
+    : `<div class="suggestion-pill" style="border-color:rgba(0,212,170,0.4);color:#00d4aa;cursor:default">✅ Nível máximo atingido!</div>`;
+  appendAiMessage(`
+    <p>Perguntas sugeridas ou explora o próximo nível:</p>
+    <div class="suggestions">${qPills}${nextPill}</div>`);
+}
+
+function handleQ(key, level, q) {
+  appendUserMessage(q);
+  const tId = addTyping();
+  setTimeout(() => {
+    removeTyping(tId);
+    const t = TOPICS[key];
+    // Encontrar o nível mais relevante para a resposta
+    const data = t.levels[level];
+    appendAiMessage(`<p>Sobre "<em>${escHtml(q)}</em>":</p>${data.content}`);
+  }, 600);
+}
+
+function escAttr(s) { return s.replace(/'/g,"\\'"); }
+
+// ═══════════════════════════════════════════════════════════════
+//  MENSAGENS
+// ═══════════════════════════════════════════════════════════════
+function appendUserMessage(text) {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `
+    <div class="avatar user-av">👤</div>
+    <div>
+      <div class="bubble"><p>${escHtml(text)}</p></div>
+      <div class="msg-meta">${getTime()}</div>
+    </div>`;
+  area.appendChild(div);
+  scrollDown();
+}
+
+function appendAiMessage(html) {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `
+    <div class="avatar ai-av">N</div>
+    <div>
+      <div class="bubble">${html}</div>
+      <div class="msg-meta">NexusAI · ${getTime()}</div>
+    </div>`;
+  area.appendChild(div);
+  scrollDown();
+}
+
+function addTyping() {
+  const area = document.getElementById('chat-area');
+  const id = 'tp-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'msg ai'; div.id = id;
+  div.innerHTML = `<div class="avatar ai-av">N</div><div><div class="bubble">
+    <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+  </div></div>`;
+  area.appendChild(div); scrollDown(); return id;
+}
+function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
+// ═══════════════════════════════════════════════════════════════
+//  INPUT LIVRE (usa API Claude, contexto enriquecido com dados locais)
+// ═══════════════════════════════════════════════════════════════
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+  hideWelcome();
+  input.value = ''; input.style.height = 'auto';
+  appendUserMessage(text);
+  conversationHistory.push({ role: 'user', content: text });
+
+  const tId = addTyping();
+  try {
+    const topicContext = currentKey ? TOPICS[currentKey] : null;
+    const systemPrompt = topicContext
+      ? `És o NexusAI, assistente inteligente. Responde sempre em português europeu de forma clara e estruturada.
+O utilizador estuda "${topicContext.name}". Conteúdo de referência deste tópico (básico ao avançado):
+${Object.entries(topicContext.levels).map(([lvl, d]) => `[${lvl.toUpperCase()}] ${d.content.replace(/<[^>]+>/g,'').replace(/\s+/g,' ')}`).join('\n\n')}
+Usa este conteúdo como base e aprofunda com o teu conhecimento. Responde de forma didáctica.`
+      : `És o NexusAI, assistente inteligente e prestável. Responde sempre em português europeu de forma clara, estruturada e interessante. Usa **negrito** e listas quando útil.`;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: conversationHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(b => b.type==='text'?b.text:'').join('') || 'Sem resposta disponível.';
+    conversationHistory.push({ role: 'assistant', content: reply });
+    removeTyping(tId);
+    appendAiMessage(formatReply(reply));
+  } catch(e) {
+    removeTyping(tId);
+    appendAiMessage('<p>Erro ao contactar a IA. Explora os tópicos com os botões de nível — todo o conteúdo está disponível localmente!</p>');
+  }
+}
+
+function formatReply(text) {
+  return '<p>' + text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>') + '</p>';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CONTROLOS
+// ═══════════════════════════════════════════════════════════════
+function handleKey(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,140)+'px'; }
+
+function clearChat() {
+  conversationHistory = [];
+  document.getElementById('chat-area').innerHTML = '';
+  if (currentKey) showLevelSelector(currentKey);
+}
+
+function newChat() {
+  conversationHistory = []; currentKey = null;
+  document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('title-icon').textContent = '✨';
+  document.getElementById('title-text').textContent = 'Assistente NexusAI';
+  document.getElementById('chat-area').innerHTML = `
+    <div id="welcome">
+      <div class="welcome-icon">✨</div>
+      <div class="welcome-title">Como posso ajudar?</div>
+      <div class="welcome-sub">Seleciona um tópico e escolhe o teu nível — do básico ao avançado. Todo o conteúdo está disponível localmente.</div>
+      <div class="welcome-suggestions" id="welcome-pills"></div>
+    </div>`;
+  renderWelcomePills();
+}
+
+function filterTopics(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('.topic-btn').forEach(b => {
+    const t = TOPICS[b.dataset.key];
+    b.style.display = (t && t.name.toLowerCase().includes(q)) ? 'flex' : 'none';
+  });
+}
+
+// ═══ INIT ═══
+renderSidebar();
+renderWelcomePills();
+</script>
+</body>
+</html>

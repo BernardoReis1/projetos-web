@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Clube de Estudos — Plataforma</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08090d;
+  --bg2:#0e1018;
+  --surface:#13161f;
+  --surface2:#191d28;
+  --border:rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.1);
+  --gold:#d4a843;
+  --gold2:#f0c96a;
+  --gold-dim:rgba(212,168,67,0.12);
+  --gold-glow:rgba(212,168,67,0.25);
+  --blue:#4a7cf7;
+  --teal:#2ec4a9;
+  --rose:#e05a7a;
+  --text:#edeae2;
+  --text2:#9e9b94;
+  --text3:#5a5852;
+  --nav-h:64px;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Instrument Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* Custom cursor */
+#cursor{
+  position:fixed;width:10px;height:10px;
+  background:var(--gold);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform 0.1s,opacity 0.3s,width 0.25s,height 0.25s,background 0.25s;
+  mix-blend-mode:screen;
+}
+#cursor-ring{
+  position:fixed;width:32px;height:32px;
+  border:1px solid rgba(212,168,67,0.5);
+  border-radius:50%;pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform 0.18s ease-out,width 0.25s,height 0.25s,opacity 0.3s;
+}
+body:hover #cursor{opacity:1}
+body .hover-cursor #cursor{width:40px;height:40px;background:transparent;border:1px solid var(--gold)}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 3rem;z-index:100;
+  background:rgba(8,9,13,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:all 0.3s;
+}
+.nav-brand{
+  font-family:'Fraunces',serif;
+  font-size:1.2rem;font-weight:700;
+  color:var(--text);
+  display:flex;align-items:center;gap:0.6rem;
+  text-decoration:none;
+}
+.nav-brand span{color:var(--gold)}
+.nav-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+.nav-links{display:flex;align-items:center;gap:0.3rem}
+.nav-links a{
+  font-size:0.8rem;font-weight:500;
+  color:var(--text2);text-decoration:none;
+  padding:0.45rem 0.85rem;border-radius:8px;
+  transition:color 0.2s,background 0.2s;
+  letter-spacing:0.04em;
+}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,0.06)}
+.nav-links a.active{color:var(--gold)}
+.nav-cta{
+  background:var(--gold);color:#08090d!important;
+  font-weight:600!important;padding:0.45rem 1.1rem!important;
+  border-radius:8px!important;
+  transition:box-shadow 0.2s,transform 0.15s!important;
+}
+.nav-cta:hover{box-shadow:0 0 20px var(--gold-glow);transform:translateY(-1px)!important}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px}
+.hamburger span{width:22px;height:2px;background:var(--text2);border-radius:2px;transition:all 0.3s}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:calc(var(--nav-h) + 3rem) 3rem 4rem;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 60% 40%, rgba(212,168,67,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 70% at 10% 80%, rgba(74,124,247,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 90% 10%, rgba(46,196,169,0.04) 0%, transparent 50%);
+  pointer-events:none;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+}
+.hero-grid::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, var(--bg) 100%);
+}
+.hero-content{
+  position:relative;z-index:1;
+  max-width:680px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:var(--gold-dim);border:1px solid rgba(212,168,67,0.2);
+  border-radius:100px;padding:0.35rem 0.9rem;
+  font-size:0.72rem;font-weight:500;color:var(--gold2);
+  letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:1.5rem;
+  animation:fadeUp 0.8s both;
+}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%}
+
+h1.hero-title{
+  font-family:'Fraunces',serif;
+  font-size:clamp(2.8rem,6vw,5rem);
+  font-weight:700;line-height:1.05;
+  letter-spacing:-0.02em;
+  margin-bottom:1.2rem;
+  animation:fadeUp 0.8s 0.1s both;
+}
+h1.hero-title em{
+  font-style:italic;color:var(--gold);
+  font-weight:300;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--text2);
+  line-height:1.7;max-width:500px;
+  margin-bottom:2.2rem;
+  animation:fadeUp 0.8s 0.2s both;
+}
+.hero-actions{
+  display:flex;gap:0.9rem;flex-wrap:wrap;
+  animation:fadeUp 0.8s 0.3s both;
+}
+.btn-primary{
+  background:var(--gold);color:#08090d;
+  font-family:'Instrument Sans',sans-serif;
+  font-size:0.85rem;font-weight:600;
+  padding:0.8rem 1.8rem;border-radius:10px;
+  border:none;cursor:pointer;
+  transition:box-shadow 0.25s,transform 0.15s;
+  letter-spacing:0.04em;
+  display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-primary:hover{box-shadow:0 0 30px var(--gold-glow);transform:translateY(-2px)}
+.btn-ghost{
+  background:transparent;color:var(--text);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:0.85rem;font-weight:500;
+  padding:0.8rem 1.6rem;border-radius:10px;
+  border:1px solid var(--border2);cursor:pointer;
+  transition:border-color 0.25s,background 0.25s;
+  letter-spacing:0.04em;
+  display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.04)}
+
+.hero-stats{
+  display:flex;gap:2.5rem;margin-top:3.5rem;
+  animation:fadeUp 0.8s 0.4s both;
+}
+.stat{border-left:2px solid var(--gold-dim);padding-left:1rem}
+.stat-num{
+  font-family:'Fraunces',serif;
+  font-size:1.8rem;font-weight:700;color:var(--gold2);
+  line-height:1;
+}
+.stat-label{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem}
+
+/* Floating cards hero */
+.hero-visual{
+  position:absolute;right:-60px;top:50%;transform:translateY(-50%);
+  width:420px;
+  animation:fadeLeft 1s 0.5s both;
+}
+@media(max-width:1100px){.hero-visual{display:none}}
+.float-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;padding:1.2rem 1.4rem;
+  position:absolute;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.fc1{top:0;left:60px;width:260px;animation:floatY 4s ease-in-out infinite}
+.fc2{top:140px;left:0;width:220px;animation:floatY 4s 1s ease-in-out infinite}
+.fc3{top:280px;left:80px;width:240px;animation:floatY 4s 2s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.fc-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:0.4rem}
+.fc-title{font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:0.6rem}
+.fc-bar{height:5px;border-radius:3px;background:rgba(255,255,255,0.08);margin-bottom:0.3rem}
+.fc-bar-fill{height:100%;border-radius:3px}
+.fc-prog{font-size:0.7rem;color:var(--text2);display:flex;justify-content:space-between}
+
+/* SECTIONS */
+section{padding:5rem 3rem}
+.section-label{
+  font-size:0.68rem;text-transform:uppercase;letter-spacing:0.18em;
+  color:var(--gold);font-weight:500;
+  display:flex;align-items:center;gap:0.6rem;
+  margin-bottom:0.8rem;
+}
+.section-label::before{content:'';width:20px;height:1px;background:var(--gold)}
+h2.section-title{
+  font-family:'Fraunces',serif;
+  font-size:clamp(1.8rem,3.5vw,2.8rem);
+  font-weight:700;line-height:1.1;
+  letter-spacing:-0.02em;
+  margin-bottom:0.6rem;
+}
+.section-sub{font-size:0.95rem;color:var(--text2);line-height:1.7;max-width:500px}
+
+/* CATEGORIES */
+#categorias{background:var(--bg2)}
+.categories-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+  margin-top:3rem;
+}
+.cat-card{
+  background:var(--surface);
+  padding:1.8rem;
+  transition:background 0.25s;
+  cursor:pointer;position:relative;overflow:hidden;
+}
+.cat-card::before{
+  content:'';position:absolute;
+  bottom:-40px;right:-40px;
+  width:100px;height:100px;
+  border-radius:50%;
+  transition:all 0.4s;
+  opacity:0;
+}
+.cat-card:hover{background:var(--surface2)}
+.cat-card:hover::before{bottom:-20px;right:-20px;opacity:1;transform:scale(1.5)}
+.cat-c1::before{background:radial-gradient(var(--gold-dim),transparent 70%)}
+.cat-c2::before{background:radial-gradient(rgba(74,124,247,0.15),transparent 70%)}
+.cat-c3::before{background:radial-gradient(rgba(46,196,169,0.12),transparent 70%)}
+.cat-c4::before{background:radial-gradient(rgba(224,90,122,0.12),transparent 70%)}
+.cat-c5::before{background:radial-gradient(rgba(180,120,250,0.12),transparent 70%)}
+.cat-c6::before{background:radial-gradient(rgba(250,180,50,0.12),transparent 70%)}
+
+.cat-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:1rem;
+}
+.cat-name{font-size:1rem;font-weight:600;margin-bottom:0.3rem}
+.cat-count{font-size:0.75rem;color:var(--text3)}
+.cat-arrow{
+  position:absolute;top:1.4rem;right:1.4rem;
+  color:var(--text3);font-size:0.8rem;
+  transition:transform 0.2s,color 0.2s;
+}
+.cat-card:hover .cat-arrow{transform:translate(3px,-3px);color:var(--gold)}
+
+/* CURSOS */
+#cursos{}
+.courses-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+.filter-tabs{display:flex;gap:0.3rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px}
+.filter-tab{
+  font-size:0.75rem;font-weight:500;
+  color:var(--text2);background:transparent;
+  border:none;padding:0.45rem 1rem;border-radius:8px;
+  cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;
+}
+.filter-tab.active{background:var(--surface2);color:var(--gold);box-shadow:0 1px 6px rgba(0,0,0,0.3)}
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem}
+
+.course-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  transition:transform 0.25s,border-color 0.25s,box-shadow 0.25s;
+  cursor:pointer;
+}
+.course-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(255,255,255,0.12);
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+}
+.course-thumb{
+  height:150px;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;
+}
+.course-body{padding:1.2rem}
+.course-tags{display:flex;gap:0.4rem;margin-bottom:0.8rem;flex-wrap:wrap}
+.tag{
+  font-size:0.65rem;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;
+  padding:0.25rem 0.6rem;border-radius:100px;
+}
+.tag-gold{background:rgba(212,168,67,0.15);color:var(--gold2)}
+.tag-blue{background:rgba(74,124,247,0.15);color:#7aa4ff}
+.tag-teal{background:rgba(46,196,169,0.15);color:#5de0c9}
+.tag-rose{background:rgba(224,90,122,0.15);color:#f08ca0}
+.tag-purple{background:rgba(160,100,255,0.15);color:#c084fc}
+
+.course-title{font-size:1rem;font-weight:600;line-height:1.3;margin-bottom:0.5rem}
+.course-desc{font-size:0.78rem;color:var(--text2);line-height:1.6;margin-bottom:1rem}
+.course-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--border);padding-top:0.9rem;
+}
+.course-meta{display:flex;gap:0.9rem}
+.meta-item{font-size:0.72rem;color:var(--text3);display:flex;align-items:center;gap:0.3rem}
+.course-progress{font-size:0.72rem;font-weight:600;color:var(--gold)}
+
+/* PROGRESS BAR */
+.progress-bar{height:3px;background:rgba(255,255,255,0.07);border-radius:2px;margin-top:0.6rem}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+
+/* SCHEDULE */
+#agenda{background:var(--bg2)}
+.schedule-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem}
+@media(max-width:768px){.schedule-grid{grid-template-columns:1fr}}
+
+.schedule-day{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+.day-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.2rem;
+  padding-bottom:0.8rem;
+  border-bottom:1px solid var(--border);
+}
+.day-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600}
+.day-date{font-size:0.72rem;color:var(--text3)}
+.session{
+  display:flex;gap:0.9rem;align-items:flex-start;
+  padding:0.7rem 0;
+  border-bottom:1px solid var(--border);
+}
+.session:last-child{border-bottom:none;padding-bottom:0}
+.session-time{
+  font-size:0.68rem;color:var(--text3);
+  min-width:45px;padding-top:2px;letter-spacing:0.05em;
+}
+.session-dot{
+  width:8px;height:8px;border-radius:50%;
+  margin-top:4px;flex-shrink:0;
+}
+.session-info{flex:1}
+.session-title{font-size:0.85rem;font-weight:500;margin-bottom:0.15rem}
+.session-sub{font-size:0.72rem;color:var(--text3)}
+.session-badge{
+  font-size:0.62rem;padding:0.2rem 0.5rem;border-radius:4px;
+  font-weight:500;flex-shrink:0;margin-top:2px;
+}
+.badge-live{background:rgba(46,196,169,0.15);color:var(--teal)}
+.badge-rec{background:rgba(255,255,255,0.07);color:var(--text2)}
+.badge-soon{background:rgba(212,168,67,0.15);color:var(--gold)}
+
+/* NOTES / QUICK TOOLS */
+#ferramentas{}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;margin-top:2.5rem}
+.tool-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:1.6rem;
+  transition:transform 0.2s,border-color 0.2s;cursor:pointer;
+  display:flex;flex-direction:column;gap:0.7rem;
+}
+.tool-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,0.1)}
+.tool-icon-wrap{
+  width:46px;height:46px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+}
+.tool-title{font-size:0.95rem;font-weight:600}
+.tool-desc{font-size:0.78rem;color:var(--text2);line-height:1.6}
+.tool-action{
+  font-size:0.75rem;font-weight:500;color:var(--gold);
+  display:flex;align-items:center;gap:0.3rem;
+  margin-top:auto;
+}
+
+/* LEADERBOARD */
+#ranking{background:var(--bg2)}
+.ranking-wrap{display:grid;grid-template-columns:1fr 1.6fr;gap:1.5rem;margin-top:2.5rem;align-items:start}
+@media(max-width:900px){.ranking-wrap{grid-template-columns:1fr}}
+.ranking-list{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.rank-header{padding:1rem 1.4rem;border-bottom:1px solid var(--border);font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3)}
+.rank-item{
+  display:flex;align-items:center;gap:0.9rem;
+  padding:0.9rem 1.4rem;border-bottom:1px solid var(--border);
+  transition:background 0.2s;
+}
+.rank-item:last-child{border-bottom:none}
+.rank-item:hover{background:var(--surface2)}
+.rank-item.me{background:var(--gold-dim)}
+.rank-pos{
+  font-family:'Fraunces',serif;
+  font-size:1.1rem;font-weight:700;
+  width:24px;text-align:center;
+}
+.rank-pos.top1{color:var(--gold)}
+.rank-pos.top2{color:#b0b8c8}
+.rank-pos.top3{color:#c88840}
+.rank-avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;font-weight:600;flex-shrink:0;
+}
+.rank-name{flex:1;font-size:0.85rem;font-weight:500}
+.rank-pts{font-size:0.8rem;font-weight:600;color:var(--gold)}
+.rank-pts span{font-size:0.65rem;font-weight:400;color:var(--text3)}
+
+.streak-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:1.8rem;
+}
+.streak-header{margin-bottom:1.5rem}
+.streak-num{
+  font-family:'Fraunces',serif;
+  font-size:3.5rem;font-weight:700;color:var(--gold);
+  line-height:1;
+}
+.streak-label{font-size:0.78rem;color:var(--text2);margin-top:0.3rem}
+.streak-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:1.2rem}
+.sc-day{
+  aspect-ratio:1;border-radius:5px;
+  background:rgba(255,255,255,0.05);
+  transition:background 0.2s;
+}
+.sc-day.done{background:var(--gold)}
+.sc-day.done.dim{background:rgba(212,168,67,0.35)}
+.sc-day.today{box-shadow:0 0 0 2px var(--gold)}
+
+/* CTA SECTION */
+.cta-section{
+  padding:6rem 3rem;text-align:center;
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 50%, rgba(212,168,67,0.08) 0%, transparent 60%),
+    var(--bg);
+  position:relative;overflow:hidden;
+}
+.cta-section::before{
+  content:'';position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:600px;border-radius:50%;
+  border:1px solid rgba(212,168,67,0.07);
+  pointer-events:none;
+}
+.cta-section::after{
+  content:'';position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:400px;height:400px;border-radius:50%;
+  border:1px solid rgba(212,168,67,0.1);
+  pointer-events:none;
+}
+.cta-title{
+  font-family:'Fraunces',serif;
+  font-size:clamp(2rem,4vw,3.2rem);
+  font-weight:700;margin-bottom:1rem;
+  position:relative;z-index:1;
+}
+.cta-sub{font-size:1rem;color:var(--text2);max-width:440px;margin:0 auto 2rem;line-height:1.7;position:relative;z-index:1}
+
+/* FOOTER */
+footer{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:2.5rem 3rem;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+}
+.footer-brand{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--text2)}
+.footer-brand span{color:var(--gold)}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{font-size:0.75rem;color:var(--text3);text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:var(--gold)}
+.footer-copy{font-size:0.72rem;color:var(--text3)}
+
+/* MOBILE NAV */
+.mobile-menu{
+  display:none;position:fixed;top:var(--nav-h);left:0;right:0;
+  background:rgba(8,9,13,0.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:1.2rem 1.5rem;z-index:99;
+  flex-direction:column;gap:0.3rem;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{
+  font-size:0.9rem;color:var(--text2);text-decoration:none;
+  padding:0.7rem;border-radius:8px;font-weight:500;
+  transition:color 0.2s,background 0.2s;
+}
+.mobile-menu a:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s,transform 0.7s}
+.reveal.visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+.reveal-delay-4{transition-delay:0.4s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeLeft{from{opacity:0;transform:translate(30px,-50%)}to{opacity:1;transform:translateY(-50%)}}
+
+/* Notification toast */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:12px;padding:1rem 1.3rem;
+  display:flex;align-items:center;gap:0.8rem;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);
+  z-index:200;font-size:0.82rem;
+  transform:translateY(100px);opacity:0;
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.4s;
+  max-width:300px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-dot{width:8px;height:8px;background:var(--teal);border-radius:50%;flex-shrink:0}
+.toast strong{color:var(--gold)}
+
+/* Responsive */
+@media(max-width:768px){
+  nav{padding:0 1.2rem}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .hero{padding:calc(var(--nav-h)+2rem) 1.2rem 3rem}
+  section{padding:3.5rem 1.2rem}
+  .hero-stats{gap:1.5rem}
+  footer{padding:2rem 1.2rem;flex-direction:column}
+  .categories-grid{grid-template-columns:1fr 1fr}
+  .cta-section{padding:4rem 1.2rem}
+}
+@media(max-width:480px){
+  .categories-grid{grid-template-columns:1fr}
+  .hero-stats{flex-wrap:wrap}
+  .filter-tabs{flex-wrap:wrap}
+}
+
+/* ═══════════════════════════════════════
+   AI ASSISTANT — IRIS
+═══════════════════════════════════════ */
+#ai-btn{
+  position:fixed;bottom:2rem;right:2rem;
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,#d4a843,#9e7d3a);
+  border:none;cursor:pointer;z-index:300;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 32px rgba(212,168,67,0.4),0 0 0 0 rgba(212,168,67,0.4);
+  animation:aiPulse 2.5s ease-in-out infinite;
+  transition:transform 0.2s;
+}
+#ai-btn:hover{transform:scale(1.08)}
+#ai-btn svg{width:24px;height:24px;color:#08090d}
+@keyframes aiPulse{
+  0%,100%{box-shadow:0 8px 32px rgba(212,168,67,0.4),0 0 0 0 rgba(212,168,67,0.3)}
+  50%{box-shadow:0 8px 32px rgba(212,168,67,0.5),0 0 0 12px rgba(212,168,67,0)}
+}
+#ai-badge{
+  position:absolute;top:-4px;right:-4px;
+  width:18px;height:18px;background:#2ec4a9;
+  border-radius:50%;border:2px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:#08090d;
+}
+
+#ai-panel{
+  position:fixed;bottom:6.5rem;right:2rem;
+  width:380px;max-width:calc(100vw - 2rem);
+  background:var(--surface);
+  border:1px solid rgba(212,168,67,0.2);
+  border-radius:20px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,168,67,0.08);
+  z-index:299;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  transform:scale(0.92) translateY(20px);
+  opacity:0;pointer-events:none;
+  transform-origin:bottom right;
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.25s;
+  max-height:560px;
+}
+#ai-panel.open{
+  transform:scale(1) translateY(0);
+  opacity:1;pointer-events:all;
+}
+
+.ai-header{
+  padding:1rem 1.2rem 0.9rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0.7rem;
+  background:linear-gradient(135deg,rgba(212,168,67,0.08),transparent);
+  flex-shrink:0;
+}
+.ai-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#d4a843,#9e7d3a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+  position:relative;
+}
+.ai-avatar::after{
+  content:'';
+  position:absolute;bottom:1px;right:1px;
+  width:9px;height:9px;border-radius:50%;
+  background:#2ec4a9;border:2px solid var(--surface);
+}
+.ai-header-info{flex:1}
+.ai-name{font-size:0.88rem;font-weight:600;line-height:1}
+.ai-status{font-size:0.68rem;color:var(--teal);margin-top:0.2rem}
+.ai-close{
+  background:none;border:none;cursor:pointer;
+  color:var(--text3);padding:4px;border-radius:6px;
+  transition:color 0.2s,background 0.2s;
+}
+.ai-close:hover{color:var(--text);background:rgba(255,255,255,0.06)}
+
+.ai-messages{
+  flex:1;overflow-y:auto;
+  padding:1rem;display:flex;flex-direction:column;gap:0.75rem;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;
+}
+.ai-messages::-webkit-scrollbar{width:4px}
+.ai-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+
+.msg-bubble{
+  max-width:88%;padding:0.7rem 0.9rem;
+  border-radius:14px;font-size:0.82rem;line-height:1.6;
+  animation:bubbleIn 0.3s cubic-bezier(0.34,1.2,0.64,1) both;
+}
+@keyframes bubbleIn{from{opacity:0;transform:scale(0.9) translateY(6px)}to{opacity:1;transform:none}}
+.msg-bot{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-bottom-left-radius:4px;
+  align-self:flex-start;color:var(--text);
+}
+.msg-user{
+  background:linear-gradient(135deg,rgba(212,168,67,0.2),rgba(212,168,67,0.1));
+  border:1px solid rgba(212,168,67,0.2);
+  border-bottom-right-radius:4px;
+  align-self:flex-end;color:var(--text);
+}
+.msg-bot strong{color:var(--gold)}
+.msg-bot code{
+  background:rgba(255,255,255,0.08);
+  padding:1px 5px;border-radius:4px;
+  font-size:0.78rem;color:var(--gold2);
+  font-family:monospace;
+}
+
+/* Typing indicator */
+.typing{display:flex;gap:4px;align-items:center;padding:0.6rem 0.9rem}
+.typing span{
+  width:6px;height:6px;background:var(--text3);border-radius:50%;
+  animation:typingDot 1.2s ease-in-out infinite;
+}
+.typing span:nth-child(2){animation-delay:0.2s}
+.typing span:nth-child(3){animation-delay:0.4s}
+@keyframes typingDot{0%,80%,100%{transform:scale(1);opacity:0.4}40%{transform:scale(1.3);opacity:1}}
+
+/* Quick suggestions */
+.ai-suggestions{
+  padding:0.6rem 1rem;
+  display:flex;gap:0.4rem;flex-wrap:wrap;
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.sug-btn{
+  font-size:0.68rem;font-weight:500;
+  background:rgba(212,168,67,0.08);
+  border:1px solid rgba(212,168,67,0.18);
+  color:var(--gold2);border-radius:100px;
+  padding:0.28rem 0.7rem;cursor:pointer;
+  transition:background 0.2s,border-color 0.2s;
+  white-space:nowrap;
+  font-family:'Instrument Sans',sans-serif;
+}
+.sug-btn:hover{background:rgba(212,168,67,0.15);border-color:rgba(212,168,67,0.35)}
+
+.ai-input-row{
+  padding:0.75rem 1rem;
+  display:flex;gap:0.6rem;align-items:center;
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+#aiInput{
+  flex:1;background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);border-radius:10px;
+  color:var(--text);font-family:'Instrument Sans',sans-serif;
+  font-size:0.82rem;padding:0.6rem 0.9rem;
+  outline:none;transition:border-color 0.2s,background 0.2s;
+}
+#aiInput::placeholder{color:var(--text3);font-size:0.78rem}
+#aiInput:focus{border-color:rgba(212,168,67,0.35);background:rgba(212,168,67,0.04)}
+#aiSend{
+  width:34px;height:34px;border-radius:9px;
+  background:var(--gold);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:transform 0.15s,box-shadow 0.2s;
+}
+#aiSend:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(212,168,67,0.4)}
+#aiSend svg{width:14px;height:14px;color:#08090d}
+#aiSend:disabled{opacity:0.5;transform:none;cursor:not-allowed}
+
+@media(max-width:480px){
+  #ai-panel{right:1rem;bottom:5.5rem;width:calc(100vw - 2rem)}
+  #ai-btn{bottom:1.5rem;right:1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-brand" href="#">
+    <div class="nav-dot"></div>
+    Clube de <span>&nbsp;Estudos</span>
+  </a>
+  <div class="nav-links">
+    <a href="#" class="active">Início</a>
+    <a href="#cursos">Cursos</a>
+    <a href="#categorias">Categorias</a>
+    <a href="#agenda">Agenda</a>
+    <a href="#ferramentas">Ferramentas</a>
+    <a href="#ranking">Ranking</a>
+    <a href="#" class="nav-cta">Entrar</a>
+  </div>
+  <div class="hamburger" id="menuToggle" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#">Início</a>
+  <a href="#cursos">Cursos</a>
+  <a href="#categorias">Categorias</a>
+  <a href="#agenda">Agenda</a>
+  <a href="#ferramentas">Ferramentas</a>
+  <a href="#ranking">Ranking</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✦ Nova temporada disponível</div>
+    <h1 class="hero-title">Aprenda com <em>método</em> e clareza</h1>
+    <p class="hero-sub">Uma plataforma pensada para quem estuda de verdade. Cursos estruturados, trilhas personalizadas e uma comunidade comprometida com o crescimento.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showToast()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Começar agora
+      </button>
+      <button class="btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Ver planos
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">12K+</div><div class="stat-label">Estudantes</div></div>
+      <div class="stat"><div class="stat-num">340+</div><div class="stat-label">Aulas</div></div>
+      <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Satisfação</div></div>
+    </div>
+  </div>
+
+  <!-- Floating visual cards -->
+  <div class="hero-visual">
+    <div class="float-card fc1">
+      <div class="fc-label">Progresso atual</div>
+      <div class="fc-title">Matemática Avançada</div>
+      <div class="fc-bar"><div class="fc-bar-fill" style="width:72%;background:linear-gradient(90deg,#d4a843,#f0c96a)"></div></div>
+      <div class="fc-prog"><span>72% completo</span><span style="color:var(--gold)">72%</span></div>
+    </div>
+    <div class="float-card fc2">
+      <div class="fc-label">Próxima aula</div>
+      <div class="fc-title">Redação — Coesão textual</div>
+      <div style="font-size:0.72rem;color:var(--text3);margin-top:0.3rem">Hoje às 19h30</div>
+    </div>
+    <div class="float-card fc3">
+      <div class="fc-label">Sequência de estudos</div>
+      <div style="display:flex;gap:5px;margin-top:0.4rem">
+        <div style="width:10px;height:28px;background:var(--gold);border-radius:3px"></div>
+        <div style="width:10px;height:20px;background:var(--gold);border-radius:3px;opacity:0.7"></div>
+        <div style="width:10px;height:35px;background:var(--gold);border-radius:3px"></div>
+        <div style="width:10px;height:18px;background:var(--gold);border-radius:3px;opacity:0.6"></div>
+        <div style="width:10px;height:30px;background:var(--gold);border-radius:3px"></div>
+        <div style="width:10px;height:12px;background:rgba(212,168,67,0.3);border-radius:3px"></div>
+        <div style="width:10px;height:12px;background:rgba(212,168,67,0.2);border-radius:3px"></div>
+      </div>
+      <div style="font-size:0.7rem;color:var(--text3);margin-top:0.5rem">🔥 5 dias consecutivos</div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIAS -->
+<section id="categorias">
+  <div class="section-label">Explorar</div>
+  <h2 class="section-title reveal">Todas as categorias</h2>
+  <p class="section-sub reveal reveal-delay-1">Do básico ao avançado, encontre a trilha certa para os seus objetivos.</p>
+  <div class="categories-grid reveal reveal-delay-2">
+    <div class="cat-card cat-c1" onclick="showToast('Matemática selecionada!')">
+      <div class="cat-icon" style="background:rgba(212,168,67,0.1)">📐</div>
+      <div class="cat-name">Matemática</div>
+      <div class="cat-count">48 cursos · 320 aulas</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card cat-c2" onclick="showToast('Ciências selecionada!')">
+      <div class="cat-icon" style="background:rgba(74,124,247,0.1)">🔬</div>
+      <div class="cat-name">Ciências</div>
+      <div class="cat-count">35 cursos · 240 aulas</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card cat-c3" onclick="showToast('Linguagens selecionada!')">
+      <div class="cat-icon" style="background:rgba(46,196,169,0.1)">📝</div>
+      <div class="cat-name">Linguagens</div>
+      <div class="cat-count">42 cursos · 280 aulas</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card cat-c4" onclick="showToast('História selecionada!')">
+      <div class="cat-icon" style="background:rgba(224,90,122,0.1)">🏛️</div>
+      <div class="cat-name">História</div>
+      <div class="cat-count">29 cursos · 190 aulas</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card cat-c5" onclick="showToast('Tecnologia selecionada!')">
+      <div class="cat-icon" style="background:rgba(160,100,255,0.1)">💻</div>
+      <div class="cat-name">Tecnologia</div>
+      <div class="cat-count">55 cursos · 410 aulas</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-card cat-c6" onclick="showToast('Filosofia selecionada!')">
+      <div class="cat-icon" style="background:rgba(250,180,50,0.1)">🧭</div>
+      <div class="cat-name">Filosofia</div>
+      <div class="cat-count">18 cursos · 130 aulas</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+  </div>
+</section>
+
+<!-- CURSOS EM DESTAQUE -->
+<section id="cursos">
+  <div class="courses-header">
+    <div>
+      <div class="section-label">Em destaque</div>
+      <h2 class="section-title" style="margin-bottom:0">Cursos populares</h2>
+    </div>
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" onclick="filterCourses('todos',this)">Todos</button>
+      <button class="filter-tab" onclick="filterCourses('exatas',this)">Exatas</button>
+      <button class="filter-tab" onclick="filterCourses('humanas',this)">Humanas</button>
+      <button class="filter-tab" onclick="filterCourses('tech',this)">Tech</button>
+    </div>
+  </div>
+  <div class="courses-grid" id="coursesGrid">
+
+    <div class="course-card reveal" data-cat="exatas">
+      <div class="course-thumb" style="background:linear-gradient(135deg,#1a1f2e,#0f1420)">
+        <span style="font-size:3rem">📐</span>
+      </div>
+      <div class="course-body">
+        <div class="course-tags"><span class="tag tag-gold">Exatas</span><span class="tag tag-blue">ENEM</span></div>
+        <div class="course-title">Matemática Completa — Do básico ao ENEM</div>
+        <div class="course-desc">Domínio total dos conteúdos de matemática com exercícios e simulados.</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+        <div class="course-footer">
+          <div class="course-meta">
+            <div class="meta-item">📖 48 aulas</div>
+            <div class="meta-item">⏱ 18h</div>
+          </div>
+          <div class="course-progress">72%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card reveal reveal-delay-1" data-cat="humanas">
+      <div class="course-thumb" style="background:linear-gradient(135deg,#1c1520,#100e18)">
+        <span style="font-size:3rem">📜</span>
+      </div>
+      <div class="course-body">
+        <div class="course-tags"><span class="tag tag-rose">Humanas</span><span class="tag tag-gold">Redação</span></div>
+        <div class="course-title">Redação nota 1000 — Método ENEM</div>
+        <div class="course-desc">Estrutura, coesão, coerência e competências da redação oficial.</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:30%;background:linear-gradient(90deg,var(--rose),#f4a0b5)"></div></div>
+        <div class="course-footer">
+          <div class="course-meta">
+            <div class="meta-item">📖 32 aulas</div>
+            <div class="meta-item">⏱ 12h</div>
+          </div>
+          <div class="course-progress" style="color:#f08ca0">30%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card reveal reveal-delay-2" data-cat="tech">
+      <div class="course-thumb" style="background:linear-gradient(135deg,#0f1c1a,#0a1815)">
+        <span style="font-size:3rem">💻</span>
+      </div>
+      <div class="course-body">
+        <div class="course-tags"><span class="tag tag-teal">Tech</span><span class="tag tag-blue">Iniciante</span></div>
+        <div class="course-title">Introdução à Programação com Python</div>
+        <div class="course-desc">Lógica, variáveis, loops, funções e projetos práticos do zero.</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:linear-gradient(90deg,var(--teal),#5de0c9)"></div></div>
+        <div class="course-footer">
+          <div class="course-meta">
+            <div class="meta-item">📖 60 aulas</div>
+            <div class="meta-item">⏱ 24h</div>
+          </div>
+          <div class="course-progress" style="color:var(--text3)">Novo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card reveal" data-cat="exatas">
+      <div class="course-thumb" style="background:linear-gradient(135deg,#101a1c,#0a1215)">
+        <span style="font-size:3rem">⚗️</span>
+      </div>
+      <div class="course-body">
+        <div class="course-tags"><span class="tag tag-teal">Exatas</span><span class="tag tag-blue">Química</span></div>
+        <div class="course-title">Química Orgânica — Vestibular</div>
+        <div class="course-desc">Funções orgânicas, reações e nomenclatura com exemplos visuais.</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:55%;background:linear-gradient(90deg,var(--teal),#5de0c9)"></div></div>
+        <div class="course-footer">
+          <div class="course-meta">
+            <div class="meta-item">📖 40 aulas</div>
+            <div class="meta-item">⏱ 15h</div>
+          </div>
+          <div class="course-progress" style="color:var(--teal)">55%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card reveal reveal-delay-1" data-cat="humanas">
+      <div class="course-thumb" style="background:linear-gradient(135deg,#1a1310,#130e0b)">
+        <span style="font-size:3rem">🌍</span>
+      </div>
+      <div class="course-body">
+        <div class="course-tags"><span class="tag tag-gold">Humanas</span><span class="tag tag-rose">Geografia</span></div>
+        <div class="course-title">Geopolítica e Geografia do Brasil</div>
+        <div class="course-desc">Biomas, clima, geopolítica e questões socioambientais para vestibular.</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
+        <div class="course-footer">
+          <div class="course-meta">
+            <div class="meta-item">📖 36 aulas</div>
+            <div class="meta-item">⏱ 14h</div>
+          </div>
+          <div class="course-progress">10%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card reveal reveal-delay-2" data-cat="tech">
+      <div class="course-thumb" style="background:linear-gradient(135deg,#141020,#0e0c1a)">
+        <span style="font-size:3rem">🤖</span>
+      </div>
+      <div class="course-body">
+        <div class="course-tags"><span class="tag tag-purple">Tech</span><span class="tag tag-blue">IA</span></div>
+        <div class="course-title">Introdução à Inteligência Artificial</div>
+        <div class="course-desc">Conceitos fundamentais de IA, Machine Learning e suas aplicações.</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:linear-gradient(90deg,#a064ff,#c084fc)"></div></div>
+        <div class="course-footer">
+          <div class="course-meta">
+            <div class="meta-item">📖 45 aulas</div>
+            <div class="meta-item">⏱ 20h</div>
+          </div>
+          <div class="course-progress" style="color:var(--text3)">Em breve</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- AGENDA -->
+<section id="agenda">
+  <div class="section-label">Programação</div>
+  <h2 class="section-title reveal">Agenda da semana</h2>
+  <p class="section-sub reveal reveal-delay-1">Acompanhe as aulas ao vivo e organize sua rotina de estudos.</p>
+  <div class="schedule-grid reveal reveal-delay-2">
+
+    <div class="schedule-day">
+      <div class="day-header">
+        <div class="day-name">Segunda-feira</div>
+        <div class="day-date">24 Mar</div>
+      </div>
+      <div class="session">
+        <div class="session-time">08h00</div>
+        <div class="session-dot" style="background:var(--teal)"></div>
+        <div class="session-info">
+          <div class="session-title">Funções do 2º grau</div>
+          <div class="session-sub">Matemática · Prof. Carlos</div>
+        </div>
+        <div class="session-badge badge-live">AO VIVO</div>
+      </div>
+      <div class="session">
+        <div class="session-time">10h30</div>
+        <div class="session-dot" style="background:var(--text3)"></div>
+        <div class="session-info">
+          <div class="session-title">Era Vargas</div>
+          <div class="session-sub">História · Prof.ª Ana</div>
+        </div>
+        <div class="session-badge badge-rec">GRAVADO</div>
+      </div>
+      <div class="session">
+        <div class="session-time">14h00</div>
+        <div class="session-dot" style="background:var(--gold)"></div>
+        <div class="session-info">
+          <div class="session-title">Introdução ao Python</div>
+          <div class="session-sub">Tecnologia · Prof. Lucas</div>
+        </div>
+        <div class="session-badge badge-soon">EM BREVE</div>
+      </div>
+      <div class="session">
+        <div class="session-time">19h30</div>
+        <div class="session-dot" style="background:var(--rose)"></div>
+        <div class="session-info">
+          <div class="session-title">Coesão textual</div>
+          <div class="session-sub">Redação · Prof.ª Bruna</div>
+        </div>
+        <div class="session-badge badge-soon">EM BREVE</div>
+      </div>
+    </div>
+
+    <div class="schedule-day">
+      <div class="day-header">
+        <div class="day-name">Terça-feira</div>
+        <div class="day-date">25 Mar</div>
+      </div>
+      <div class="session">
+        <div class="session-time">09h00</div>
+        <div class="session-dot" style="background:var(--teal)"></div>
+        <div class="session-info">
+          <div class="session-title">Reações Químicas</div>
+          <div class="session-sub">Química · Prof. Rui</div>
+        </div>
+        <div class="session-badge badge-soon">EM BREVE</div>
+      </div>
+      <div class="session">
+        <div class="session-time">11h00</div>
+        <div class="session-dot" style="background:var(--text3)"></div>
+        <div class="session-info">
+          <div class="session-title">Biomas Brasileiros</div>
+          <div class="session-sub">Geografia · Prof.ª Marta</div>
+        </div>
+        <div class="session-badge badge-rec">GRAVADO</div>
+      </div>
+      <div class="session">
+        <div class="session-time">15h30</div>
+        <div class="session-dot" style="background:var(--blue)"></div>
+        <div class="session-info">
+          <div class="session-title">Figuras de Linguagem</div>
+          <div class="session-sub">Português · Prof.ª Fernanda</div>
+        </div>
+        <div class="session-badge badge-soon">EM BREVE</div>
+      </div>
+      <div class="session">
+        <div class="session-time">20h00</div>
+        <div class="session-dot" style="background:var(--gold)"></div>
+        <div class="session-info">
+          <div class="session-title">Simulado Completo ENEM</div>
+          <div class="session-sub">Interdisciplinar · Todos</div>
+        </div>
+        <div class="session-badge badge-soon">EM BREVE</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FERRAMENTAS -->
+<section id="ferramentas">
+  <div class="section-label">Recursos</div>
+  <h2 class="section-title reveal">Ferramentas de estudo</h2>
+  <p class="section-sub reveal reveal-delay-1">Tudo que você precisa para maximizar sua produtividade e retenção.</p>
+  <div class="tools-grid">
+    <div class="tool-card reveal" onclick="showToast('Abrindo Flashcards...')">
+      <div class="tool-icon-wrap" style="background:rgba(212,168,67,0.1)">🃏</div>
+      <div class="tool-title">Flashcards</div>
+      <div class="tool-desc">Revisão espaçada com algoritmo inteligente de memorização ativa.</div>
+      <div class="tool-action">Abrir ferramenta →</div>
+    </div>
+    <div class="tool-card reveal reveal-delay-1" onclick="showToast('Abrindo Mapa Mental...')">
+      <div class="tool-icon-wrap" style="background:rgba(74,124,247,0.1)">🧠</div>
+      <div class="tool-title">Mapas Mentais</div>
+      <div class="tool-desc">Crie e organize mapas mentais visuais para absorver conteúdo rápido.</div>
+      <div class="tool-action">Abrir ferramenta →</div>
+    </div>
+    <div class="tool-card reveal reveal-delay-2" onclick="showToast('Abrindo Simulados...')">
+      <div class="tool-icon-wrap" style="background:rgba(46,196,169,0.1)">📊</div>
+      <div class="tool-title">Simulados</div>
+      <div class="tool-desc">Questões do ENEM e vestibulares com correção automática e análise.</div>
+      <div class="tool-action">Abrir ferramenta →</div>
+    </div>
+    <div class="tool-card reveal" onclick="showToast('Abrindo Pomodoro...')">
+      <div class="tool-icon-wrap" style="background:rgba(224,90,122,0.1)">⏱️</div>
+      <div class="tool-title">Timer Pomodoro</div>
+      <div class="tool-desc">Técnica Pomodoro integrada com metas diárias e histórico de foco.</div>
+      <div class="tool-action">Abrir ferramenta →</div>
+    </div>
+    <div class="tool-card reveal reveal-delay-1" onclick="showToast('Abrindo Caderno...')">
+      <div class="tool-icon-wrap" style="background:rgba(160,100,255,0.1)">📓</div>
+      <div class="tool-title">Caderno Digital</div>
+      <div class="tool-desc">Anote, organize por matéria e sincronize em todos seus dispositivos.</div>
+      <div class="tool-action">Abrir ferramenta →</div>
+    </div>
+    <div class="tool-card reveal reveal-delay-2" onclick="showToast('Abrindo Planner...')">
+      <div class="tool-icon-wrap" style="background:rgba(50,200,120,0.1)">📅</div>
+      <div class="tool-title">Planner Semanal</div>
+      <div class="tool-desc">Monte seu cronograma de estudos e receba lembretes personalizados.</div>
+      <div class="tool-action">Abrir ferramenta →</div>
+    </div>
+  </div>
+</section>
+
+<!-- RANKING -->
+<section id="ranking">
+  <div class="section-label">Comunidade</div>
+  <h2 class="section-title reveal">Ranking da semana</h2>
+  <p class="section-sub reveal reveal-delay-1">Os estudantes mais dedicados da comunidade. Sua vez de brilhar!</p>
+  <div class="ranking-wrap reveal reveal-delay-2">
+    <div class="ranking-list">
+      <div class="rank-header">🏆 Top Estudantes</div>
+      <div class="rank-item">
+        <div class="rank-pos top1">1</div>
+        <div class="rank-avatar" style="background:rgba(212,168,67,0.2);color:var(--gold)">AM</div>
+        <div class="rank-name">Ana Mendes</div>
+        <div class="rank-pts">2.840 <span>pts</span></div>
+      </div>
+      <div class="rank-item">
+        <div class="rank-pos top2">2</div>
+        <div class="rank-avatar" style="background:rgba(176,184,200,0.15);color:#b0b8c8">RO</div>
+        <div class="rank-name">Rafael Oliveira</div>
+        <div class="rank-pts">2.610 <span>pts</span></div>
+      </div>
+      <div class="rank-item">
+        <div class="rank-pos top3">3</div>
+        <div class="rank-avatar" style="background:rgba(200,136,64,0.15);color:#c88840">JS</div>
+        <div class="rank-name">Julia Santos</div>
+        <div class="rank-pts">2.390 <span>pts</span></div>
+      </div>
+      <div class="rank-item">
+        <div class="rank-pos" style="color:var(--text3)">4</div>
+        <div class="rank-avatar" style="background:rgba(74,124,247,0.15);color:#7aa4ff">ML</div>
+        <div class="rank-name">Marcos Lima</div>
+        <div class="rank-pts">2.100 <span>pts</span></div>
+      </div>
+      <div class="rank-item">
+        <div class="rank-pos" style="color:var(--text3)">5</div>
+        <div class="rank-avatar" style="background:rgba(46,196,169,0.15);color:var(--teal)">FC</div>
+        <div class="rank-name">Fernanda Cruz</div>
+        <div class="rank-pts">1.980 <span>pts</span></div>
+      </div>
+      <div class="rank-item me">
+        <div class="rank-pos" style="color:var(--text3)">12</div>
+        <div class="rank-avatar" style="background:rgba(212,168,67,0.3);color:var(--gold)">Eu</div>
+        <div class="rank-name" style="color:var(--gold)">Você</div>
+        <div class="rank-pts">890 <span>pts</span></div>
+      </div>
+    </div>
+
+    <div class="streak-card">
+      <div class="streak-header">
+        <div class="streak-num">🔥 5</div>
+        <div class="streak-label">dias consecutivos estudando</div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--text2);line-height:1.6;margin-bottom:1.2rem">Continue assim! Faltam <strong style="color:var(--gold)">2 dias</strong> para alcançar a medalha de <strong style="color:var(--gold)">Bronze</strong>.</p>
+      <div style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text3);margin-bottom:0.4rem">
+          <span>Pontos desta semana</span><span style="color:var(--gold)">890 / 1200</span>
+        </div>
+        <div class="progress-bar" style="height:6px"><div class="progress-fill" style="width:74%"></div></div>
+      </div>
+      <div style="font-size:0.75rem;color:var(--text2);margin-bottom:0.8rem">Calendário do mês</div>
+      <div class="streak-calendar">
+        <div class="sc-day done dim"></div>
+        <div class="sc-day done dim"></div>
+        <div class="sc-day done dim"></div>
+        <div class="sc-day done dim"></div>
+        <div class="sc-day done dim"></div>
+        <div class="sc-day"></div>
+        <div class="sc-day done dim"></div>
+        <div class="sc-day done dim"></div>
+        <div class="sc-day done dim"></div>
+        <div class="sc-day done dim"></div>
+        <div class="sc-day done"></div>
+        <div class="sc-day done"></div>
+        <div class="sc-day done"></div>
+        <div class="sc-day done"></div>
+        <div class="sc-day done today"></div>
+        <div class="sc-day"></div>
+        <div class="sc-day"></div>
+        <div class="sc-day"></div>
+        <div class="sc-day"></div>
+        <div class="sc-day"></div>
+        <div class="sc-day"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="section-label" style="justify-content:center">Comece hoje</div>
+  <h2 class="cta-title">Pronto para evoluir <em style="font-family:Fraunces,serif;font-style:italic;color:var(--gold);font-weight:300">de verdade</em>?</h2>
+  <p class="cta-sub">Junte-se a mais de 12.000 estudantes e transforme sua rotina de estudos com método e consistência.</p>
+  <button class="btn-primary" style="margin:0 auto" onclick="showToast('Redirecionando para cadastro...')">
+    Criar conta gratuita →
+  </button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Clube de <span>Estudos</span></div>
+  <div class="footer-links">
+    <a href="#">Sobre</a>
+    <a href="#">Contato</a>
+    <a href="#">Termos</a>
+    <a href="#">Privacidade</a>
+  </div>
+  <div class="footer-copy">© 2025 Clube de Estudos</div>
+</footer>
+
+<!-- AI ASSISTANT BUTTON -->
+<button id="ai-btn" onclick="toggleAI()" title="Falar com IRIS">
+  <div id="ai-badge">IA</div>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3h-1v1a4 4 0 0 1-8 0v-1H7a3 3 0 0 1-3-3v-3a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z"/>
+    <circle cx="9" cy="11" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="15" cy="11" r="1" fill="currentColor" stroke="none"/>
+  </svg>
+</button>
+
+<!-- AI PANEL -->
+<div id="ai-panel">
+  <div class="ai-header">
+    <div class="ai-avatar">🤖</div>
+    <div class="ai-header-info">
+      <div class="ai-name">IRIS — Assistente de Estudos</div>
+      <div class="ai-status">● Online · Conhece toda a plataforma</div>
+    </div>
+    <button class="ai-close" onclick="toggleAI()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="ai-messages" id="aiMessages"></div>
+
+  <div class="ai-suggestions" id="aiSuggestions">
+    <button class="sug-btn" onclick="askSuggestion('Quais cursos estão disponíveis?')">📚 Ver cursos</button>
+    <button class="sug-btn" onclick="askSuggestion('Qual é meu progresso?')">📊 Meu progresso</button>
+    <button class="sug-btn" onclick="askSuggestion('Agenda de hoje')">📅 Agenda</button>
+    <button class="sug-btn" onclick="askSuggestion('Quem está no ranking?')">🏆 Ranking</button>
+    <button class="sug-btn" onclick="askSuggestion('Quais ferramentas existem?')">🛠 Ferramentas</button>
+    <button class="sug-btn" onclick="askSuggestion('Quantos estudantes há?')">👥 Estatísticas</button>
+  </div>
+
+  <div class="ai-input-row">
+    <input id="aiInput" type="text" placeholder="Pergunte sobre cursos, agenda, ranking..." maxlength="200"
+      onkeydown="if(event.key==='Enter')sendAI()"/>
+    <button id="aiSend" onclick="sendAI()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg"><strong>Ação registrada</strong> — redirecionando...</span>
+</div>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)}
+animRing();
+document.querySelectorAll('a,button,.cat-card,.course-card,.tool-card,.rank-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2.5)';ring.style.transform='translate(-50%,-50%) scale(1.5)'});
+  el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)'});
+});
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// Nav scroll
+window.addEventListener('scroll',()=>{
+  const nav=document.getElementById('navbar');
+  nav.style.background=window.scrollY>40?'rgba(8,9,13,0.95)':'rgba(8,9,13,0.8)';
+});
+
+// Mobile menu
+function toggleMenu(){
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+document.querySelectorAll('#mobileMenu a').forEach(a=>a.addEventListener('click',()=>document.getElementById('mobileMenu').classList.remove('open')));
+
+// Course filters
+function filterCourses(cat,btn){
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.course-card').forEach(c=>{
+    const show = cat==='todos'||c.dataset.cat===cat;
+    c.style.display=show?'':'none';
+    c.style.opacity=show?'1':'0';
+  });
+}
+
+// Toast
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  const tm=document.getElementById('toastMsg');
+  clearTimeout(toastTimer);
+  tm.innerHTML=msg?`<strong>✓</strong> ${msg}`:'<strong>✓ Ação realizada</strong> — continue explorando!';
+  t.classList.add('show');
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ════════════════════════════════════════════
+// IRIS — AI ASSISTANT · DADOS DA PLATAFORMA
+// ════════════════════════════════════════════
+
+// ── Base de dados completa da plataforma ──
+const PLATFORM_DATA = {
+  plataforma: {
+    nome: "Clube de Estudos",
+    estudantes: 12000,
+    aulas: 340,
+    satisfacao: "98%",
+    descricao: "Plataforma de estudos com cursos estruturados, trilhas personalizadas e comunidade."
+  },
+  usuario: {
+    nome: "Você",
+    posicaoRanking: 12,
+    pontos: 890,
+    metaPontos: 1200,
+    streakDias: 5,
+    progresso: {
+      "Matemática Completa": { percentual: 72, aulasTotal: 48, horas: 18 },
+      "Redação nota 1000":   { percentual: 30, aulasTotal: 32, horas: 12 },
+      "Química Orgânica":    { percentual: 55, aulasTotal: 40, horas: 15 },
+      "Geopolítica e Brasil":{ percentual: 10, aulasTotal: 36, horas: 14 },
+    }
+  },
+  categorias: [
+    { nome:"Matemática",  emoji:"📐", cursos:48, aulas:320, area:"exatas"  },
+    { nome:"Ciências",    emoji:"🔬", cursos:35, aulas:240, area:"exatas"  },
+    { nome:"Linguagens",  emoji:"📝", cursos:42, aulas:280, area:"humanas" },
+    { nome:"História",    emoji:"🏛️", cursos:29, aulas:190, area:"humanas" },
+    { nome:"Tecnologia",  emoji:"💻", cursos:55, aulas:410, area:"tech"    },
+    { nome:"Filosofia",   emoji:"🧭", cursos:18, aulas:130, area:"humanas" },
+  ],
+  cursos: [
+    { titulo:"Matemática Completa — Do básico ao ENEM",  categoria:"exatas",  tags:["ENEM"],      aulas:48, horas:18, progresso:72,  status:"em andamento" },
+    { titulo:"Redação nota 1000 — Método ENEM",          categoria:"humanas", tags:["Redação"],   aulas:32, horas:12, progresso:30,  status:"em andamento" },
+    { titulo:"Introdução à Programação com Python",      categoria:"tech",    tags:["Iniciante"], aulas:60, horas:24, progresso:0,   status:"não iniciado"  },
+    { titulo:"Química Orgânica — Vestibular",            categoria:"exatas",  tags:["Química"],   aulas:40, horas:15, progresso:55,  status:"em andamento" },
+    { titulo:"Geopolítica e Geografia do Brasil",        categoria:"humanas", tags:["Geografia"], aulas:36, horas:14, progresso:10,  status:"em andamento" },
+    { titulo:"Introdução à Inteligência Artificial",     categoria:"tech",    tags:["IA"],        aulas:45, horas:20, progresso:0,   status:"em breve"     },
+  ],
+  agenda: {
+    "Segunda (24/03)": [
+      { hora:"08h00", titulo:"Funções do 2º grau",   materia:"Matemática", professor:"Prof. Carlos",   status:"ao vivo"  },
+      { hora:"10h30", titulo:"Era Vargas",            materia:"História",   professor:"Prof.ª Ana",     status:"gravado"  },
+      { hora:"14h00", titulo:"Introdução ao Python",  materia:"Tecnologia", professor:"Prof. Lucas",    status:"em breve" },
+      { hora:"19h30", titulo:"Coesão textual",        materia:"Redação",    professor:"Prof.ª Bruna",   status:"em breve" },
+    ],
+    "Terça (25/03)": [
+      { hora:"09h00", titulo:"Reações Químicas",      materia:"Química",    professor:"Prof. Rui",       status:"em breve" },
+      { hora:"11h00", titulo:"Biomas Brasileiros",    materia:"Geografia",  professor:"Prof.ª Marta",    status:"gravado"  },
+      { hora:"15h30", titulo:"Figuras de Linguagem",  materia:"Português",  professor:"Prof.ª Fernanda", status:"em breve" },
+      { hora:"20h00", titulo:"Simulado Completo ENEM",materia:"Geral",      professor:"Todos",           status:"em breve" },
+    ]
+  },
+  ferramentas: [
+    { nome:"Flashcards",     emoji:"🃏", desc:"Revisão espaçada com algoritmo inteligente"           },
+    { nome:"Mapas Mentais",  emoji:"🧠", desc:"Crie mapas visuais para absorver conteúdo"            },
+    { nome:"Simulados",      emoji:"📊", desc:"Questões ENEM/vestibular com correção automática"     },
+    { nome:"Timer Pomodoro", emoji:"⏱️", desc:"Técnica Pomodoro com metas e histórico de foco"      },
+    { nome:"Caderno Digital",emoji:"📓", desc:"Notas organizadas por matéria, sincronizadas"        },
+    { nome:"Planner Semanal",emoji:"📅", desc:"Cronograma de estudos com lembretes personalizados"  },
+  ],
+  ranking: [
+    { pos:1,  nome:"Ana Mendes",     pontos:2840, iniciais:"AM" },
+    { pos:2,  nome:"Rafael Oliveira",pontos:2610, iniciais:"RO" },
+    { pos:3,  nome:"Julia Santos",   pontos:2390, iniciais:"JS" },
+    { pos:4,  nome:"Marcos Lima",    pontos:2100, iniciais:"ML" },
+    { pos:5,  nome:"Fernanda Cruz",  pontos:1980, iniciais:"FC" },
+    { pos:12, nome:"Você",           pontos:890,  iniciais:"Eu" },
+  ]
+};
+
+// ── UI helpers ──
+let aiOpen = false;
+
+function toggleAI() {
+  aiOpen = !aiOpen;
+  document.getElementById('ai-panel').classList.toggle('open', aiOpen);
+  if (aiOpen && document.getElementById('aiMessages').children.length === 0) {
+    setTimeout(() => addBotMsg(
+      `Olá! 👋 Sou a <strong>IRIS</strong>, assistente do <strong>Clube de Estudos</strong>.\n\nPosso te informar sobre cursos, agenda, seu progresso, ranking, ferramentas e muito mais. Como posso ajudar?`
+    ), 300);
+  }
+  if (aiOpen) setTimeout(() => document.getElementById('aiInput').focus(), 400);
+}
+
+function addUserMsg(text) {
+  const el = document.createElement('div');
+  el.className = 'msg-bubble msg-user';
+  el.textContent = text;
+  document.getElementById('aiMessages').appendChild(el);
+  scrollChat();
+}
+
+function addBotMsg(html) {
+  const el = document.createElement('div');
+  el.className = 'msg-bubble msg-bot';
+  el.innerHTML = html.replace(/\n/g, '<br>');
+  document.getElementById('aiMessages').appendChild(el);
+  scrollChat();
+}
+
+function showTyping() {
+  const el = document.createElement('div');
+  el.className = 'msg-bubble msg-bot typing';
+  el.id = 'typingIndicator';
+  el.innerHTML = '<span></span><span></span><span></span>';
+  document.getElementById('aiMessages').appendChild(el);
+  scrollChat();
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+function scrollChat() {
+  const c = document.getElementById('aiMessages');
+  c.scrollTop = c.scrollHeight;
+}
+
+function askSuggestion(q) {
+  document.getElementById('aiInput').value = q;
+  sendAI();
+}
+
+// ── Send & process ──
+async function sendAI() {
+  const input = document.getElementById('aiInput');
+  const sendBtn = document.getElementById('aiSend');
+  const q = input.value.trim();
+  if (!q) return;
+
+  addUserMsg(q);
+  input.value = '';
+  sendBtn.disabled = true;
+  showTyping();
+
+  // Build system prompt with ALL platform data
+  const systemPrompt = `Você é IRIS, a assistente inteligente do Clube de Estudos. Você tem acesso completo a todos os dados da plataforma abaixo e deve responder em português brasileiro de forma clara, amigável e precisa.
+
+DADOS COMPLETOS DA PLATAFORMA:
+${JSON.stringify(PLATFORM_DATA, null, 2)}
+
+REGRAS:
+- Responda sempre em português do Brasil
+- Use emojis com moderação para tornar as respostas mais visuais
+- Seja objetiva e direta
+- Quando listar itens, use formatação clara
+- Sempre baseie suas respostas nos dados fornecidos acima
+- Se perguntarem sobre algo fora dos dados, diga que não tem essa informação disponível
+- Use negritos com ** para destacar informações importantes (que serão convertidos para <strong>)
+- Máximo de 3-4 parágrafos por resposta
+- Seja motivadora quando falar sobre progresso do usuário`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: q }]
+      })
+    });
+
+    const data = await res.json();
+    removeTyping();
+
+    if (data.content && data.content[0]) {
+      let reply = data.content[0].text;
+      // Convert **bold** to <strong>
+      reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      addBotMsg(reply);
+    } else {
+      addBotMsg("Desculpe, não consegui processar sua pergunta agora. Tente novamente! 🙏");
+    }
+  } catch(e) {
+    removeTyping();
+    // Fallback local quando API não disponível
+    addBotMsg(localAnswer(q));
+  }
+
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+// ── Fallback local (sem API) ──
+function localAnswer(q) {
+  const ql = q.toLowerCase();
+  const d = PLATFORM_DATA;
+
+  if (/curso|matéria|aprender|estudar/.test(ql)) {
+    const list = d.cursos.map(c => `• <strong>${c.titulo}</strong> — ${c.aulas} aulas · ${c.horas}h · ${c.progresso > 0 ? c.progresso+'% completo' : c.status}`).join('\n');
+    return `📚 <strong>Cursos disponíveis (${d.cursos.length}):</strong>\n\n${list}`;
+  }
+  if (/progresso|andamento|completo/.test(ql)) {
+    const list = Object.entries(d.usuario.progresso).map(([k,v]) => `• <strong>${k}</strong>: ${v.percentual}%`).join('\n');
+    return `📊 <strong>Seu progresso atual:</strong>\n\n${list}\n\n💪 Continue assim! Você está na posição <strong>#${d.usuario.posicaoRanking}</strong> do ranking com <strong>${d.usuario.pontos} pontos</strong>.`;
+  }
+  if (/agenda|aula|hoje|horário|semana/.test(ql)) {
+    let out = '';
+    for (const [dia, aulas] of Object.entries(d.agenda)) {
+      out += `\n📅 <strong>${dia}</strong>\n` + aulas.map(a => `  ${a.hora} — ${a.titulo} (${a.materia})`).join('\n');
+    }
+    return `<strong>Agenda da semana:</strong>${out}`;
+  }
+  if (/ranking|pontos|posição|melhor/.test(ql)) {
+    const top = d.ranking.map(r => `${r.pos === 1 ? '🥇' : r.pos === 2 ? '🥈' : r.pos === 3 ? '🥉' : `#${r.pos}`} <strong>${r.nome}</strong> — ${r.pontos.toLocaleString('pt-BR')} pts`).join('\n');
+    return `🏆 <strong>Ranking da semana:</strong>\n\n${top}\n\nVocê está na posição <strong>#12</strong> com <strong>890 pontos</strong>. Faltam apenas ${d.usuario.metaPontos - d.usuario.pontos} pts para a meta semanal!`;
+  }
+  if (/ferramenta|recurso|flashcard|pomodoro|mapa|simulado/.test(ql)) {
+    const list = d.ferramentas.map(f => `${f.emoji} <strong>${f.nome}</strong>: ${f.desc}`).join('\n');
+    return `🛠 <strong>Ferramentas disponíveis:</strong>\n\n${list}`;
+  }
+  if (/categoria|área|matéria disponível/.test(ql)) {
+    const list = d.categorias.map(c => `${c.emoji} <strong>${c.nome}</strong> — ${c.cursos} cursos · ${c.aulas} aulas`).join('\n');
+    return `📂 <strong>Categorias da plataforma:</strong>\n\n${list}`;
+  }
+  if (/estudante|aluno|total|plataforma|estatística/.test(ql)) {
+    const p = d.plataforma;
+    return `📈 <strong>Estatísticas do Clube de Estudos:</strong>\n\n👥 <strong>${p.estudantes.toLocaleString('pt-BR')}+</strong> estudantes ativos\n🎬 <strong>${p.aulas}+</strong> aulas disponíveis\n⭐ <strong>${p.satisfacao}</strong> de satisfação\n\n${p.descricao}`;
+  }
+  if (/streak|sequência|consecutivo/.test(ql)) {
+    return `🔥 Você está em uma sequência de <strong>${d.usuario.streakDias} dias consecutivos</strong> de estudos!\n\nContinue para conquistar a medalha de Bronze. Você acumulou <strong>${d.usuario.pontos} pontos</strong> nesta semana de um total de ${d.usuario.metaPontos} pts da meta.`;
+  }
+  if (/olá|oi|hey|bom dia|boa tarde|boa noite/.test(ql)) {
+    return `Olá! 👋 Tudo bem? Sou a <strong>IRIS</strong>, assistente do Clube de Estudos.\n\nPosso te ajudar com informações sobre <strong>cursos</strong>, <strong>agenda</strong>, <strong>seu progresso</strong>, <strong>ranking</strong> e <strong>ferramentas</strong>. O que deseja saber?`;
+  }
+  return `Hmm, não encontrei dados específicos sobre isso na plataforma. 🤔\n\nPosso te ajudar com: <strong>cursos</strong>, <strong>agenda da semana</strong>, <strong>seu progresso</strong>, <strong>ranking</strong>, <strong>ferramentas</strong> ou <strong>categorias</strong>. Tente uma dessas!`;
+}
+
+function animateCount(el,target,suffix=''){
+  let start=0;const dur=1500;const step=16;
+  const inc=target/(dur/step);
+  const timer=setInterval(()=>{
+    start+=inc;
+    if(start>=target){start=target;clearInterval(timer)}
+    el.textContent=Math.floor(start).toLocaleString('pt-BR')+(suffix||'');
+  },step);
+}
+const statsObserver=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      statsObserver.unobserve(e.target);
+      const nums=e.target.querySelectorAll('.stat-num');
+      nums.forEach(n=>{
+        const txt=n.textContent;
+        const val=parseInt(txt.replace(/\D/g,''));
+        const suf=txt.replace(/[\d,]/g,'');
+        animateCount(n,val,suf);
+      });
+    }
+  });
+},{threshold:0.5});
+document.querySelectorAll('.hero-stats').forEach(el=>statsObserver.observe(el));
+</script>
+</body>
+</html>

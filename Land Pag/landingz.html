@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Página Elegante</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8cc80;
+      --dark: #0e0e0e;
+      --dark-2: #161616;
+      --dark-3: #1f1f1f;
+      --cream: #f5f0e8;
+      --muted: #7a7265;
+      --border: rgba(201,168,76,0.2);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dark);
+      color: var(--cream);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background texture ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(201,168,76,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: var(--gold-light);
+    }
+
+    nav a {
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      margin-left: 2.5rem;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: var(--gold-light); }
+
+    /* ── Main Layout ── */
+    main {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 3rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 4rem 4rem 6rem;
+    }
+
+    /* ── Hero / Content ── */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--cream);
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .desc {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--muted);
+      max-width: 520px;
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+
+    /* ── Cards row ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 1.5rem;
+      transition: border-color 0.3s, transform 0.3s;
+      cursor: default;
+    }
+    .card:hover {
+      border-color: rgba(201,168,76,0.5);
+      transform: translateY(-3px);
+    }
+
+    .card-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .card-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .card-desc {
+      font-size: 0.88rem;
+      color: rgba(245,240,232,0.6);
+      margin-top: 0.6rem;
+      line-height: 1.6;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding-top: 0.5rem;
+    }
+
+    /* ── AdSense Box ── */
+    .adsense-box {
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .adsense-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--dark-3);
+    }
+
+    .adsense-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .adsense-badge {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.35);
+      padding: 0.15rem 0.5rem;
+      border-radius: 1px;
+    }
+
+    .adsense-content {
+      padding: 1.5rem;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    /* Área de cole o link */
+    .adsense-input-area {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .adsense-input-area label {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .adsense-input-area input {
+      width: 100%;
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      border-radius: 1px;
+      padding: 0.65rem 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      color: var(--cream);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .adsense-input-area input::placeholder { color: rgba(122,114,101,0.5); }
+    .adsense-input-area input:focus {
+      border-color: rgba(201,168,76,0.6);
+    }
+
+    .btn-apply {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--gold);
+      border-radius: 1px;
+      padding: 0.65rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-apply:hover {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    /* Iframe / embed display */
+    .adsense-iframe-wrap {
+      width: 100%;
+      min-height: 250px;
+      display: none;
+      background: var(--dark-3);
+      align-items: center;
+      justify-content: center;
+    }
+    .adsense-iframe-wrap iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* ── Info card sidebar ── */
+    .info-card {
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 1.5rem;
+    }
+    .info-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 300;
+      color: var(--cream);
+      margin-bottom: 0.8rem;
+    }
+    .info-card p {
+      font-size: 0.84rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    /* ── Gold ornament ── */
+    .ornament {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      color: rgba(201,168,76,0.25);
+      letter-spacing: 0.5em;
+      padding: 0.5rem 0;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 1.8rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-copy {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .footer-links a {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      margin-left: 2rem;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--gold-light); }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .content-area > * { animation: fadeUp 0.7s ease both; }
+    .content-area > *:nth-child(1) { animation-delay: 0.0s; }
+    .content-area > *:nth-child(2) { animation-delay: 0.1s; }
+    .content-area > *:nth-child(3) { animation-delay: 0.2s; }
+    .content-area > *:nth-child(4) { animation-delay: 0.3s; }
+    .content-area > *:nth-child(5) { animation-delay: 0.4s; }
+
+    .sidebar > * { animation: fadeUp 0.7s ease both; }
+    .sidebar > *:nth-child(1) { animation-delay: 0.3s; }
+    .sidebar > *:nth-child(2) { animation-delay: 0.45s; }
+    .sidebar > *:nth-child(3) { animation-delay: 0.55s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; padding: 2rem 1.5rem 4rem; }
+      header { padding: 1.5rem; }
+      footer { padding: 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">ÆTHOS</div>
+    <nav>
+      <a href="#">Início</a>
+      <a href="#">Sobre</a>
+      <a href="#">Artigos</a>
+      <a href="#">Contato</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Conteúdo Principal -->
+    <div class="content-area">
+      <div class="eyebrow">Destaque Editorial</div>
+
+      <h1>
+        Elegância é<br/>
+        <em>intenção</em>,<br/>
+        não ornamento.
+      </h1>
+
+      <p class="desc">
+        Uma experiência refinada começa nos detalhes invisíveis — no espaçamento
+        entre letras, no peso da tipografia, na respiração entre os elementos.
+        Cada escolha aqui é deliberada.
+      </p>
+
+      <div class="divider"></div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-number">01</div>
+          <div class="card-label">Design</div>
+          <div class="card-desc">Composição visual com intenção e precisão estética.</div>
+        </div>
+        <div class="card">
+          <div class="card-number">02</div>
+          <div class="card-label">Conteúdo</div>
+          <div class="card-desc">Narrativa clara que guia o leitor com naturalidade.</div>
+        </div>
+        <div class="card">
+          <div class="card-number">03</div>
+          <div class="card-label">Conversão</div>
+          <div class="card-desc">Monetização integrada sem comprometer a experiência.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+      <!-- Box AdSense -->
+      <div class="adsense-box">
+        <div class="adsense-header">
+          <span class="adsense-label">Anúncio</span>
+          <span class="adsense-badge">AdSense</span>
+        </div>
+        <div class="adsense-content">
+          <div class="adsense-input-area">
+            <label>Cole o link / código do anúncio</label>
+            <input
+              type="text"
+              id="adInput"
+              placeholder="https://... ou código AdSense"
+            />
+            <button class="btn-apply" onclick="applyAd()">Aplicar Anúncio</button>
+          </div>
+          <div class="adsense-iframe-wrap" id="adDisplay">
+            <iframe id="adIframe" src="" height="250" scrolling="no"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Card -->
+      <div class="info-card">
+        <h3>Como usar</h3>
+        <p>
+          Cole acima o link ou o código HTML do seu bloco de anúncio AdSense.
+          O anúncio será exibido automaticamente neste espaço lateral,
+          integrado ao layout sem quebrar a harmonia visual.
+        </p>
+      </div>
+
+      <div class="ornament">✦ · · ✦ · · ✦</div>
+    </div>
+  </main>
+
+  <footer>
+    <span class="footer-copy">© 2026 Æthos · Todos os direitos reservados</span>
+    <div class="footer-links">
+      <a href="#">Privacidade</a>
+      <a href="#">Termos</a>
+      <a href="#">Suporte</a>
+    </div>
+  </footer>
+
+  <script>
+    function applyAd() {
+      const val = document.getElementById('adInput').value.trim();
+      if (!val) return;
+
+      const inputArea = document.querySelector('.adsense-input-area');
+      const display   = document.getElementById('adDisplay');
+      const iframe    = document.getElementById('adIframe');
+
+      // Se for um URL, carrega no iframe
+      if (val.startsWith('http')) {
+        iframe.src = val;
+        inputArea.style.display = 'none';
+        display.style.display   = 'flex';
+      }
+      // Se for código HTML (script/ins do AdSense), injeta diretamente
+      else if (val.includes('<') || val.includes('adsbygoogle')) {
+        inputArea.style.display = 'none';
+        display.style.display   = 'flex';
+        display.innerHTML = val; // injeta o bloco AdSense
+        // Tenta executar scripts injetados
+        display.querySelectorAll('script').forEach(old => {
+          const s = document.createElement('script');
+          s.text = old.text;
+          old.parentNode.replaceChild(s, old);
+        });
+      } else {
+        alert('Por favor insira um URL válido (https://...) ou o código HTML do AdSense.');
+      }
+    }
+
+    // Permite pressionar Enter no campo
+    document.getElementById('adInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') applyAd();
+    });
+  </script>
+</body>
+</html>

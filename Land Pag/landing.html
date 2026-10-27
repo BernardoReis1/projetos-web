@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAULT — Produtos Digitais Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: #0f1219;
+    --surface2: #161b26;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --card-bg: #111620;
+    --glow: rgba(0,229,255,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1.5px solid rgba(0,229,255,0.5); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease-out, width 0.3s, height 0.3s, opacity 0.3s;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1000; opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 2.5rem;
+    background: rgba(8,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem; font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text);
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none;
+    font-size: 0.9rem; font-weight: 500;
+    transition: color 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent); color: #000;
+    padding: 0.55rem 1.4rem; border-radius: 6px;
+    font-size: 0.875rem; font-weight: 600;
+    text-decoration: none; transition: all 0.2s;
+    letter-spacing: 0.01em;
+  }
+  .nav-cta:hover { background: #00bcd4; transform: translateY(-1px); }
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    cursor: none; background: none; border: none; padding: 4px;
+  }
+  .hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--text); border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid; place-items: center;
+    padding: 8rem 2rem 4rem;
+    position: relative; overflow: hidden;
+    text-align: center;
+  }
+  .hero-glow {
+    position: absolute; top: 10%; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 500px;
+    background: radial-gradient(ellipse, rgba(0,229,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-glow2 {
+    position: absolute; bottom: 0; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.2);
+    padding: 0.35rem 1rem; border-radius: 100px;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 1.8rem;
+    animation: fadeDown 0.8s ease both;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 6rem);
+    font-weight: 800; line-height: 1.02;
+    letter-spacing: -0.04em;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    max-width: 560px; margin: 1.5rem auto 0;
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: var(--muted); line-height: 1.7;
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+  .hero-actions {
+    display: flex; gap: 1rem; justify-content: center;
+    flex-wrap: wrap; margin-top: 2.5rem;
+    animation: fadeUp 0.9s 0.3s ease both;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--accent); color: #000;
+    padding: 0.85rem 2rem; border-radius: 8px;
+    font-size: 0.95rem; font-weight: 700; text-decoration: none;
+    transition: all 0.25s; letter-spacing: 0.01em;
+    box-shadow: 0 0 40px rgba(0,229,255,0.3);
+  }
+  .btn-primary:hover { background: #00bcd4; transform: translateY(-2px); box-shadow: 0 0 60px rgba(0,229,255,0.4); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: transparent; color: var(--text);
+    padding: 0.85rem 2rem; border-radius: 8px;
+    font-size: 0.95rem; font-weight: 500; text-decoration: none;
+    border: 1px solid var(--border); transition: all 0.25s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 3rem; justify-content: center;
+    margin-top: 4rem; padding-top: 3rem;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.9s 0.4s ease both;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat strong {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.03em;
+  }
+  .stat span { font-size: 0.82rem; color: var(--muted); letter-spacing: 0.03em; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+
+  /* SCROLLING TICKER */
+  .ticker-wrap {
+    overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    background: var(--surface); padding: 0.85rem 0;
+  }
+  .ticker {
+    display: flex; gap: 0; white-space: nowrap;
+    animation: ticker 28s linear infinite;
+  }
+  .ticker span {
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 0 2.5rem;
+  }
+  .ticker span em { color: var(--accent); font-style: normal; margin-left: 0.6rem; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* SECTIONS */
+  section { padding: 6rem 2rem; position: relative; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1.1; margin-bottom: 1rem;
+  }
+  .section-sub { color: var(--muted); font-size: 1rem; max-width: 480px; line-height: 1.65; }
+
+  /* ADS BANNER */
+  .ads-section { background: var(--surface); padding: 3rem 2rem; }
+  .ads-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem; margin-top: 2rem;
+  }
+  .ad-card {
+    border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--border); position: relative;
+    cursor: none; transition: transform 0.3s, box-shadow 0.3s;
+    background: var(--card-bg);
+    min-height: 180px; display: flex; flex-direction: column;
+  }
+  .ad-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+  .ad-label {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+    color: var(--muted); font-size: 0.65rem;
+    font-weight: 600; letter-spacing: 0.08em;
+    padding: 0.25rem 0.6rem; border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .ad-inner {
+    padding: 1.8rem; flex: 1; display: flex;
+    flex-direction: column; justify-content: space-between;
+  }
+  .ad-inner h3 {
+    font-family: 'Syne', sans-serif; font-size: 1.05rem;
+    font-weight: 700; margin-bottom: 0.5rem;
+  }
+  .ad-inner p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+  .ad-btn {
+    display: inline-block; margin-top: 1.2rem;
+    padding: 0.5rem 1.2rem; border-radius: 6px;
+    font-size: 0.82rem; font-weight: 600;
+    text-decoration: none; transition: all 0.2s; width: fit-content;
+  }
+  .ad-card-1 { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+  .ad-card-1 .accent-line { width: 40px; height: 3px; background: var(--accent); border-radius: 2px; margin-bottom: 1rem; }
+  .ad-card-1 .ad-btn { background: var(--accent); color: #000; }
+  .ad-card-2 { background: linear-gradient(135deg, #1a0a2e 0%, #16042b 100%); }
+  .ad-card-2 .accent-line { width: 40px; height: 3px; background: var(--accent2); border-radius: 2px; margin-bottom: 1rem; }
+  .ad-card-2 .ad-btn { background: var(--accent2); color: #fff; }
+  .ad-card-3 { background: linear-gradient(135deg, #1c1004 0%, #1a0f02 100%); }
+  .ad-card-3 .accent-line { width: 40px; height: 3px; background: var(--accent3); border-radius: 2px; margin-bottom: 1rem; }
+  .ad-card-3 .ad-btn { background: var(--accent3); color: #000; }
+
+  /* FEATURED AD - wide */
+  .ad-featured {
+    grid-column: 1 / -1;
+    min-height: 140px;
+    background: linear-gradient(135deg, #050d1a 0%, #0a1628 50%, #050d1a 100%);
+    border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 12px; overflow: hidden;
+    display: flex; align-items: center;
+    padding: 2rem 2.5rem; gap: 2rem;
+    position: relative; cursor: none;
+    transition: box-shadow 0.3s;
+  }
+  .ad-featured:hover { box-shadow: 0 0 60px rgba(0,229,255,0.08); }
+  .ad-featured::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: linear-gradient(180deg, var(--accent), var(--accent2));
+  }
+  .ad-featured-text { flex: 1; }
+  .ad-featured-text h3 {
+    font-family: 'Syne', sans-serif; font-size: 1.3rem;
+    font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.4rem;
+  }
+  .ad-featured-text p { color: var(--muted); font-size: 0.9rem; }
+  .ad-featured-badge {
+    background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.2);
+    color: var(--accent); font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.3rem 0.8rem; border-radius: 4px; white-space: nowrap;
+    margin-right: 1rem;
+  }
+
+  /* PRODUCTS GRID */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; transition: all 0.35s;
+    cursor: none; position: relative;
+    display: flex; flex-direction: column;
+  }
+  .product-card:hover { transform: translateY(-6px); border-color: rgba(0,229,255,0.2); box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+  .product-card:hover .card-glow { opacity: 1; }
+  .card-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0, rgba(0,229,255,0.06), transparent 60%);
+    opacity: 0; transition: opacity 0.35s; pointer-events: none;
+  }
+  .card-thumb {
+    height: 180px; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; letter-spacing: -0.02em;
+  }
+  .card-thumb-1 { background: linear-gradient(135deg, #0f1a2e, #1a2d4a); }
+  .card-thumb-2 { background: linear-gradient(135deg, #1a0a2e, #2d1040); }
+  .card-thumb-3 { background: linear-gradient(135deg, #0a1a0f, #0f2e1a); }
+  .card-thumb-4 { background: linear-gradient(135deg, #1a150a, #2e200f); }
+  .card-thumb-5 { background: linear-gradient(135deg, #100a1a, #1a0f2e); }
+  .card-thumb-6 { background: linear-gradient(135deg, #001a1a, #002e2e); }
+  .card-type {
+    position: absolute; bottom: 10px; left: 10px;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+    font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; border-radius: 4px; color: var(--muted);
+  }
+  .card-badge {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 0.68rem; font-weight: 700;
+    padding: 0.3rem 0.7rem; border-radius: 4px;
+  }
+  .badge-new { background: rgba(0,229,255,0.15); color: var(--accent); border: 1px solid rgba(0,229,255,0.3); }
+  .badge-hot { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .badge-sale { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+  .card-body { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
+  .card-meta { display: flex; align-items: center; gap: 0.6rem; }
+  .card-cat {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .card-dot { width: 3px; height: 3px; background: var(--border); border-radius: 50%; }
+  .card-rating { font-size: 0.75rem; color: var(--accent3); display: flex; align-items: center; gap: 0.3rem; }
+  .card-title {
+    font-family: 'Syne', sans-serif; font-size: 1.05rem;
+    font-weight: 700; line-height: 1.3; letter-spacing: -0.01em;
+  }
+  .card-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; flex: 1; }
+  .card-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em;
+    padding: 0.25rem 0.6rem; border-radius: 4px;
+    background: rgba(255,255,255,0.05); color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.4rem; border-top: 1px solid var(--border);
+    gap: 1rem;
+  }
+  .card-price { display: flex; align-items: baseline; gap: 0.4rem; }
+  .price-current {
+    font-family: 'Syne', sans-serif; font-size: 1.3rem;
+    font-weight: 800; color: var(--accent);
+  }
+  .price-old {
+    font-size: 0.85rem; color: var(--muted);
+    text-decoration: line-through;
+  }
+  .btn-download {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: rgba(0,229,255,0.1); color: var(--accent);
+    border: 1px solid rgba(0,229,255,0.25);
+    padding: 0.55rem 1.1rem; border-radius: 7px;
+    font-size: 0.82rem; font-weight: 600; text-decoration: none;
+    transition: all 0.25s; white-space: nowrap;
+  }
+  .btn-download:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+  .btn-download svg { width: 14px; height: 14px; }
+
+  /* CATEGORIES */
+  .cats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem; margin-top: 2.5rem;
+  }
+  .cat-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem 1.2rem;
+    text-align: center; cursor: none;
+    transition: all 0.3s; text-decoration: none;
+    display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+  }
+  .cat-card:hover { border-color: rgba(0,229,255,0.2); transform: translateY(-4px); background: var(--surface2); }
+  .cat-icon { font-size: 2.2rem; }
+  .cat-name {
+    font-family: 'Syne', sans-serif; font-size: 0.95rem;
+    font-weight: 700; color: var(--text);
+  }
+  .cat-count { font-size: 0.78rem; color: var(--muted); }
+
+  /* FEATURES */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .feature-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.8rem;
+    transition: border-color 0.3s;
+  }
+  .feature-card:hover { border-color: rgba(0,229,255,0.2); }
+  .feature-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1.2rem;
+  }
+  .fi-1 { background: rgba(0,229,255,0.1); }
+  .fi-2 { background: rgba(124,58,237,0.1); }
+  .fi-3 { background: rgba(245,158,11,0.1); }
+  .fi-4 { background: rgba(34,197,94,0.1); }
+  .feature-card h3 {
+    font-family: 'Syne', sans-serif; font-size: 1rem;
+    font-weight: 700; margin-bottom: 0.5rem;
+  }
+  .feature-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+
+  /* TESTIMONIALS */
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .testi-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.8rem;
+    transition: all 0.3s;
+  }
+  .testi-card:hover { border-color: rgba(255,255,255,0.1); transform: translateY(-3px); }
+  .testi-stars { color: var(--accent3); font-size: 0.9rem; margin-bottom: 1rem; }
+  .testi-text { font-size: 0.925rem; color: var(--muted); line-height: 1.7; font-style: italic; margin-bottom: 1.4rem; }
+  .testi-author { display: flex; align-items: center; gap: 0.8rem; }
+  .testi-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+    background: var(--surface2); border: 1px solid var(--border);
+  }
+  .testi-info strong { font-size: 0.9rem; font-weight: 600; display: block; }
+  .testi-info span { font-size: 0.75rem; color: var(--muted); }
+
+  /* CTA SECTION */
+  .cta-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    padding: 6rem 2rem; text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: ''; position: absolute;
+    top: -200px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; letter-spacing: -0.04em;
+    margin-bottom: 1rem;
+  }
+  .cta-section p { color: var(--muted); max-width: 500px; margin: 0 auto 2.5rem; font-size: 1rem; line-height: 1.7; }
+
+  /* NEWSLETTER */
+  .newsletter-form {
+    display: flex; gap: 0.8rem; justify-content: center;
+    flex-wrap: wrap; margin-top: 2rem;
+  }
+  .newsletter-form input {
+    background: var(--card-bg); border: 1px solid var(--border);
+    color: var(--text); padding: 0.85rem 1.4rem;
+    border-radius: 8px; font-size: 0.9rem;
+    outline: none; width: 300px; max-width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+  }
+  .newsletter-form input:focus { border-color: rgba(0,229,255,0.3); }
+  .newsletter-form input::placeholder { color: var(--muted); }
+
+  /* FOOTER */
+  footer {
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 4rem 2rem 2rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 3rem; margin-bottom: 3rem;
+  }
+  .footer-brand p { color: var(--muted); font-size: 0.875rem; line-height: 1.7; margin-top: 0.8rem; max-width: 240px; }
+  .footer-col h4 {
+    font-family: 'Syne', sans-serif; font-size: 0.9rem;
+    font-weight: 700; margin-bottom: 1.2rem; color: var(--text);
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+  .footer-col ul a { color: var(--muted); text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
+  .footer-col ul a:hover { color: var(--accent); }
+  .footer-bottom {
+    border-top: 1px solid var(--border); padding-top: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+  }
+  .footer-bottom p { color: var(--muted); font-size: 0.8rem; }
+  .social-links { display: flex; gap: 0.8rem; }
+  .social-link {
+    width: 34px; height: 34px; border-radius: 7px;
+    background: var(--card-bg); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); text-decoration: none; font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .social-link:hover { border-color: rgba(0,229,255,0.3); color: var(--accent); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+    z-index: 800; place-items: center;
+  }
+  .modal-overlay.open { display: grid; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2.5rem;
+    max-width: 480px; width: 90%; position: relative;
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .modal-close {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    background: var(--card-bg); border: 1px solid var(--border);
+    color: var(--muted); width: 32px; height: 32px;
+    border-radius: 7px; cursor: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; transition: all 0.2s;
+  }
+  .modal-close:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .modal h3 {
+    font-family: 'Syne', sans-serif; font-size: 1.3rem;
+    font-weight: 800; margin-bottom: 0.5rem;
+  }
+  .modal p { color: var(--muted); font-size: 0.875rem; line-height: 1.65; margin-bottom: 1.5rem; }
+  .modal-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  .progress-bar {
+    width: 100%; height: 6px; background: var(--border);
+    border-radius: 3px; overflow: hidden; margin: 1.2rem 0 0.5rem;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 3px; width: 0%;
+    transition: width 2.5s ease;
+  }
+  .progress-label { font-size: 0.8rem; color: var(--muted); text-align: right; }
+
+  /* HEADER HIGHLIGHT STRIP */
+  .top-strip {
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    text-align: center; padding: 0.5rem 1rem;
+    font-size: 0.8rem; font-weight: 600; color: #fff;
+    letter-spacing: 0.04em;
+  }
+  .top-strip a { color: #fff; text-decoration: underline; }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 0; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 680px) {
+    .nav-links, .nav-cta { display: none; }
+    .hamburger { display: flex; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-stats { gap: 2rem; }
+    .ad-featured { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .ad-featured-badge { margin-right: 0; }
+    nav { padding: 1rem 1.5rem; }
+    section { padding: 4rem 1.2rem; }
+  }
+  @media (max-width: 420px) {
+    .products-grid, .cats-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- TOP STRIP -->
+<div class="top-strip">
+  🎉 Semana do Lançamento — Todos os produtos com <strong>40% OFF</strong>. Use: <strong>VAULT40</strong> &nbsp;·&nbsp; <a href="#">Ver ofertas →</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">VAULT<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#produtos">Produtos</a></li>
+    <li><a href="#categorias">Categorias</a></li>
+    <li><a href="#anuncios">Anúncios</a></li>
+    <li><a href="#depoimentos">Reviews</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Criar Conta →</a>
+  <button class="hamburger" id="menuBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div>
+    <div class="hero-badge">🔐 Plataforma verificada &amp; segura</div>
+    <h1>Produtos Digitais<br>de <em>Alta Conversão</em></h1>
+    <p>Templates, e-books, cursos e assets profissionais para acelerar seus projetos. Download imediato após a compra.</p>
+    <div class="hero-actions">
+      <a href="#produtos" class="btn-primary">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:18px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+        Explorar Produtos
+      </a>
+      <a href="#categorias" class="btn-secondary">Ver Categorias</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong>12K+</strong><span>Clientes ativos</span></div>
+      <div class="stat"><strong>400+</strong><span>Produtos digitais</span></div>
+      <div class="stat"><strong>4.9★</strong><span>Avaliação média</span></div>
+      <div class="stat"><strong>99%</strong><span>Satisfação garantida</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>Templates Canva <em>✦</em></span>
+    <span>E-books Premium <em>✦</em></span>
+    <span>Cursos Online <em>✦</em></span>
+    <span>Assets de Design <em>✦</em></span>
+    <span>Pack de Fontes <em>✦</em></span>
+    <span>Presets Lightroom <em>✦</em></span>
+    <span>Scripts &amp; Automações <em>✦</em></span>
+    <span>Mockups Profissionais <em>✦</em></span>
+    <span>Templates Canva <em>✦</em></span>
+    <span>E-books Premium <em>✦</em></span>
+    <span>Cursos Online <em>✦</em></span>
+    <span>Assets de Design <em>✦</em></span>
+    <span>Pack de Fontes <em>✦</em></span>
+    <span>Presets Lightroom <em>✦</em></span>
+    <span>Scripts &amp; Automações <em>✦</em></span>
+    <span>Mockups Profissionais <em>✦</em></span>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section id="categorias">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Navegar por</p>
+      <h2 class="section-title">Categorias em destaque</h2>
+      <p class="section-sub">Encontre exatamente o que precisa entre centenas de produtos organizados por tipo.</p>
+    </div>
+    <div class="cats-grid reveal">
+      <a href="#" class="cat-card">
+        <div class="cat-icon">🎨</div>
+        <div class="cat-name">Design & Templates</div>
+        <div class="cat-count">128 produtos</div>
+      </a>
+      <a href="#" class="cat-card">
+        <div class="cat-icon">📖</div>
+        <div class="cat-name">E-books & Guias</div>
+        <div class="cat-count">74 produtos</div>
+      </a>
+      <a href="#" class="cat-card">
+        <div class="cat-icon">🎬</div>
+        <div class="cat-name">Vídeo & Motion</div>
+        <div class="cat-count">56 produtos</div>
+      </a>
+      <a href="#" class="cat-card">
+        <div class="cat-icon">💻</div>
+        <div class="cat-name">Código & Scripts</div>
+        <div class="cat-count">89 produtos</div>
+      </a>
+      <a href="#" class="cat-card">
+        <div class="cat-icon">📸</div>
+        <div class="cat-name">Fotografia & Presets</div>
+        <div class="cat-count">42 produtos</div>
+      </a>
+      <a href="#" class="cat-card">
+        <div class="cat-icon">🎓</div>
+        <div class="cat-name">Cursos & Treinamentos</div>
+        <div class="cat-count">31 produtos</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ADS SECTION -->
+<section class="ads-section" id="anuncios">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Espaço patrocinado</p>
+      <h2 class="section-title">Anúncios em destaque</h2>
+      <p class="section-sub">Parceiros e ferramentas recomendados para criadores digitais.</p>
+    </div>
+
+    <div class="ads-grid reveal">
+      <!-- Featured wide ad -->
+      <div class="ad-featured">
+        <div class="ad-label">Anúncio</div>
+        <div class="ad-featured-text">
+          <h3>🚀 Ferramentas para escalar seu negócio digital</h3>
+          <p>Plataforma completa de automação de marketing, funil de vendas e e-mail marketing — tudo integrado.</p>
+        </div>
+        <span class="ad-featured-badge">PARCEIRO OFICIAL</span>
+        <a href="#" class="btn-primary" style="white-space:nowrap;flex-shrink:0">Saiba mais →</a>
+      </div>
+
+      <!-- Ad 1 -->
+      <div class="ad-card ad-card-1">
+        <div class="ad-label">Anúncio</div>
+        <div class="ad-inner">
+          <div>
+            <div class="accent-line"></div>
+            <h3>💡 Crie landing pages que convertem</h3>
+            <p>Arraste, solte e publique em minutos. Mais de 200 templates prontos para qualquer nicho.</p>
+          </div>
+          <a href="#" class="ad-btn">Testar grátis 14 dias →</a>
+        </div>
+      </div>
+
+      <!-- Ad 2 -->
+      <div class="ad-card ad-card-2">
+        <div class="ad-label">Anúncio</div>
+        <div class="ad-inner">
+          <div>
+            <div class="accent-line"></div>
+            <h3>🤖 IA para criar conteúdo 10x mais rápido</h3>
+            <p>Geração de textos, imagens e vídeos para suas redes sociais e estratégias de marketing.</p>
+          </div>
+          <a href="#" class="ad-btn">Ver demonstração →</a>
+        </div>
+      </div>
+
+      <!-- Ad 3 -->
+      <div class="ad-card ad-card-3">
+        <div class="ad-label">Anúncio</div>
+        <div class="ad-inner">
+          <div>
+            <div class="accent-line"></div>
+            <h3>💰 Monetize sua audiência agora</h3>
+            <p>Venda seus próprios produtos digitais com taxa zero. Setup em menos de 5 minutos.</p>
+          </div>
+          <a href="#" class="ad-btn">Começar agora →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRODUCTS -->
+<section id="produtos">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Mais vendidos</p>
+      <h2 class="section-title">Produtos em destaque</h2>
+      <p class="section-sub">Curadoria dos itens com melhor avaliação e maior taxa de conversão da plataforma.</p>
+    </div>
+
+    <div class="products-grid reveal" id="productsGrid">
+
+      <!-- Product 1 -->
+      <div class="product-card">
+        <div class="card-glow"></div>
+        <div class="card-thumb card-thumb-1">
+          <span>🎨</span>
+          <div class="card-type">Template Pack</div>
+          <div class="card-badge badge-hot">🔥 HOT</div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-cat">Design</span>
+            <span class="card-dot"></span>
+            <span class="card-rating">★★★★★ <span style="color:var(--muted)">(312)</span></span>
+          </div>
+          <h3 class="card-title">Kit Completo de Templates Canva Pro</h3>
+          <p class="card-desc">200+ templates editáveis para redes sociais, stories, posts e apresentações. Compatível com Canva Free e Pro.</p>
+          <div class="card-tags">
+            <span class="tag">Canva</span>
+            <span class="tag">Social Media</span>
+            <span class="tag">+200 arquivos</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-price">
+            <span class="price-current">R$47</span>
+            <span class="price-old">R$97</span>
+          </div>
+          <a href="#" class="btn-download" onclick="openModal(event, 'Kit Templates Canva Pro')">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+            Baixar
+          </a>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="product-card">
+        <div class="card-glow"></div>
+        <div class="card-thumb card-thumb-2">
+          <span>📖</span>
+          <div class="card-type">E-book</div>
+          <div class="card-badge badge-new">✦ NOVO</div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-cat">Marketing</span>
+            <span class="card-dot"></span>
+            <span class="card-rating">★★★★★ <span style="color:var(--muted)">(89)</span></span>
+          </div>
+          <h3 class="card-title">Copywriting Magnético — Guia Definitivo</h3>
+          <p class="card-desc">240 páginas com técnicas avançadas de escrita persuasiva para aumentar suas conversões em até 300%.</p>
+          <div class="card-tags">
+            <span class="tag">PDF</span>
+            <span class="tag">Copywriting</span>
+            <span class="tag">240 pgs</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-price">
+            <span class="price-current">R$37</span>
+            <span class="price-old">R$79</span>
+          </div>
+          <a href="#" class="btn-download" onclick="openModal(event, 'Copywriting Magnético')">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+            Baixar
+          </a>
+        </div>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="product-card">
+        <div class="card-glow"></div>
+        <div class="card-thumb card-thumb-3">
+          <span>💻</span>
+          <div class="card-type">Template HTML</div>
+          <div class="card-badge badge-sale">💥 -60%</div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-cat">Desenvolvimento</span>
+            <span class="card-dot"></span>
+            <span class="card-rating">★★★★☆ <span style="color:var(--muted)">(47)</span></span>
+          </div>
+          <h3 class="card-title">Dashboard Admin UI Kit — Dark Edition</h3>
+          <p class="card-desc">Kit completo de componentes HTML/CSS para painéis administrativos. Inclui 50+ componentes responsivos.</p>
+          <div class="card-tags">
+            <span class="tag">HTML/CSS</span>
+            <span class="tag">Dark Mode</span>
+            <span class="tag">50+ comps</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-price">
+            <span class="price-current">R$67</span>
+            <span class="price-old">R$167</span>
+          </div>
+          <a href="#" class="btn-download" onclick="openModal(event, 'Dashboard Admin UI Kit')">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+            Baixar
+          </a>
+        </div>
+      </div>
+
+      <!-- Product 4 -->
+      <div class="product-card">
+        <div class="card-glow"></div>
+        <div class="card-thumb card-thumb-4">
+          <span>📸</span>
+          <div class="card-type">Preset Pack</div>
+          <div class="card-badge badge-new">✦ NOVO</div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-cat">Fotografia</span>
+            <span class="card-dot"></span>
+            <span class="card-rating">★★★★★ <span style="color:var(--muted)">(203)</span></span>
+          </div>
+          <h3 class="card-title">Presets Moody Cinema — Lightroom & Mobile</h3>
+          <p class="card-desc">30 presets profissionais com estética cinematográfica para Lightroom Desktop e Mobile. Resultado em 1 clique.</p>
+          <div class="card-tags">
+            <span class="tag">Lightroom</span>
+            <span class="tag">Mobile</span>
+            <span class="tag">30 presets</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-price">
+            <span class="price-current">R$29</span>
+            <span class="price-old">R$59</span>
+          </div>
+          <a href="#" class="btn-download" onclick="openModal(event, 'Presets Moody Cinema')">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+            Baixar
+          </a>
+        </div>
+      </div>
+
+      <!-- Product 5 -->
+      <div class="product-card">
+        <div class="card-glow"></div>
+        <div class="card-thumb card-thumb-5">
+          <span>⚡</span>
+          <div class="card-type">Script Python</div>
+          <div class="card-badge badge-hot">🔥 HOT</div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-cat">Automação</span>
+            <span class="card-dot"></span>
+            <span class="card-rating">★★★★★ <span style="color:var(--muted)">(128)</span></span>
+          </div>
+          <h3 class="card-title">Bot de Automação para Instagram &amp; TikTok</h3>
+          <p class="card-desc">Scripts Python prontos para automação de engajamento, agendamento de posts e análise de métricas.</p>
+          <div class="card-tags">
+            <span class="tag">Python</span>
+            <span class="tag">API Ready</span>
+            <span class="tag">Suporte 30d</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-price">
+            <span class="price-current">R$97</span>
+            <span class="price-old">R$197</span>
+          </div>
+          <a href="#" class="btn-download" onclick="openModal(event, 'Bot de Automação Social')">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+            Baixar
+          </a>
+        </div>
+      </div>
+
+      <!-- Product 6 -->
+      <div class="product-card">
+        <div class="card-glow"></div>
+        <div class="card-thumb card-thumb-6">
+          <span>🎬</span>
+          <div class="card-type">Motion Pack</div>
+          <div class="card-badge badge-sale">💥 -50%</div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-cat">Vídeo</span>
+            <span class="card-dot"></span>
+            <span class="card-rating">★★★★★ <span style="color:var(--muted)">(76)</span></span>
+          </div>
+          <h3 class="card-title">Pack de Transições e Efeitos After Effects</h3>
+          <p class="card-desc">60 transições cinematográficas e efeitos de texto para After Effects. Drag &amp; Drop, sem plugins extras.</p>
+          <div class="card-tags">
+            <span class="tag">After Effects</span>
+            <span class="tag">60 efeitos</span>
+            <span class="tag">4K Ready</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-price">
+            <span class="price-current">R$57</span>
+            <span class="price-old">R$114</span>
+          </div>
+          <a href="#" class="btn-download" onclick="openModal(event, 'Pack After Effects')">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+            Baixar
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;margin-top:3rem;" class="reveal">
+      <a href="#" class="btn-secondary" style="display:inline-flex">Ver todos os produtos (400+) →</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Por que a VAULT</p>
+      <h2 class="section-title">Sua plataforma de confiança</h2>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon fi-1">⚡</div>
+        <h3>Download Imediato</h3>
+        <p>Após a confirmação do pagamento, o link de download é liberado instantaneamente. Sem filas, sem espera.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-2">🔐</div>
+        <h3>Pagamento 100% Seguro</h3>
+        <p>Criptografia SSL e integração com os principais gateways do mercado. Seus dados sempre protegidos.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-3">💫</div>
+        <h3>Garantia de 7 dias</h3>
+        <p>Não gostou? Devolvemos 100% do seu dinheiro sem burocracia. Nossa missão é sua satisfação total.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-4">📦</div>
+        <h3>Atualizações gratuitas</h3>
+        <p>Todos os produtos recebem atualizações contínuas. Compre uma vez e acesse melhorias para sempre.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TESTIMONIALS -->
+<section id="depoimentos">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Depoimentos</p>
+      <h2 class="section-title">O que nossos clientes dizem</h2>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Os templates do Canva transformaram minha presença digital. Em 2 semanas aumentei meu engajamento em 80%. Produto incrível."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">👩</div>
+          <div class="testi-info">
+            <strong>Mariana Costa</strong>
+            <span>Social Media Manager · SP</span>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"O e-book de copywriting pagou o meu investimento em 3 dias. Apliquei as técnicas e minhas landing pages triplicaram a conversão."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">👨</div>
+          <div class="testi-info">
+            <strong>Rafael Mendes</strong>
+            <span>Empreendedor Digital · RJ</span>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Suporte excepcional e produtos de altíssima qualidade. O Dashboard UI Kit me economizou semanas de desenvolvimento. Vale cada centavo!"</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🧑</div>
+          <div class="testi-info">
+            <strong>Lucas Fernandes</strong>
+            <span>Dev Fullstack · MG</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <p class="section-label">Newsletter</p>
+  <h2>Novos produtos toda semana</h2>
+  <p>Cadastre-se e receba em primeira mão lançamentos, promoções exclusivas e conteúdo gratuito direto no seu e-mail.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="seu@email.com" id="emailInput">
+    <a href="#" class="btn-primary" onclick="handleNewsletter(event)">Quero receber →</a>
+  </div>
+  <p id="newsletterMsg" style="margin-top:1rem;font-size:0.85rem;color:var(--accent);display:none;">✅ Incrível! Você está na lista. Bem-vindo à VAULT.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo">VAULT<span style="color:var(--accent)">.</span></div>
+        <p>A plataforma premium para quem cria, vende e baixa produtos digitais com confiança.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Produtos</h4>
+        <ul>
+          <li><a href="#">Templates</a></li>
+          <li><a href="#">E-books</a></li>
+          <li><a href="#">Cursos</a></li>
+          <li><a href="#">Presets</a></li>
+          <li><a href="#">Scripts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="#">Como funciona</a></li>
+          <li><a href="#">Vender na VAULT</a></li>
+          <li><a href="#">Afiliados</a></li>
+          <li><a href="#">Anunciar</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Suporte</h4>
+        <ul>
+          <li><a href="#">Central de ajuda</a></li>
+          <li><a href="#">Política de reembolso</a></li>
+          <li><a href="#">Termos de uso</a></li>
+          <li><a href="#">Privacidade</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 VAULT Digital. Todos os direitos reservados.</p>
+      <div class="social-links">
+        <a href="#" class="social-link" title="Instagram">ig</a>
+        <a href="#" class="social-link" title="Twitter">tw</a>
+        <a href="#" class="social-link" title="YouTube">yt</a>
+        <a href="#" class="social-link" title="LinkedIn">in</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- DOWNLOAD MODAL -->
+<div class="modal-overlay" id="downloadModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="font-size:2rem;margin-bottom:1rem;">📦</div>
+    <h3 id="modalTitle">Preparando seu download...</h3>
+    <p id="modalDesc">Aguarde enquanto verificamos sua licença e preparamos o arquivo para download.</p>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <p class="progress-label" id="progressLabel">0%</p>
+    <div class="modal-actions" id="modalActions" style="display:none;">
+      <a href="#" class="btn-primary">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+        Baixar arquivo
+      </a>
+      <button onclick="closeModal()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.55rem 1.2rem;border-radius:8px;font-size:0.875rem;cursor:none;">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx=0, my=0, rx=0, ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+  function animRing() { rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
+  animRing();
+  document.querySelectorAll('a,button,.cat-card,.product-card,.ad-card,.testi-card').forEach(el => {
+    el.addEventListener('mouseenter',()=>{ cursor.style.transform='translate(-50%,-50%) scale(2)'; ring.style.transform='translate(-50%,-50%) scale(1.5)'; ring.style.opacity='0.5'; });
+    el.addEventListener('mouseleave',()=>{ cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.transform='translate(-50%,-50%) scale(1)'; ring.style.opacity='1'; });
+  });
+
+  // SCROLL REVEAL
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // MODAL
+  function openModal(e, name) {
+    e.preventDefault();
+    document.getElementById('downloadModal').classList.add('open');
+    document.getElementById('modalTitle').textContent = name;
+    document.getElementById('modalDesc').textContent = 'Aguarde enquanto verificamos sua licença e preparamos o arquivo para download.';
+    document.getElementById('modalActions').style.display = 'none';
+    document.getElementById('progressLabel').textContent = '0%';
+    const fill = document.getElementById('progressFill');
+    fill.style.width = '0%';
+    setTimeout(()=>{ fill.style.width='100%'; }, 100);
+    let pct=0;
+    const iv = setInterval(()=>{
+      pct = Math.min(pct+Math.random()*18, 100);
+      document.getElementById('progressLabel').textContent = Math.floor(pct)+'%';
+      if(pct>=100) {
+        clearInterval(iv);
+        document.getElementById('progressLabel').textContent = '100% — Pronto!';
+        document.getElementById('modalTitle').textContent = '✅ Download pronto!';
+        document.getElementById('modalDesc').textContent = `Seu arquivo "${name}" está pronto. Clique abaixo para baixar.`;
+        document.getElementById('modalActions').style.display = 'flex';
+      }
+    }, 220);
+  }
+  function closeModal() { document.getElementById('downloadModal').classList.remove('open'); }
+  document.getElementById('downloadModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+  // NEWSLETTER
+  function handleNewsletter(e) {
+    e.preventDefault();
+    const v = document.getElementById('emailInput').value;
+    if(v&&v.includes('@')) {
+      document.getElementById('newsletterMsg').style.display='block';
+      document.getElementById('emailInput').value='';
+    }
+  }
+</script>
+</body>
+</html>

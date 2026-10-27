@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAULT — Produtos Digitais Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080d;
+  --surface: #0b0e16;
+  --surface2: #10141f;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --gold: #c9a96e;
+  --gold2: #e8c98a;
+  --cyan: #00d4ff;
+  --violet: #8b5cf6;
+  --text: #eef0f6;
+  --muted: #6b7585;
+  --muted2: #9aa0b2;
+  --card: #0e1220;
+  --card2: #111625;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none;}
+
+/* ─── CURSOR ─── */
+#cur{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;}
+#cur-r{position:fixed;width:32px;height:32px;border:1px solid rgba(201,169,110,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s,opacity .3s;}
+
+/* ─── NOISE ─── */
+body::after{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;}
+
+/* ─── TOP STRIP ─── */
+.strip{background:linear-gradient(90deg,#1a0e2e,#0e1628,#1a0e2e);border-bottom:1px solid rgba(139,92,246,.2);text-align:center;padding:.55rem 1rem;font-size:.78rem;font-weight:500;color:var(--muted2);letter-spacing:.04em;}
+.strip strong{color:var(--gold);}
+.strip a{color:var(--gold);text-decoration:none;opacity:.8;}
+.strip a:hover{opacity:1;}
+
+/* ─── NAV ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:600;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 3rem;background:rgba(6,8,13,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;letter-spacing:-.03em;color:var(--text);}
+.nav-logo span{color:var(--gold);}
+.nav-links{display:flex;gap:2.2rem;list-style:none;}
+.nav-links a{color:var(--muted2);text-decoration:none;font-size:.875rem;font-weight:500;letter-spacing:.03em;transition:color .2s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:.5rem 1.4rem;border-radius:4px;font-size:.825rem;font-weight:600;text-decoration:none;letter-spacing:.04em;transition:all .25s;}
+.nav-cta:hover{background:var(--gold);color:#000;}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:none;padding:4px;}
+.hamburger span{display:block;width:22px;height:1.5px;background:var(--text);border-radius:2px;transition:all .3s;}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:grid;place-items:center;padding:9rem 2rem 5rem;position:relative;overflow:hidden;text-align:center;}
+.hero-orb1{position:absolute;top:5%;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse,rgba(201,169,110,.07) 0%,transparent 65%);pointer-events:none;}
+.hero-orb2{position:absolute;bottom:-10%;right:-5%;width:500px;height:500px;background:radial-gradient(ellipse,rgba(139,92,246,.08) 0%,transparent 65%);pointer-events:none;}
+.hero-orb3{position:absolute;top:30%;left:-8%;width:350px;height:350px;background:radial-gradient(ellipse,rgba(0,212,255,.05) 0%,transparent 70%);pointer-events:none;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.6rem;padding:.35rem 1.1rem;border:1px solid rgba(201,169,110,.25);border-radius:100px;font-size:.72rem;font-weight:600;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2rem;background:rgba(201,169,110,.05);animation:fadeUp .8s ease both;}
+.hero-dot{width:5px;height:5px;background:var(--gold);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,7.5vw,6.5rem);font-weight:900;line-height:1;letter-spacing:-.03em;animation:fadeUp .9s .08s ease both;}
+.hero h1 em{font-style:italic;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{max-width:520px;margin:1.6rem auto 0;font-size:1.05rem;color:var(--muted2);line-height:1.75;font-weight:300;animation:fadeUp .9s .16s ease both;}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem;animation:fadeUp .9s .24s ease both;}
+.btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:var(--gold);color:#000;padding:.8rem 2rem;border-radius:4px;font-size:.9rem;font-weight:700;text-decoration:none;letter-spacing:.03em;transition:all .25s;box-shadow:0 0 40px rgba(201,169,110,.25);}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 0 60px rgba(201,169,110,.35);}
+.btn-ghost{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--text);padding:.8rem 2rem;border-radius:4px;font-size:.9rem;font-weight:500;text-decoration:none;border:1px solid var(--border2);transition:all .25s;}
+.btn-ghost:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04);transform:translateY(-2px);}
+.hero-stats{display:flex;gap:3.5rem;justify-content:center;flex-wrap:wrap;margin-top:4rem;padding-top:3rem;border-top:1px solid var(--border);animation:fadeUp .9s .32s ease both;}
+.stat strong{display:block;font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--gold);letter-spacing:-.02em;}
+.stat span{font-size:.78rem;color:var(--muted);letter-spacing:.04em;font-weight:400;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── TICKER ─── */
+.ticker-wrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface);padding:.8rem 0;}
+.ticker{display:flex;white-space:nowrap;animation:tick 30s linear infinite;}
+.ticker span{font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;padding:0 2rem;}
+.ticker span em{color:var(--gold);font-style:normal;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ─── LAYOUT HELPERS ─── */
+section{padding:6rem 2rem;position:relative;}
+.container{max-width:1180px;margin:0 auto;}
+.s-label{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem;}
+.s-title{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,4vw,3rem);font-weight:700;letter-spacing:-.025em;line-height:1.1;margin-bottom:.9rem;}
+.s-sub{color:var(--muted2);font-size:.95rem;max-width:460px;line-height:1.7;font-weight:300;}
+.divider{height:1px;background:var(--border);}
+
+/* ─── ADSENSE BLOCK ─── */
+.adsense-section{background:var(--surface);padding:3rem 2rem;}
+.adsense-wrap{max-width:1180px;margin:0 auto;}
+.adsense-header{margin-bottom:1.8rem;}
+.adsense-row{display:grid;gap:1.5rem;grid-template-columns:1fr 300px;}
+.adsense-main-slot{border-radius:12px;overflow:hidden;border:1px dashed rgba(201,169,110,.2);background:var(--card);min-height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;position:relative;transition:border-color .3s;}
+.adsense-main-slot:hover{border-color:rgba(201,169,110,.4);}
+.adsense-main-slot .ad-placeholder-icon{font-size:2.2rem;opacity:.4;}
+.adsense-main-slot .ad-placeholder-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--muted2);text-align:center;}
+.adsense-main-slot .ad-placeholder-desc{font-size:.78rem;color:var(--muted);text-align:center;max-width:280px;line-height:1.6;}
+.adsense-main-slot code{font-size:.72rem;background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.15);color:var(--gold);padding:.35rem .8rem;border-radius:4px;font-family:monospace;letter-spacing:.02em;}
+.adsense-sidebar{display:flex;flex-direction:column;gap:1.5rem;}
+.adsense-slot-sm{border-radius:12px;overflow:hidden;border:1px dashed rgba(139,92,246,.25);background:var(--card);min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;transition:border-color .3s;}
+.adsense-slot-sm:hover{border-color:rgba(139,92,246,.45);}
+.adsense-slot-sm .ad-placeholder-title{font-size:.85rem;color:var(--muted2);font-weight:600;text-align:center;}
+.adsense-slot-sm code{font-size:.68rem;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15);color:#a78bfa;padding:.25rem .6rem;border-radius:4px;font-family:monospace;}
+.adsense-corner-badge{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);color:var(--muted);font-size:.6rem;font-weight:700;letter-spacing:.08em;padding:.2rem .55rem;border-radius:3px;text-transform:uppercase;}
+.adsense-hint{margin-top:1rem;font-size:.78rem;color:var(--muted);line-height:1.65;background:rgba(201,169,110,.04);border:1px solid rgba(201,169,110,.1);border-radius:8px;padding:1rem 1.2rem;}
+.adsense-hint code{color:var(--gold);font-family:monospace;background:rgba(201,169,110,.08);padding:.1rem .4rem;border-radius:3px;}
+
+/* ─── CATEGORIES ─── */
+.cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;margin-top:2.5rem;}
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.6rem 1.2rem;text-align:center;cursor:none;transition:all .3s;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:.7rem;position:relative;overflow:hidden;}
+.cat-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(201,169,110,.06),transparent 60%);opacity:0;transition:opacity .3s;}
+.cat-card:hover{border-color:rgba(201,169,110,.25);transform:translateY(-4px);}
+.cat-card:hover::before{opacity:1;}
+.cat-icon{font-size:2rem;}
+.cat-name{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--text);}
+.cat-count{font-size:.72rem;color:var(--muted);font-weight:400;}
+
+/* ─── PRODUCTS ─── */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.5rem;margin-top:3rem;}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .35s;cursor:none;display:flex;flex-direction:column;position:relative;}
+.product-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(201,169,110,.05),transparent 50%);opacity:0;transition:opacity .35s;pointer-events:none;z-index:0;}
+.product-card:hover{transform:translateY(-6px);border-color:rgba(201,169,110,.2);box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.product-card:hover::before{opacity:1;}
+.card-thumb{height:190px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden;flex-shrink:0;}
+.ct1{background:linear-gradient(135deg,#0b1525,#162540);}
+.ct2{background:linear-gradient(135deg,#150920,#25123a);}
+.ct3{background:linear-gradient(135deg,#091a0f,#0f2e1a);}
+.ct4{background:linear-gradient(135deg,#1a120a,#2a1e0e);}
+.ct5{background:linear-gradient(135deg,#0d0a1c,#170e2e);}
+.ct6{background:linear-gradient(135deg,#001818,#002525);}
+.card-thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5));pointer-events:none;}
+.card-type-lbl{position:absolute;bottom:10px;left:10px;z-index:1;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.28rem .65rem;border-radius:3px;color:var(--muted2);}
+.card-badge{position:absolute;top:10px;right:10px;z-index:1;font-size:.62rem;font-weight:700;padding:.28rem .65rem;border-radius:3px;letter-spacing:.04em;}
+.badge-new{background:rgba(201,169,110,.12);color:var(--gold);border:1px solid rgba(201,169,110,.3);}
+.badge-hot{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);}
+.badge-sale{background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.25);}
+.card-body{padding:1.4rem;flex:1;display:flex;flex-direction:column;gap:.7rem;position:relative;z-index:1;}
+.card-meta{display:flex;align-items:center;gap:.55rem;}
+.card-cat{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);}
+.card-dot{width:3px;height:3px;background:var(--border2);border-radius:50%;}
+.card-rating{font-size:.72rem;color:#f59e0b;display:flex;align-items:center;gap:.25rem;}
+.card-rating span{color:var(--muted);}
+.card-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;line-height:1.3;letter-spacing:-.01em;}
+.card-desc{font-size:.83rem;color:var(--muted2);line-height:1.65;font-weight:300;flex:1;}
+.card-tags{display:flex;gap:.4rem;flex-wrap:wrap;}
+.tag{font-size:.65rem;font-weight:600;letter-spacing:.04em;padding:.22rem .55rem;border-radius:3px;background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border);}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;border-top:1px solid var(--border);gap:1rem;position:relative;z-index:1;}
+.price-current{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:var(--gold);}
+.price-old{font-size:.82rem;color:var(--muted);text-decoration:line-through;margin-left:.3rem;}
+.btn-get{display:inline-flex;align-items:center;gap:.4rem;background:rgba(201,169,110,.08);color:var(--gold);border:1px solid rgba(201,169,110,.2);padding:.5rem 1.1rem;border-radius:4px;font-size:.8rem;font-weight:600;text-decoration:none;transition:all .25s;white-space:nowrap;}
+.btn-get:hover{background:var(--gold);color:#000;border-color:var(--gold);}
+
+/* ─── FEATURES ─── */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.2rem;margin-top:3rem;}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.8rem;transition:border-color .3s;}
+.feature-card:hover{border-color:rgba(201,169,110,.2);}
+.fi-icon{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1.2rem;}
+.fi-a{background:rgba(201,169,110,.08);}
+.fi-b{background:rgba(139,92,246,.08);}
+.fi-c{background:rgba(0,212,255,.08);}
+.fi-d{background:rgba(34,197,94,.08);}
+.feature-card h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:.5rem;}
+.feature-card p{font-size:.845rem;color:var(--muted2);line-height:1.7;font-weight:300;}
+
+/* ─── TESTIMONIALS ─── */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.2rem;margin-top:3rem;}
+.testi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:all .3s;position:relative;overflow:hidden;}
+.testi-card::before{content:'"';position:absolute;top:.5rem;right:1.5rem;font-family:'Playfair Display',serif;font-size:8rem;color:rgba(201,169,110,.05);line-height:1;pointer-events:none;}
+.testi-card:hover{border-color:rgba(255,255,255,.1);transform:translateY(-3px);}
+.testi-stars{color:#f59e0b;font-size:.85rem;margin-bottom:1rem;letter-spacing:.1em;}
+.testi-text{font-size:.9rem;color:var(--muted2);line-height:1.75;font-style:italic;margin-bottom:1.5rem;font-weight:300;}
+.testi-author{display:flex;align-items:center;gap:.8rem;}
+.testi-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;background:var(--surface2);border:1px solid var(--border);}
+.testi-info strong{font-size:.875rem;font-weight:600;display:block;}
+.testi-info span{font-size:.72rem;color:var(--muted);}
+
+/* ─── CTA ─── */
+.cta-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6rem 2rem;text-align:center;position:relative;overflow:hidden;}
+.cta-section::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(201,169,110,.06) 0%,transparent 65%);pointer-events:none;}
+.cta-section h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:700;letter-spacing:-.03em;margin-bottom:1rem;}
+.cta-section p{color:var(--muted2);max-width:460px;margin:0 auto 2.5rem;font-size:.975rem;line-height:1.75;font-weight:300;}
+.nl-form{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
+.nl-form input{background:var(--card);border:1px solid var(--border2);color:var(--text);padding:.8rem 1.4rem;border-radius:4px;font-size:.9rem;outline:none;width:290px;max-width:100%;font-family:'Outfit',sans-serif;transition:border-color .2s;}
+.nl-form input:focus{border-color:rgba(201,169,110,.35);}
+.nl-form input::placeholder{color:var(--muted);}
+
+/* ─── FOOTER ─── */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:4rem 2rem 2rem;}
+.footer-grid{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:3rem;margin-bottom:3rem;}
+.footer-brand p{color:var(--muted2);font-size:.85rem;line-height:1.75;margin-top:.8rem;max-width:230px;font-weight:300;}
+.footer-col h4{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;margin-bottom:1.2rem;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.6rem;}
+.footer-col ul a{color:var(--muted2);text-decoration:none;font-size:.845rem;transition:color .2s;font-weight:300;}
+.footer-col ul a:hover{color:var(--gold);}
+.footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.footer-bottom p{color:var(--muted);font-size:.78rem;}
+.socials{display:flex;gap:.6rem;}
+.sc{width:32px;height:32px;border-radius:4px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted2);text-decoration:none;font-size:.78rem;font-weight:600;transition:all .2s;}
+.sc:hover{border-color:rgba(201,169,110,.3);color:var(--gold);}
+
+/* ─── MODAL ─── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:800;place-items:center;}
+.modal-overlay.open{display:grid;}
+.modal{background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:2.5rem;max-width:440px;width:90%;position:relative;animation:modIn .3s ease;}
+@keyframes modIn{from{opacity:0;transform:scale(.95) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close{position:absolute;top:1.1rem;right:1.1rem;background:var(--card);border:1px solid var(--border);color:var(--muted2);width:30px;height:30px;border-radius:5px;cursor:none;display:flex;align-items:center;justify-content:center;font-size:.875rem;transition:all .2s;}
+.modal-close:hover{color:var(--text);border-color:var(--border2);}
+.modal h3{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;margin-bottom:.5rem;}
+.modal p{color:var(--muted2);font-size:.85rem;line-height:1.65;margin-bottom:1.5rem;font-weight:300;}
+.progress-bar{width:100%;height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:1.2rem 0 .5rem;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--violet),var(--gold));border-radius:2px;width:0%;transition:width 2.5s ease;}
+.progress-label{font-size:.75rem;color:var(--muted);text-align:right;}
+.modal-actions{display:flex;gap:.7rem;flex-wrap:wrap;}
+
+/* ─── REVEAL ─── */
+.reveal{opacity:0;transform:translateY(28px);transition:all .65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:960px){
+  .adsense-row{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:680px){
+  nav{padding:1rem 1.5rem;}
+  .nav-links,.nav-cta{display:none;}
+  .hamburger{display:flex;}
+  .footer-grid{grid-template-columns:1fr;gap:2rem;}
+  .hero-stats{gap:2rem;}
+  section{padding:4rem 1.2rem;}
+}
+@media(max-width:420px){
+  .products-grid,.cats-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-r"></div>
+
+<!-- STRIP -->
+<div class="strip">🎁 Semana de Lançamento — <strong>40% OFF</strong> em tudo · Cupom: <strong>VAULT40</strong> &nbsp;·&nbsp; <a href="#">Ver ofertas →</a></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">VAULT<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#produtos">Produtos</a></li>
+    <li><a href="#categorias">Categorias</a></li>
+    <li><a href="#adsense-block">Anúncios</a></li>
+    <li><a href="#depoimentos">Reviews</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Criar Conta</a>
+  <button class="hamburger" id="menuBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb1"></div>
+  <div class="hero-orb2"></div>
+  <div class="hero-orb3"></div>
+  <div>
+    <div class="hero-eyebrow"><span class="hero-dot"></span>Plataforma verificada &amp; segura</div>
+    <h1>Produtos Digitais<br>de <em>Alta Conversão</em></h1>
+    <p class="hero-sub">Templates, e-books, cursos e assets profissionais para acelerar seus projetos. Download imediato após a compra.</p>
+    <div class="hero-actions">
+      <a href="#produtos" class="btn-primary">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+        Explorar Produtos
+      </a>
+      <a href="#categorias" class="btn-ghost">Ver Categorias</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong>12K+</strong><span>Clientes ativos</span></div>
+      <div class="stat"><strong>400+</strong><span>Produtos digitais</span></div>
+      <div class="stat"><strong>4.9★</strong><span>Avaliação média</span></div>
+      <div class="stat"><strong>99%</strong><span>Satisfação garantida</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>Templates Canva <em>✦</em></span><span>E-books Premium <em>✦</em></span><span>Cursos Online <em>✦</em></span>
+    <span>Assets de Design <em>✦</em></span><span>Pack de Fontes <em>✦</em></span><span>Presets Lightroom <em>✦</em></span>
+    <span>Scripts &amp; Automações <em>✦</em></span><span>Mockups Profissionais <em>✦</em></span>
+    <span>Templates Canva <em>✦</em></span><span>E-books Premium <em>✦</em></span><span>Cursos Online <em>✦</em></span>
+    <span>Assets de Design <em>✦</em></span><span>Pack de Fontes <em>✦</em></span><span>Presets Lightroom <em>✦</em></span>
+    <span>Scripts &amp; Automações <em>✦</em></span><span>Mockups Profissionais <em>✦</em></span>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section id="categorias">
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Navegar por</p>
+      <h2 class="s-title">Categorias em destaque</h2>
+      <p class="s-sub">Encontre o que precisa entre centenas de produtos organizados por tipo.</p>
+    </div>
+    <div class="cats-grid reveal">
+      <a href="#" class="cat-card"><div class="cat-icon">🎨</div><div class="cat-name">Design &amp; Templates</div><div class="cat-count">128 produtos</div></a>
+      <a href="#" class="cat-card"><div class="cat-icon">📖</div><div class="cat-name">E-books &amp; Guias</div><div class="cat-count">74 produtos</div></a>
+      <a href="#" class="cat-card"><div class="cat-icon">🎬</div><div class="cat-name">Vídeo &amp; Motion</div><div class="cat-count">56 produtos</div></a>
+      <a href="#" class="cat-card"><div class="cat-icon">💻</div><div class="cat-name">Código &amp; Scripts</div><div class="cat-count">89 produtos</div></a>
+      <a href="#" class="cat-card"><div class="cat-icon">📸</div><div class="cat-name">Fotografia &amp; Presets</div><div class="cat-count">42 produtos</div></a>
+      <a href="#" class="cat-card"><div class="cat-icon">🎓</div><div class="cat-name">Cursos &amp; Treinamentos</div><div class="cat-count">31 produtos</div></a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════
+     ADSENSE BLOCK — Cole seu código aqui
+════════════════════════════════════════════ -->
+<section class="adsense-section" id="adsense-block">
+  <div class="adsense-wrap">
+    <div class="adsense-header reveal">
+      <p class="s-label">Espaço patrocinado</p>
+      <h2 class="s-title">Anúncios em destaque</h2>
+    </div>
+
+    <div class="adsense-row reveal">
+
+      <!-- ★ SLOT PRINCIPAL — substitua o bloco abaixo pelo seu código AdSense ★ -->
+      <div class="adsense-main-slot">
+        <div class="adsense-corner-badge">Anúncio</div>
+        <div class="ad-placeholder-icon">📰</div>
+        <div class="ad-placeholder-title">Slot principal — 728×90 ou Responsivo</div>
+        <div class="ad-placeholder-desc">Cole aqui o código do seu anúncio Google AdSense. Tamanho recomendado: Banner 728×90, Retângulo 336×280 ou Responsivo.</div>
+        <code>&lt;!-- Cole seu script AdSense aqui --&gt;</code>
+
+        <!--
+        ════════════════════════════════════════════════
+        EXEMPLO DE CÓDIGO ADSENSE (substitua pelos seus dados):
+
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        ════════════════════════════════════════════════
+        -->
+      </div>
+
+      <!-- ★ SLOTS LATERAIS — dois slots menores (300×250 cada) ★ -->
+      <div class="adsense-sidebar">
+        <div class="adsense-slot-sm">
+          <div style="font-size:1.4rem;opacity:.35;">📦</div>
+          <div class="ad-placeholder-title">Slot lateral 1<br>300×250</div>
+          <code>&lt;!-- AdSense slot 2 --&gt;</code>
+          <!--
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:inline-block;width:300px;height:250px"
+               data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+               data-ad-slot="XXXXXXXXXX"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+          -->
+        </div>
+        <div class="adsense-slot-sm">
+          <div style="font-size:1.4rem;opacity:.35;">🎯</div>
+          <div class="ad-placeholder-title">Slot lateral 2<br>300×250</div>
+          <code>&lt;!-- AdSense slot 3 --&gt;</code>
+          <!--
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:inline-block;width:300px;height:250px"
+               data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+               data-ad-slot="XXXXXXXXXX"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+          -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Dica de instrução -->
+    <div class="adsense-hint reveal">
+      💡 <strong>Como usar:</strong> Abra o arquivo HTML, localize os comentários <code>&lt;!-- Cole seu script AdSense aqui --&gt;</code> e substitua pelo código do seu painel <a href="https://adsense.google.com" target="_blank" style="color:var(--gold)">Google AdSense</a>. Você tem 3 slots disponíveis: 1 principal (largo) e 2 laterais (300×250).
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRODUCTS -->
+<section id="produtos">
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Mais vendidos</p>
+      <h2 class="s-title">Produtos em destaque</h2>
+      <p class="s-sub">Curadoria dos itens com melhor avaliação e maior taxa de conversão.</p>
+    </div>
+    <div class="products-grid reveal">
+
+      <div class="product-card">
+        <div class="card-thumb ct1"><span>🎨</span><div class="card-type-lbl">Template Pack</div><div class="card-badge badge-hot">🔥 HOT</div></div>
+        <div class="card-body">
+          <div class="card-meta"><span class="card-cat">Design</span><span class="card-dot"></span><span class="card-rating">★★★★★ <span>(312)</span></span></div>
+          <h3 class="card-title">Kit Completo de Templates Canva Pro</h3>
+          <p class="card-desc">200+ templates editáveis para redes sociais, stories, posts e apresentações. Compatível com Canva Free e Pro.</p>
+          <div class="card-tags"><span class="tag">Canva</span><span class="tag">Social Media</span><span class="tag">+200 arquivos</span></div>
+        </div>
+        <div class="card-footer">
+          <div><span class="price-current">R$47</span><span class="price-old">R$97</span></div>
+          <a href="#" class="btn-get" onclick="openModal(event,'Kit Templates Canva Pro')">
+            <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>Baixar
+          </a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="card-thumb ct2"><span>📖</span><div class="card-type-lbl">E-book</div><div class="card-badge badge-new">✦ NOVO</div></div>
+        <div class="card-body">
+          <div class="card-meta"><span class="card-cat">Marketing</span><span class="card-dot"></span><span class="card-rating">★★★★★ <span>(89)</span></span></div>
+          <h3 class="card-title">Copywriting Magnético — Guia Definitivo</h3>
+          <p class="card-desc">240 páginas com técnicas avançadas de escrita persuasiva para aumentar conversões em até 300%.</p>
+          <div class="card-tags"><span class="tag">PDF</span><span class="tag">Copywriting</span><span class="tag">240 pgs</span></div>
+        </div>
+        <div class="card-footer">
+          <div><span class="price-current">R$37</span><span class="price-old">R$79</span></div>
+          <a href="#" class="btn-get" onclick="openModal(event,'Copywriting Magnético')">
+            <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>Baixar
+          </a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="card-thumb ct3"><span>💻</span><div class="card-type-lbl">Template HTML</div><div class="card-badge badge-sale">💥 -60%</div></div>
+        <div class="card-body">
+          <div class="card-meta"><span class="card-cat">Desenvolvimento</span><span class="card-dot"></span><span class="card-rating">★★★★☆ <span>(47)</span></span></div>
+          <h3 class="card-title">Dashboard Admin UI Kit — Dark Edition</h3>
+          <p class="card-desc">Kit completo de componentes HTML/CSS para painéis administrativos. 50+ componentes responsivos.</p>
+          <div class="card-tags"><span class="tag">HTML/CSS</span><span class="tag">Dark Mode</span><span class="tag">50+ comps</span></div>
+        </div>
+        <div class="card-footer">
+          <div><span class="price-current">R$67</span><span class="price-old">R$167</span></div>
+          <a href="#" class="btn-get" onclick="openModal(event,'Dashboard Admin UI Kit')">
+            <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>Baixar
+          </a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="card-thumb ct4"><span>📸</span><div class="card-type-lbl">Preset Pack</div><div class="card-badge badge-new">✦ NOVO</div></div>
+        <div class="card-body">
+          <div class="card-meta"><span class="card-cat">Fotografia</span><span class="card-dot"></span><span class="card-rating">★★★★★ <span>(203)</span></span></div>
+          <h3 class="card-title">Presets Moody Cinema — Lightroom &amp; Mobile</h3>
+          <p class="card-desc">30 presets profissionais com estética cinematográfica para Lightroom Desktop e Mobile.</p>
+          <div class="card-tags"><span class="tag">Lightroom</span><span class="tag">Mobile</span><span class="tag">30 presets</span></div>
+        </div>
+        <div class="card-footer">
+          <div><span class="price-current">R$29</span><span class="price-old">R$59</span></div>
+          <a href="#" class="btn-get" onclick="openModal(event,'Presets Moody Cinema')">
+            <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>Baixar
+          </a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="card-thumb ct5"><span>⚡</span><div class="card-type-lbl">Script Python</div><div class="card-badge badge-hot">🔥 HOT</div></div>
+        <div class="card-body">
+          <div class="card-meta"><span class="card-cat">Automação</span><span class="card-dot"></span><span class="card-rating">★★★★★ <span>(128)</span></span></div>
+          <h3 class="card-title">Bot de Automação para Instagram &amp; TikTok</h3>
+          <p class="card-desc">Scripts Python prontos para automação de engajamento, agendamento e análise de métricas.</p>
+          <div class="card-tags"><span class="tag">Python</span><span class="tag">API Ready</span><span class="tag">Suporte 30d</span></div>
+        </div>
+        <div class="card-footer">
+          <div><span class="price-current">R$97</span><span class="price-old">R$197</span></div>
+          <a href="#" class="btn-get" onclick="openModal(event,'Bot de Automação Social')">
+            <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>Baixar
+          </a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="card-thumb ct6"><span>🎬</span><div class="card-type-lbl">Motion Pack</div><div class="card-badge badge-sale">💥 -50%</div></div>
+        <div class="card-body">
+          <div class="card-meta"><span class="card-cat">Vídeo</span><span class="card-dot"></span><span class="card-rating">★★★★★ <span>(76)</span></span></div>
+          <h3 class="card-title">Pack de Transições &amp; Efeitos After Effects</h3>
+          <p class="card-desc">60 transições cinematográficas e efeitos de texto para After Effects. Drag &amp; Drop, sem plugins extras.</p>
+          <div class="card-tags"><span class="tag">After Effects</span><span class="tag">60 efeitos</span><span class="tag">4K Ready</span></div>
+        </div>
+        <div class="card-footer">
+          <div><span class="price-current">R$57</span><span class="price-old">R$114</span></div>
+          <a href="#" class="btn-get" onclick="openModal(event,'Pack After Effects')">
+            <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>Baixar
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:3rem;" class="reveal">
+      <a href="#" class="btn-ghost" style="display:inline-flex;">Ver todos os produtos (400+) →</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Por que a VAULT</p>
+      <h2 class="s-title">Sua plataforma de confiança</h2>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feature-card"><div class="fi-icon fi-a">⚡</div><h3>Download Imediato</h3><p>Após confirmação do pagamento, o link é liberado instantaneamente. Sem filas, sem espera.</p></div>
+      <div class="feature-card"><div class="fi-icon fi-b">🔐</div><h3>Pagamento 100% Seguro</h3><p>Criptografia SSL e integração com os principais gateways. Seus dados sempre protegidos.</p></div>
+      <div class="feature-card"><div class="fi-icon fi-c">💫</div><h3>Garantia de 7 dias</h3><p>Não gostou? Devolvemos 100% sem burocracia. Nossa missão é sua satisfação total.</p></div>
+      <div class="feature-card"><div class="fi-icon fi-d">📦</div><h3>Atualizações gratuitas</h3><p>Todos os produtos recebem atualizações contínuas. Compre uma vez, acesse melhorias para sempre.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TESTIMONIALS -->
+<section id="depoimentos">
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Depoimentos</p>
+      <h2 class="s-title">O que nossos clientes dizem</h2>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Os templates do Canva transformaram minha presença digital. Em 2 semanas aumentei meu engajamento em 80%. Produto incrível."</p>
+        <div class="testi-author"><div class="testi-av">👩</div><div class="testi-info"><strong>Mariana Costa</strong><span>Social Media Manager · SP</span></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"O e-book de copywriting pagou meu investimento em 3 dias. Apliquei as técnicas e minhas landing pages triplicaram a conversão."</p>
+        <div class="testi-author"><div class="testi-av">👨</div><div class="testi-info"><strong>Rafael Mendes</strong><span>Empreendedor Digital · RJ</span></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Suporte excepcional e produtos de altíssima qualidade. O Dashboard UI Kit me economizou semanas de desenvolvimento."</p>
+        <div class="testi-author"><div class="testi-av">🧑</div><div class="testi-info"><strong>Lucas Fernandes</strong><span>Dev Fullstack · MG</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <p class="s-label">Newsletter</p>
+  <h2>Novos produtos toda semana</h2>
+  <p>Cadastre-se e receba lançamentos, promoções exclusivas e conteúdo gratuito direto no seu e-mail.</p>
+  <div class="nl-form">
+    <input type="email" placeholder="seu@email.com" id="emailInput">
+    <a href="#" class="btn-primary" onclick="handleNL(event)">Quero receber →</a>
+  </div>
+  <p id="nlMsg" style="margin-top:1rem;font-size:.85rem;color:var(--gold);display:none;">✅ Você está na lista. Bem-vindo à VAULT.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo">VAULT<span style="color:var(--gold)">.</span></div>
+        <p>A plataforma premium para quem cria, vende e baixa produtos digitais com confiança.</p>
+      </div>
+      <div class="footer-col"><h4>Produtos</h4><ul><li><a href="#">Templates</a></li><li><a href="#">E-books</a></li><li><a href="#">Cursos</a></li><li><a href="#">Presets</a></li><li><a href="#">Scripts</a></li></ul></div>
+      <div class="footer-col"><h4>Plataforma</h4><ul><li><a href="#">Como funciona</a></li><li><a href="#">Vender na VAULT</a></li><li><a href="#">Afiliados</a></li><li><a href="#">Anunciar</a></li></ul></div>
+      <div class="footer-col"><h4>Suporte</h4><ul><li><a href="#">Central de ajuda</a></li><li><a href="#">Política de reembolso</a></li><li><a href="#">Termos de uso</a></li><li><a href="#">Privacidade</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 VAULT Digital. Todos os direitos reservados.</p>
+      <div class="socials">
+        <a href="#" class="sc">ig</a><a href="#" class="sc">tw</a><a href="#" class="sc">yt</a><a href="#" class="sc">in</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="dlModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="font-size:2rem;margin-bottom:.8rem;">📦</div>
+    <h3 id="mTitle">Preparando download...</h3>
+    <p id="mDesc">Aguarde enquanto verificamos sua licença e preparamos o arquivo.</p>
+    <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
+    <p class="progress-label" id="pLabel">0%</p>
+    <div class="modal-actions" id="mActions" style="display:none;">
+      <a href="#" class="btn-primary"><svg viewBox="0 0 20 20" fill="currentColor" style="width:14px"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>Baixar arquivo</a>
+      <button onclick="closeModal()" style="background:transparent;border:1px solid var(--border2);color:var(--muted2);padding:.5rem 1.1rem;border-radius:4px;font-size:.82rem;cursor:none;font-family:'Outfit',sans-serif;">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.cat-card,.product-card,.testi-card,.feature-card,.adsense-main-slot,.adsense-slot-sm').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';ring.style.width='48px';ring.style.height='48px';ring.style.opacity='.4';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';ring.style.width='32px';ring.style.height='32px';ring.style.opacity='1';});
+});
+
+// REVEAL
+const obs = new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// MODAL
+function openModal(e,name){
+  e.preventDefault();
+  document.getElementById('dlModal').classList.add('open');
+  document.getElementById('mTitle').textContent=name;
+  document.getElementById('mDesc').textContent='Aguarde enquanto verificamos sua licença e preparamos o arquivo.';
+  document.getElementById('mActions').style.display='none';
+  document.getElementById('pLabel').textContent='0%';
+  const fill=document.getElementById('pFill');
+  fill.style.width='0%';
+  setTimeout(()=>{fill.style.width='100%';},80);
+  let p=0;
+  const iv=setInterval(()=>{
+    p=Math.min(p+Math.random()*18,100);
+    document.getElementById('pLabel').textContent=Math.floor(p)+'%';
+    if(p>=100){clearInterval(iv);document.getElementById('pLabel').textContent='100% — Pronto!';document.getElementById('mTitle').textContent='✅ Download pronto!';document.getElementById('mDesc').textContent=`Seu arquivo "${name}" está pronto. Clique abaixo para baixar.`;document.getElementById('mActions').style.display='flex';}
+  },220);
+}
+function closeModal(){document.getElementById('dlModal').classList.remove('open');}
+document.getElementById('dlModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// NEWSLETTER
+function handleNL(e){e.preventDefault();const v=document.getElementById('emailInput').value;if(v&&v.includes('@')){document.getElementById('nlMsg').style.display='block';document.getElementById('emailInput').value='';}}
+</script>
+</body>
+</html>
